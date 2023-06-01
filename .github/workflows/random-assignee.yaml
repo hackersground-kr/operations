@@ -1,0 +1,27 @@
+name: Get Random Assignee
+
+on:
+  push:
+    branches:
+    - 'random-assignee'
+
+jobs:
+  assign:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout codes
+      uses: actions/checkout@v3
+
+    - name: Get random assignee
+      id: assignee
+      shell: pwsh
+      run: |
+        Invoke-RestMethod https://raw.githubusercontent.com/hackersground-kr/operations/random-assignee/Get-RandomAssignee.ps1 | Out-File ~/Get-RandomAssignee.ps1
+        $assignee = $(~/Get-RandomAssignee.ps1 -Assignees ${{ secrets.ASSIGNEES }})
+
+        echo "value=$assignee" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+
+    - name: Show assignee
+      shell: pwsh
+      run: |
+        echo "${{ steps.assignee.outputs.value }}"
