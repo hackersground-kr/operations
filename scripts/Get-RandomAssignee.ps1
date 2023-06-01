@@ -9,32 +9,33 @@ Param(
     $Help
 )
 
-function Show-Usage {
-    Write-Output "    This returns a randomly selected assignee from the given collection of assignees
+# function Show-Usage {
+#     Write-Output "    This returns a randomly selected assignee from the given collection of assignees
 
-    Usage: $(Split-Path $MyInvocation.ScriptName -Leaf) ``
-            [-Assignees <List of assignees>] ``
+#     Usage: $(Split-Path $MyInvocation.ScriptName -Leaf) ``
+#             [-Assignees <List of assignees>] ``
 
-            [-Help]
+#             [-Help]
 
-    Options:
-        -Assignees: A comma-delimited or line-break-delimited list of assignees
+#     Options:
+#         -Assignees: A comma-delimited or line-break-delimited list of assignees
 
-        -Help:      Show this message.
-"
+#         -Help:      Show this message.
+# "
 
-    Exit 0
-}
+#     Exit 0
+# }
 
-# Show usage
-$needHelp = $Help -eq $true
-if ($needHelp -eq $true) {
-    Show-Usage
-    Exit 0
-}
+# # Show usage
+# $needHelp = $Help -eq $true
+# if ($needHelp -eq $true) {
+#     Show-Usage
+#     Exit 0
+# }
 
 if ([String]::IsNullOrWhiteSpace($Assignees) -eq $true) {
-    Show-Usage
+    Write-Host "No assignees provided. Exiting..."
+    # Show-Usage
     Exit 0
 }
 
