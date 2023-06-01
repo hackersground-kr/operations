@@ -13,7 +13,7 @@ jobs:
       id: assignee
       shell: pwsh
       run: |
-        Invoke-RestMethod https://raw.githubusercontent.com/hackersground-kr/operations/random-assignee/scripts/Get-RandomAssignee.ps1 | Out-File ~/Get-RandomAssignee.ps1
+        Invoke-RestMethod https://raw.githubusercontent.com/hackersground-kr/operations/feature/random-assignee/scripts/Get-RandomAssignee.ps1 | Out-File ~/Get-RandomAssignee.ps1
         $assignee = $(~/Get-RandomAssignee.ps1 -Assignees "${{ secrets.ASSIGNEES }}")
 
         echo "value=$assignee" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
