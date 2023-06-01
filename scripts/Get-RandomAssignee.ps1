@@ -39,7 +39,7 @@ if ([String]::IsNullOrWhiteSpace($Assignees) -eq $true) {
 }
 
 # Split the assignees into an array
-$assigneesCollection = $Assignees -split '[,\r\n]' | `
+$assigneesCollection = $Assignees -split '[,`r`n]' | `
     Where-Object { [String]::IsNullOrWhiteSpace($_) -eq $false } | `
     ForEach-Object { $_.Trim() }
 
