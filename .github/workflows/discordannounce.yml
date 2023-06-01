@@ -1,0 +1,25 @@
+name: discord message
+on:
+  issue_comment:
+    types: [created, edited, deleted]
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Discord notification 1
+      if: contains(github.event.comment.body, '/ok')  #when issue comment include /ok
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL_1 }} #need each channels webhook id
+      uses: Ilshidur/action-discord@master
+      with:
+        args: '111The project {{ EVENT_PAYLOAD.repository.full_name }} has been deployed.'
+    - name: Discord notification 2
+      if: contains(github.event.comment.body, '/support') #when issue comment include /support
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL_2 }} #need each channels webhook id
+      uses: Ilshidur/action-discord@master
+      with:
+        args: '222The project {{ EVENT_PAYLOAD.repository.full_name }} has been deployed.'
