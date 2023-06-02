@@ -2,6 +2,12 @@ name: aftercomment
 on:
   issue_comment:
     types: [created]
+    
+permissions:
+  contents: read
+  id-token: write
+  issues: write
+  
 jobs:
 
   build:
@@ -94,25 +100,9 @@ jobs:
         token: ${{secrets.GITHUB_TOKEN}}
         labels: verifyied
         type: add
-        
-    - name: add comment
-      if: |
-        github.event.comment.user.login == github.event.issue.assignee.login&&
-          contains(github.event.comment.body, '/ok')
-      uses: bubkoo/auto-comment@v1
-      with:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        issuesOpenedReactions: 'rocket, +1'
-        issuesOpened: |
-          👉 "축하합니다! 🎉"
-
-          🔹 해커그라운드 운영진 일동 🔹
-          
-    - name: close issue
-      if: |
-        github.event.comment.user.login == github.event.issue.assignee.login&&
-          contains(github.event.comment.body, '/ok')
+                 
+    - name: comment and close Issue
       uses: peter-evans/close-issue@v3
       with:
-          issue-number: 1
-          comment: Auto-closing issue
+        comment: |
+          축하합니다! 🎉
