@@ -24,7 +24,7 @@ jobs:
       id: assignee
       shell: pwsh
       run: |
-        $scriptUrl = "https://raw.githubusercontent.com/hackersground-kr/operations/feature/random-assignee/get-randomassignee/Get-RandomAssignee.ps1"
+        $scriptUrl = "https://raw.githubusercontent.com/hackersground-kr/operations/${{ github.ref_name }}/get-randomassignee/Get-RandomAssignee.ps1"
         Invoke-RestMethod $scriptUrl | Out-File ~/Get-RandomAssignee.ps1
         $assignee = $(~/Get-RandomAssignee.ps1 -Assignees "${{ secrets.ASSIGNEES }}")
 
