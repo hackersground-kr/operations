@@ -7,19 +7,11 @@ on:
 
 jobs:
   assign:
+    name: Get random assignee
 
     runs-on: ubuntu-latest
 
     steps:
-    - name: Get event payload
-      shell: pwsh
-      run: |
-        $payload = "${{ toJSON(github) }}"
-        $payload = $payload -replace '\r\n', '\n'
-        $payload = $payload -replace '\r', '\n'
-        $payload = $payload -replace '\n', '\r\n'
-        echo "$payload"
-
     - name: Get random assignee
       id: assignee
       shell: pwsh
