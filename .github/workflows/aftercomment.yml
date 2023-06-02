@@ -1,4 +1,4 @@
-name: discord message
+name: aftercomment
 on:
   issue_comment:
     types: [created]
