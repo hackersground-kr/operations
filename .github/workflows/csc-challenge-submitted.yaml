@@ -15,7 +15,7 @@ jobs:
     - name: Get event payload
       shell: pwsh
       run: |
-        $payload = "${{ github.event.issue }}"
+        $payload = "${{ toJSON(github.event.issue) }}"
         $payload = $payload -replace '\r\n', '\n'
         $payload = $payload -replace '\r', '\n'
         $payload = $payload -replace '\n', '\r\n'
