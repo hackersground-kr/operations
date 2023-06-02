@@ -7,8 +7,19 @@ on:
 
 jobs:
   assign:
+
     runs-on: ubuntu-latest
+
     steps:
+    - name: Get event payload
+      shell: pwsh
+      run: |
+        $payload = "${{ github.event }}"
+        $payload = $payload -replace '\r\n', '\n'
+        $payload = $payload -replace '\r', '\n'
+        $payload = $payload -replace '\n', '\r\n'
+        echo "$payload"
+
     - name: Get random assignee
       id: assignee
       shell: pwsh
