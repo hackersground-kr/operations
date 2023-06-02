@@ -1,7 +1,7 @@
 name: discord message
 on:
   issue_comment:
-    types: [created, edited, deleted]
+    types: [created]
 jobs:
 
   build:
@@ -10,16 +10,87 @@ jobs:
     
     steps:
     - name: Discord notification 1
-      if: contains(github.event.comment.body, '/ok')  #when issue comment include /ok
+      if: |
+        contains(github.event.issue.title, 'az-900')&&
+          github.event.comment.user.login == github.event.issue.assignee.login&&
+            contains(github.event.comment.body, '/ok')
       env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL_1 }} #need each channels webhook id
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
       uses: Ilshidur/action-discord@master
       with:
-        args: '111The project {{ EVENT_PAYLOAD.repository.full_name }} has been deployed.'
+        args: '${{ github.event.issue.user.login }}님이 애저기초-az-900과정을 달성하셨습니다.'
+      
     - name: Discord notification 2
-      if: contains(github.event.comment.body, '/support') #when issue comment include /support
+      if: |
+        contains(github.event.issue.title, 'ai-900')&&
+          github.event.comment.user.login == github.event.issue.assignee.login&&
+            contains(github.event.comment.body, '/ok')
       env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL_2 }} #need each channels webhook id
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
       uses: Ilshidur/action-discord@master
       with:
-        args: '222The project {{ EVENT_PAYLOAD.repository.full_name }} has been deployed.'
+        args: '${{ github.event.issue.user.login }}님이 애저ai기초-ai-900과정을 달성하셨습니다.'
+        
+    - name: Discord notification 3
+      if: |
+        contains(github.event.issue.title, 'dp-900')&&
+          github.event.comment.user.login == github.event.issue.assignee.login&&
+            contains(github.event.comment.body, '/ok')
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      uses: Ilshidur/action-discord@master
+      with:
+        args: '${{ github.event.issue.user.login }}님이 애저데이터기초-dp-900과정을 달성하셨습니다.'
+        
+    - name: Discord notification 4
+      if: |
+        contains(github.event.issue.title, 'pl-900')&&
+          github.event.comment.user.login == github.event.issue.assignee.login&&
+            contains(github.event.comment.body, '/ok')
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      uses: Ilshidur/action-discord@master
+      with:
+        args: '${{ github.event.issue.user.login }}님이 파워플랫폼기초-pl-900과정을 달성하셨습니다.'
+        
+    - name: Discord notification 5
+      if: |
+        contains(github.event.issue.title, 'sc-900')&&
+          github.event.comment.user.login == github.event.issue.assignee.login&&
+            contains(github.event.comment.body, '/ok')
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      uses: Ilshidur/action-discord@master
+      with:
+        args: '${{ github.event.issue.user.login }}님이 보안기초-sc-900과정을 달성하셨습니다.'
+        
+    - name: Discord notification 6
+      if: |
+        contains(github.event.issue.title, 'ms-900')&&
+          github.event.comment.user.login == github.event.issue.assignee.login&&
+            contains(github.event.comment.body, '/ok')
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      uses: Ilshidur/action-discord@master
+      with:
+        args: '${{ github.event.issue.user.login }}님이 ms365기초-ms-900과정을 달성하셨습니다.'
+        
+    - name: removelabel
+      if: |
+        github.event.comment.user.login == github.event.issue.assignee.login&&
+          contains(github.event.comment.body, '/ok')
+      uses: buildsville/add-remove-label@v2.0.0
+      with:
+        token: ${{secrets.ACCESS_TOKEN}}
+        labels: verifying
+        type: remove
+        
+    - name: addlabel
+      if: |
+        github.event.comment.user.login == github.event.issue.assignee.login&&
+          contains(github.event.comment.body, '/ok')
+      uses: buildsville/add-remove-label@v2.0.0
+      with:
+        token: ${{secrets.ACCESS_TOKEN}}
+        labels: verifyied
+        type: add
