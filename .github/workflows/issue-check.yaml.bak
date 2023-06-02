@@ -1,0 +1,22 @@
+name: Test issues
+
+on:
+  issues:
+    types:
+    - opened
+  issue_comment:
+    types:
+    - created
+
+jobs:
+  test:
+    name: GitHub object as JSON
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Get event payload
+      shell: pwsh
+      run: |
+        $payload = echo "${{ toJSON(github) }}" | ConvertFrom-Json | ConvertTo-Json -Depth 100
+        echo $payload

@@ -5,6 +5,11 @@ on:
     types:
     - opened
 
+permissions:
+  contents: read
+  id-token: write
+  issues: write
+
 jobs:
   labelling:
     name: 'Add a label on submission: review-required'
@@ -47,11 +52,13 @@ jobs:
 
     - name: Add a label - Overdue
       if: ${{ steps.checkpoint.outputs.isOverdue == 'true' }}
-      uses: buildsville/add-remove-label@v2
-      with:
-        token: "${{ secrets.GITHUB_TOKEN }}"
-        labels: 'overdue'
-        type: add
+      shell: bash
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        gh issue edit ${{ github.event.issue.number }} \
+          --add-label "overdue" \
+          -R ${{ github.event.repository.full_name }}
 
     - name: Comment to issue - Overdue
       if: ${{ steps.checkpoint.outputs.isOverdue == 'true' }}
@@ -74,15 +81,19 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        gh issue close "${{ github.event.issue.number }}" -c "챌린지 제출 기한이 종료되었습니다. 이슈를 닫습니다."
+        gh issue close ${{ github.event.issue.number }} \
+          -c "챌린지 제출 기한이 종료되었습니다. 이슈를 닫습니다." \
+          -R ${{ github.event.repository.full_name }}
 
     - name: Add a label - Invalid challenge code
       if: ${{ steps.checkpoint.outputs.isOverdue == 'false' && steps.challenge.outputs.isValidCode == 'false' }}
-      uses: buildsville/add-remove-label@v2
-      with:
-        token: "${{ secrets.GITHUB_TOKEN }}"
-        labels: 'invalid'
-        type: add
+      shell: bash
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        gh issue edit ${{ github.event.issue.number }} \
+          --add-label "invalid" \
+          -R ${{ github.event.repository.full_name }}
   
     - name: Comment to issue - Invalid challenge code
       if: ${{ steps.checkpoint.outputs.isOverdue == 'false' && steps.challenge.outputs.isValidCode == 'false' }}
@@ -105,15 +116,40 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        gh issue close "${{ github.event.issue.number }}" -c "챌린지 코드를 확인할 수 없습니다. 이슈를 닫습니다."
+        gh issue close ${{ github.event.issue.number }} \
+          -c "챌린지 코드를 확인할 수 없습니다. 이슈를 닫습니다." \
+          -R ${{ github.event.repository.full_name }}
   
     - name: Add a label - Acknowledge
       if: ${{ steps.checkpoint.outputs.isOverdue == 'false' && steps.challenge.outputs.isValidCode == 'true' }}
-      uses: buildsville/add-remove-label@v2
-      with:
-        token: "${{ secrets.GITHUB_TOKEN }}"
-        label: 'csc, ${{ steps.challenge.outputs.code }}, verifying'
-        type: add
+      shell: bash
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        gh issue edit ${{ github.event.issue.number }} \
+          --add-label "csc,${{ steps.challenge.outputs.code }},verifying" \
+          -R ${{ github.event.repository.full_name }}
+
+    - name: Get random assignee
+      if: ${{ steps.checkpoint.outputs.isOverdue == 'false' && steps.challenge.outputs.isValidCode == 'true' }}
+      id: assignee
+      shell: pwsh
+      run: |
+        $scriptUrl = "https://raw.githubusercontent.com/hackersground-kr/operations/main/get-randomassignee/Get-RandomAssignee.ps1"
+        Invoke-RestMethod $scriptUrl | Out-File ~/Get-RandomAssignee.ps1
+        $assignee = $(~/Get-RandomAssignee.ps1 -Assignees "${{ vars.INSPECTORS }}")
+
+        echo "value=$assignee" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+
+    - name: Assign a staff
+      if: ${{ steps.checkpoint.outputs.isOverdue == 'false' && steps.challenge.outputs.isValidCode == 'true' }}
+      shell: bash
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        gh issue edit ${{ github.event.issue.number }} \
+          --add-assignee "${{ steps.assignee.outputs.value }}" \
+          -R ${{ github.event.repository.full_name }}
 
     - name: Comment to issue - Acknowledge
       if: ${{ steps.checkpoint.outputs.isOverdue == 'false' && steps.challenge.outputs.isValidCode == 'true' }}
@@ -124,28 +160,8 @@ jobs:
         issuesOpened: |
           👋🏼 @{{ author }} 님!
 
-          ${{ steps.challenge.outputs.code }} 챌린지 완료 이슈를 생성해 주셔서 감사합니다! 🎉 참가자님의 해커톤 완주를 응원해요! 💪🏼
+          ${{ steps.challenge.outputs.codeUpper }} 챌린지 완료 이슈를 생성해 주셔서 감사합니다! 🎉 참가자님의 해커톤 완주를 응원해요! 💪🏼
 
-          PR 템플릿 작성 가이드라인을 잘 준수하셨는지 확인해주세요. 최대한 빠르게 리뷰하겠습니다! 😊
+          @${{ steps.assignee.outputs.value }} 님께서 최대한 빠르게 확인해 드리겠습니다! 😊
 
           🔹 해커그라운드 운영진 일동 🔹
-
-    - name: Get random assignee
-      if: ${{ steps.checkpoint.outputs.isOverdue == 'false' && steps.challenge.outputs.isValidCode == 'true' }}
-      id: assignee
-      shell: pwsh
-      run: |
-        $scriptUrl = "https://raw.githubusercontent.com/hackersground-kr/operations/main/get-randomassignee/Get-RandomAssignee.ps1"
-        Invoke-RestMethod $scriptUrl | Out-File ~/Get-RandomAssignee.ps1
-        $assignee = $(~/Get-RandomAssignee.ps1 -Assignees "${{ secrets.ASSIGNEES }}")
-
-        echo "value=$assignee" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-
-    - name: Assign a staff
-      if: ${{ steps.checkpoint.outputs.isOverdue == 'false' && steps.challenge.outputs.isValidCode == 'true' }}
-      shell: pwsh
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        $url = "repos/${{ github.event.repository.full_name }}/issues/${{ github.event.issue.number }}/assignees"
-        gh api $url -X POST -f assignees=["${{ steps.assignee.outputs.value }}"]
