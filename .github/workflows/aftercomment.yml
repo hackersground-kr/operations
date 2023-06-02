@@ -81,7 +81,7 @@ jobs:
           contains(github.event.comment.body, '/ok')
       uses: buildsville/add-remove-label@v2.0.0
       with:
-        token: ${{secrets.ACCESS_TOKEN}}
+        token: ${{secrets.GITHUB_TOKEN}}
         labels: verifying
         type: remove
         
@@ -91,7 +91,7 @@ jobs:
           contains(github.event.comment.body, '/ok')
       uses: buildsville/add-remove-label@v2.0.0
       with:
-        token: ${{secrets.ACCESS_TOKEN}}
+        token: ${{secrets.GITHUB_TOKEN}}
         labels: verifyied
         type: add
         
