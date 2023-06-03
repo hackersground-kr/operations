@@ -15,71 +15,27 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Discord notification 1
-      if: |
-        contains(github.event.issue.title, 'az-900')&&
-          github.event.comment.user.login == github.event.issue.assignee.login&&
-            contains(github.event.comment.body, '/ok')
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
-      uses: Ilshidur/action-discord@master
-      with:
-        args: '${{ github.event.issue.user.login }}님이 애저기초-az-900과정을 달성하셨습니다.'
-      
-    - name: Discord notification 2
-      if: |
-        contains(github.event.issue.title, 'ai-900')&&
-          github.event.comment.user.login == github.event.issue.assignee.login&&
-            contains(github.event.comment.body, '/ok')
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
-      uses: Ilshidur/action-discord@master
-      with:
-        args: '${{ github.event.issue.user.login }}님이 애저ai기초-ai-900과정을 달성하셨습니다.'
+    - name: Check challenge code
+      id: challenge
+      shell: pwsh
+      run: |
+        $title = "${{ github.event.issue.title }}"
+        $code = $title.Substring(0, $title.IndexOf(']')).Replace("[", "").Replace("]", "").Trim().ToLowerInvariant()
+        $codeUpper = $code.ToUpperInvariant()
+        $codes = @("az-900", "ai-900", "dp-900", "pl-900", "sc-900", "ms-900")
+        $isValidCode = $($codes.Contains($code)).ToString().ToLowerInvariant()
+
+        echo "code=$code" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "codeUpper=$codeUpper" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "isValidCode=$isValidCode" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         
-    - name: Discord notification 3
-      if: |
-        contains(github.event.issue.title, 'dp-900')&&
-          github.event.comment.user.login == github.event.issue.assignee.login&&
-            contains(github.event.comment.body, '/ok')
+    - name: Discord Message
+      if: ${{ github.event.comment.user.login == github.event.issue.assignee.login && steps.challenge.outputs.isValidCode == 'true' && contains(github.event.comment.body, '/ok') }}
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
       uses: Ilshidur/action-discord@master
       with:
-        args: '${{ github.event.issue.user.login }}님이 애저데이터기초-dp-900과정을 달성하셨습니다.'
-        
-    - name: Discord notification 4
-      if: |
-        contains(github.event.issue.title, 'pl-900')&&
-          github.event.comment.user.login == github.event.issue.assignee.login&&
-            contains(github.event.comment.body, '/ok')
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
-      uses: Ilshidur/action-discord@master
-      with:
-        args: '${{ github.event.issue.user.login }}님이 파워플랫폼기초-pl-900과정을 달성하셨습니다.'
-        
-    - name: Discord notification 5
-      if: |
-        contains(github.event.issue.title, 'sc-900')&&
-          github.event.comment.user.login == github.event.issue.assignee.login&&
-            contains(github.event.comment.body, '/ok')
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
-      uses: Ilshidur/action-discord@master
-      with:
-        args: '${{ github.event.issue.user.login }}님이 보안기초-sc-900과정을 달성하셨습니다.'
-        
-    - name: Discord notification 6
-      if: |
-        contains(github.event.issue.title, 'ms-900')&&
-          github.event.comment.user.login == github.event.issue.assignee.login&&
-            contains(github.event.comment.body, '/ok')
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
-      uses: Ilshidur/action-discord@master
-      with:
-        args: '${{ github.event.issue.user.login }}님이 ms365기초-ms-900과정을 달성하셨습니다.'
+        args: '${{ github.event.issue.user.login }}님이 ${{ steps.challenge.outputs.codeUpper }}과정을 달성하셨습니다.'
         
     - name: removelabel
       if: |
@@ -105,4 +61,6 @@ jobs:
       uses: peter-evans/close-issue@v3
       with:
         comment: |
-          축하합니다! 🎉
+          ${{ steps.challenge.outputs.codeUpper }}과정을 끝내서 수고했다는 말씀 드리고 싶어요! 
+          ${{ steps.challenge.outputs.codeUpper }}과정을 마치고 느낀 감정이나 어려웠던 점을 공유해주시면 더욱 좋겠어요. 
+          앞으로도 화이팅하세요! 🎉🎉🎉💪💪💪
