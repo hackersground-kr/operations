@@ -29,6 +29,13 @@ jobs:
         echo "codeUpper=$codeUpper" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         echo "isValidCode=$isValidCode" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         
+    - name: Call power automate
+      if: ${{ github.event.comment.user.login == github.event.issue.assignee.login && steps.challenge.outputs.isValidCode == 'true' && contains(github.event.comment.body, '/ok') }}
+      uses: fjogeleit/http-request-action@v1
+      with:
+        url: 'https://prod-01.koreacentral.logic.azure.com:443/workflows/eb085e233f4146d6a9368c5db4121154/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Zv0Cc3gdZiz_76jz2OW22xnYZRF7l_j1i7HdOL_4B7Y'
+        method: 'POST'
+        
     - name: Discord Message
       if: ${{ github.event.comment.user.login == github.event.issue.assignee.login && steps.challenge.outputs.isValidCode == 'true' && contains(github.event.comment.body, '/ok') }}
       env:
