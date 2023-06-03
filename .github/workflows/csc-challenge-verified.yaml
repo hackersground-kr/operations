@@ -1,4 +1,4 @@
-name: aftercomment
+name: On Challenge Verified
 on:
   issue_comment:
     types: [created]
