@@ -20,11 +20,11 @@ jobs:
       shell: pwsh
       run: |
         $title = "${{ github.event.issue.title }}"
-        $code = $title.Substring(0, $title.IndexOf(']')).Replace("[", "").Replace("]", "").Trim().ToLowerInvariant()
-        $codeUpper = $code.ToUpperInvariant()
+        $code = $title.Contains("]") ? $title.Substring(0, $title.IndexOf(']')).Replace("[", "").Replace("]", "").Trim().ToLowerInvariant() : ""
+        $codeUpper = ($code -ne "") ? $code.ToUpperInvariant() : ""
         $codes = @("az-900", "ai-900", "dp-900", "pl-900", "sc-900", "ms-900")
-        $isValidCode = $($codes.Contains($code)).ToString().ToLowerInvariant()
-
+        $isValidCode = ($code -ne "") ? $($codes.Contains($code)).ToString().ToLowerInvariant() : $false
+        
         echo "code=$code" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         echo "codeUpper=$codeUpper" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         echo "isValidCode=$isValidCode" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
