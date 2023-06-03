@@ -33,7 +33,7 @@ jobs:
       if: ${{ github.event.comment.user.login == github.event.issue.assignee.login && steps.challenge.outputs.isValidCode == 'true' && contains(github.event.comment.body, '/ok') }}
       uses: fjogeleit/http-request-action@v1
       with:
-        url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        url: ${{ secrets.HTTP_REQUEST_URL }}
         method: 'POST'
         
     - name: removelabel
