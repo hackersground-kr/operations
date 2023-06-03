@@ -58,6 +58,9 @@ jobs:
         type: add
                  
     - name: comment and close Issue
+      if: |
+        github.event.comment.user.login == github.event.issue.assignee.login&&
+          contains(github.event.comment.body, '/ok')
       uses: peter-evans/close-issue@v3
       with:
         comment: |
