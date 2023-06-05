@@ -1,4 +1,4 @@
-name: aftercomment
+name: On Challenge Verified
 on:
   issue_comment:
     types: [created]
@@ -10,8 +10,8 @@ permissions:
   
 jobs:
 
-  build:
-    name: Build
+  verification-completion:
+    name: Completing verification
     runs-on: ubuntu-latest
     
     steps:
@@ -20,22 +20,21 @@ jobs:
       shell: pwsh
       run: |
         $title = "${{ github.event.issue.title }}"
-        $code = $title.Substring(0, $title.IndexOf(']')).Replace("[", "").Replace("]", "").Trim().ToLowerInvariant()
-        $codeUpper = $code.ToUpperInvariant()
+        $code = $title.Contains("]") ? $title.Substring(0, $title.IndexOf(']')).Replace("[", "").Replace("]", "").Trim().ToLowerInvariant() : ""
+        $codeUpper = ($code -ne "") ? $code.ToUpperInvariant() : ""
         $codes = @("az-900", "ai-900", "dp-900", "pl-900", "sc-900", "ms-900")
-        $isValidCode = $($codes.Contains($code)).ToString().ToLowerInvariant()
-
+        $isValidCode = ($code -ne "") ? $($codes.Contains($code)).ToString().ToLowerInvariant() : $false
+        
         echo "code=$code" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         echo "codeUpper=$codeUpper" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         echo "isValidCode=$isValidCode" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         
-    - name: Discord Message
+    - name: Call power automate
       if: ${{ github.event.comment.user.login == github.event.issue.assignee.login && steps.challenge.outputs.isValidCode == 'true' && contains(github.event.comment.body, '/ok') }}
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
-      uses: Ilshidur/action-discord@master
+      uses: fjogeleit/http-request-action@v1
       with:
-        args: '${{ github.event.issue.user.login }}님이 ${{ steps.challenge.outputs.codeUpper }}과정을 달성하셨습니다.'
+        url: ${{ secrets.HTTP_REQUEST_URL }}
+        method: 'POST'
         
     - name: removelabel
       if: |
@@ -56,8 +55,19 @@ jobs:
         token: ${{secrets.GITHUB_TOKEN}}
         labels: verifyied
         type: add
+        
+    - name: Discord Message
+      if: ${{ github.event.comment.user.login == github.event.issue.assignee.login && steps.challenge.outputs.isValidCode == 'true' && contains(github.event.comment.body, '/ok') }}
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      uses: Ilshidur/action-discord@master
+      with:
+        args: '${{ github.event.issue.user.login }}님이 ${{ steps.challenge.outputs.codeUpper }}과정을 달성하셨습니다.'
                  
     - name: comment and close Issue
+      if: |
+        github.event.comment.user.login == github.event.issue.assignee.login&&
+          contains(github.event.comment.body, '/ok')
       uses: peter-evans/close-issue@v3
       with:
         comment: |
