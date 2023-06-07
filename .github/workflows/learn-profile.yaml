@@ -1,0 +1,35 @@
+name: Get Microsoft Learn profile
+
+on:
+  push:
+    branches:
+    - 'feature/*'
+
+jobs:
+  assign:
+    name: Get Microsoft Learn profile
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Get Microsoft Learn profile
+      id: profile
+      shell: pwsh
+      run: |
+        $scriptUrl = "https://raw.githubusercontent.com/hackersground-kr/operations/${{ github.ref_name }}/get-learnprofile/Get-LearnProfile.ps1"
+        Invoke-RestMethod $scriptUrl | Out-File ~/Get-LearnProfile.ps1
+
+        $text1 = "깃헙 ID: https://github.com/octocat\r\n\r\nMicrosoft Learn 프로필 링크: https://learn.microsoft.com/ko-kr/users/octocat/\r\n\r\n클라우드 스킬 챌린지 토픽/코드: 애저 기초 (PL-900)"
+        $profileLink1 = $(~/Get-LearnProfile.ps1 -Text $text1)
+
+        $text2 = "깃헙 ID: https://github.com/octocat\r\n\r\nMicrosoft Learn 프로필 링크: https://learn.microsoft.com/t/\r\n\r\n클라우드 스킬 챌린지 토픽/코드: 애저 기초 (PL-900)"
+        $profileLink2 = $(~/Get-LearnProfile.ps1 -Text $text2)
+
+        echo "link1=$profileLink1" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "link2=$profileLink2" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+
+    - name: Show Microsoft Learn profile
+      shell: pwsh
+      run: |
+        echo "${{ steps.profile.outputs.link1 }}"
+        echo "${{ steps.profile.outputs.link2 }}"
