@@ -23,10 +23,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Check event payload
-      shell: pwsh
-      run: |
-        $eventPayload = ${{ toJson(github) }}
+    # - name: Check event payload
+    #   shell: pwsh
+    #   run: |
+    #     $eventPayload = ${{ toJson(github) }}
 
     - name: Check issue details
       id: issue
@@ -37,16 +37,25 @@ jobs:
         if ("${{ github.event_name}}" -eq "workflow_dispatch") {
           echo "number=${{ github.event.inputs.issue-number }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8
 
-          $issue = $(gh api /repos/microsoft/hackers-ground/issues/${{ github.event.inputs.issue-number }} | ConvertFrom-Json)
+          $issue = $(gh api /repos/${{ github.repository }}/issues/${{ github.event.inputs.issue-number }} | ConvertFrom-Json)
           echo "title=$($issue.title)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-          echo "created_at=$($issue.created_at.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"))" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+
+          $body = $($issue.body) | ConvertTo-Json -Compress
+          echo "body=$body" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+
+          $created_at=$($issue.created_at.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"))
+          echo "created_at=$created_at" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+
           echo "githubId=$($issue.user.login)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+          echo "assignee=$($issue.assignee)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         } else {
           echo "number=${{ github.event.issue.number }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8
 
           echo "title=$('${{ github.event.issue.title }}')" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+          echo "body=$('${{ github.event.issue.body }}')" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
           echo "created_at=$('${{ github.event.issue.created_at }}')" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
           echo "githubId=$('${{ github.event.issue.user.login }}')" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+          echo "assignee=$('${{ github.event.issue.assignee }}')" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         }
 
     - name: Check issue date/time
@@ -81,6 +90,17 @@ jobs:
         echo "code=$code" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         echo "codeUpper=$codeUpper" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         echo "isValidCode=$isValidCode" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+
+    - name: Extract Microsoft Learn profile link
+      id: profile
+      shell: pwsh
+      run: |
+        $scriptUrl = "https://raw.githubusercontent.com/hackersground-kr/operations/main/get-learnprofile/Get-LearnProfile.ps1"
+        Invoke-RestMethod $scriptUrl | Out-File ~/Get-LearnProfile.ps1
+
+        $profileLink = $(~/Get-LearnProfile.ps1 -Text ${{ steps.issue.outputs.body }})
+
+        echo "link=$profileLink" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
 
     - name: Add a label - Overdue
       if: ${{ steps.checkpoint.outputs.isOverdue == 'true' }}
@@ -167,26 +187,18 @@ jobs:
           -R ${{ github.event.repository.full_name }}
 
     - name: Get random assignee
-      if: ${{ steps.checkpoint.outputs.isOverdue == 'false' && steps.challenge.outputs.isValidCode == 'true' }}
+      if: ${{ steps.checkpoint.outputs.isOverdue == 'false' && steps.challenge.outputs.isValidCode == 'true' && steps.issue.outputs.assignee == '' }}
       id: assignee
       shell: pwsh
       run: |
         $scriptUrl = "https://raw.githubusercontent.com/hackersground-kr/operations/main/get-randomassignee/Get-RandomAssignee.ps1"
         Invoke-RestMethod $scriptUrl | Out-File ~/Get-RandomAssignee.ps1
-        $assignee = $(~/Get-RandomAssignee.ps1 -Assignees "${{ secrets.INSPECTORS }}")
+        $assignee = $(~/Get-RandomAssignee.ps1 -Assignees "${{ vars.INSPECTORS }}")
 
         echo "githubId=$assignee" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
 
-    # - name: Assign a staff
-    #   if: ${{ steps.checkpoint.outputs.isOverdue == 'false' && steps.challenge.outputs.isValidCode == 'true' }}
-    #   shell: bash
-    #   env:
-    #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #   run: |
-    #     gh issue edit ${{ steps.issue.outputs.number }} --add-assignee ${{ steps.assignee.outputs.githubId }} -R ${{ github.event.repository.full_name }}
-
-    - name: Assign a staff
-      if: ${{ steps.checkpoint.outputs.isOverdue == 'false' && steps.challenge.outputs.isValidCode == 'true' }}
+    - name: Assign an inspector
+      if: ${{ steps.checkpoint.outputs.isOverdue == 'false' && steps.challenge.outputs.isValidCode == 'true' && steps.issue.outputs.assignee == '' }}
       uses: actions-cool/issues-helper@v3
       with:
         actions: 'add-assignees'
@@ -211,10 +223,10 @@ jobs:
 
           🔹 해커그라운드 운영진 일동 🔹
 
-    # - name: Call Power Automate workflow
-    #   if: ${{ steps.checkpoint.outputs.isOverdue == 'false' && steps.challenge.outputs.isValidCode == 'true' }}
-    #   uses: fjogeleit/http-request-action@v1
-    #   with:
-    #     url: ${{ secrets.PAU_ON_CHALLENGE_SUBMITTED_URL }}
-    #     method: 'POST'
-    #     data: '{ "githubId": "${{ steps.issue.outputs.githubId }}" }'
+    - name: Call Power Automate workflow
+      if: ${{ steps.checkpoint.outputs.isOverdue == 'false' && steps.challenge.outputs.isValidCode == 'true' }}
+      uses: fjogeleit/http-request-action@v1
+      with:
+        url: ${{ secrets.PAU_ON_CHALLENGE_SUBMITTED_URL }}
+        method: 'POST'
+        data: '{ "githubId": "${{ steps.issue.outputs.githubId }}", "msLearnProfileLink": "${{ steps.profile.outputs.link }}" }'
