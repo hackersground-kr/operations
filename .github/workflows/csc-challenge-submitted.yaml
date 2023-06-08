@@ -225,8 +225,30 @@ jobs:
 
     - name: Call Power Automate workflow
       if: ${{ steps.checkpoint.outputs.isOverdue == 'false' && steps.challenge.outputs.isValidCode == 'true' }}
+      id: request
       uses: fjogeleit/http-request-action@v1
       with:
         url: ${{ secrets.PAU_ON_CHALLENGE_SUBMITTED_URL }}
         method: 'POST'
         data: '{ "githubId": "${{ steps.issue.outputs.githubId }}", "msLearnProfileLink": "${{ steps.profile.outputs.link }}" }'
+
+    - name: Check the response from Power Automate workflow
+      if: ${{ steps.checkpoint.outputs.isOverdue == 'false' && steps.challenge.outputs.isValidCode == 'true' }}
+      id: response
+      run: |
+        echo "statusCode=${{ fromJson(steps.request.outputs.response).statusCode }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+
+    - name: Comment to issue - Power Automate workflow
+      if: ${{ steps.checkpoint.outputs.isOverdue == 'false' && steps.challenge.outputs.isValidCode == 'true' && steps.response.outputs.statusCode == '400' }}
+      uses: actions-cool/issues-helper@v3
+      with:
+        actions: 'create-comment'
+        token: ${{ secrets.GITHUB_TOKEN }}
+        issue-number: ${{ steps.issue.outputs.number }}
+        emoji: '+1,eyes,confused'
+        body: |
+          🚨 @${{ steps.issue.outputs.githubId }} 님!
+
+          현재 @${{ steps.issue.outputs.githubId }}님의 GitHub ID를 시스템에서 확인할 수 없습니다. 😱
+
+          저희 해커그라운드 조직위원회로 빠른 연락 부탁 드립니다. 🙏🏼
