@@ -230,7 +230,7 @@ jobs:
       with:
         url: ${{ secrets.PAU_ON_CHALLENGE_SUBMITTED_URL }}
         method: 'POST'
-        data: '{ "githubId": "${{ steps.issue.outputs.githubId }}", "msLearnProfileLink": "${{ steps.profile.outputs.link }}" }'
+        data: '{ "githubId": "${{ steps.issue.outputs.githubId }}", "msLearnProfileLink": "${{ steps.profile.outputs.link }}", "challengeCode": "${{ steps.challenge.outputs.codeUpper }}" }'
 
     - name: Check the response from Power Automate workflow
       if: ${{ steps.checkpoint.outputs.isOverdue == 'false' && steps.challenge.outputs.isValidCode == 'true' }}
