@@ -52,7 +52,10 @@ jobs:
           echo "number=${{ github.event.issue.number }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8
 
           echo "title=$('${{ github.event.issue.title }}')" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-          echo "body=$('${{ github.event.issue.body }}')" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+
+          $body = $(${{ github.event.issue.body }}) | ConvertTo-Json -Compress
+          echo "body=$body" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+
           echo "created_at=$('${{ github.event.issue.created_at }}')" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
           echo "githubId=$('${{ github.event.issue.user.login }}')" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
           echo "assignee=$('${{ github.event.issue.assignee }}')" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
