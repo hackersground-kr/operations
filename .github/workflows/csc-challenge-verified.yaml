@@ -60,16 +60,16 @@ jobs:
         labels: verified
         type: add
 
-    # - name: Post message to Discord
-    #   if: |
-    #     github.event.comment.user.login == github.event.issue.assignee.login &&
-    #     steps.challenge.outputs.isValidCode == 'true' &&
-    #     contains(github.event.comment.body, '/ok')
-    #   uses: Ilshidur/action-discord@master
-    #   env:
-    #     DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
-    #   with:
-    #     args: 'GitHub ID @${{ github.event.issue.user.login }}님께서 ${{ steps.challenge.outputs.codeUpper }} 과정을 달성하셨습니다.'
+    - name: Post message to Discord
+      if: |
+        github.event.comment.user.login == github.event.issue.assignee.login &&
+        steps.challenge.outputs.isValidCode == 'true' &&
+        contains(github.event.comment.body, '/ok')
+      uses: Ilshidur/action-discord@master
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      with:
+        args: 'GitHub ID @${{ github.event.issue.user.login }}님께서 ${{ steps.challenge.outputs.codeUpper }} 과정을 달성하셨습니다.'
 
     - name: Comment and close Issue
       if: |
