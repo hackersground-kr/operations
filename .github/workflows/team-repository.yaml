@@ -35,7 +35,7 @@ jobs:
       run: |
         $scriptUrl = "https://raw.githubusercontent.com/hackersground-kr/operations/main/set-teamrepository/Set-TeamRepository.ps1"
         Invoke-RestMethod $scriptUrl | Out-File ~/Set-TeamRepository.ps1
-        ~/Set-TeamRepository.ps1 -RepositoryName "${{ github.event.inputs.repository }}") -TeamLeader "${{ github.event.inputs.leader }}" -TeamMembers "${{ github.event.inputs.members }}"
+        ~/Set-TeamRepository.ps1 -RepositoryName "${{ github.event.inputs.repository }}" -TeamLeader "${{ github.event.inputs.leader }}" -TeamMembers "${{ github.event.inputs.members }}"
 
     - name: Get team repository details
       shell: pwsh
