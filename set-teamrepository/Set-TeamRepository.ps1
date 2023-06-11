@@ -63,7 +63,7 @@ if ([String]::IsNullOrWhiteSpace($TeamMembers) -eq $true) {
     Exit 0
 }
 
-$repository = $RepositoryName.Trim()
+$repository = (($RepositoryName.Trim() -replace ' ', '-') -replace '_', '-') -replace '[^a-zA-Z0-9\-]+', ''
 $leader = $TeamLeader.Trim()
 $members = $TeamMembers -split "[,]" | `
     Where-Object { [String]::IsNullOrWhiteSpace($_) -eq $false } | `
