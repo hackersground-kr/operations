@@ -11,7 +11,7 @@
 
 ## 설치
 
-1. 이 저장소를 클론하거나 `main.py` 파일을 다운로드합니다.
+1. 이 저장소를 클론하거나 `check-csc-trophies.py` 파일을 다운로드합니다.
 2. pip를 사용하여 필요한 패키지를 설치합니다:
    ```
    pip install playwright==1.11.1 playwright-sync==1.11.1
