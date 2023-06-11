@@ -1,0 +1,46 @@
+name: Set Team Repository
+
+on:
+  workflow_dispatch:
+    inputs:
+      repository:
+        description: 'Repository name'
+        required: true
+        default: ''
+      leader:
+        description: 'GitHub ID for leader'
+        required: true
+        default: ''
+      members:
+        description: 'Comma-delimited GitHub IDs for members'
+        required: true
+        default: ''
+
+jobs:
+  assign:
+    name: Set team repository
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check event payload
+      shell: pwsh
+      run: |
+        $eventPayload = ${{ toJson(github) }}
+
+    - name: Set team repository
+      shell: pwsh
+      env:
+        GH_TOKEN: ${{ secrets.GH_PAT }}
+      run: |
+        $scriptUrl = "https://raw.githubusercontent.com/hackersground-kr/operations/${{ github.ref_name }}/set-teamrepository/Set-TeamRepository.ps1"
+        Invoke-RestMethod $scriptUrl | Out-File ~/Set-TeamRepository.ps1
+        ~/Set-TeamRepository.ps1 -RepositoryName "${{ github.event.inputs.repository }}") -TeamLeader "${{ github.event.inputs.leader }}" -TeamMembers "${{ github.event.inputs.members }}"
+
+    - name: Get team repository details
+      shell: pwsh
+      env:
+        GH_TOKEN: ${{ secrets.GH_PAT }}
+      run: |
+        gh api /repos/hackersground-kr/${{ github.event.inputs.repository }} -q ".full_name"
+        gh api /repos/hackersground-kr/${{ github.event.inputs.repository }}/collaborators?affiliation=direct -q ".[] | .login"
