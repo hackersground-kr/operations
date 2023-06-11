@@ -33,7 +33,7 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GH_PAT }}
       run: |
-        $scriptUrl = "https://raw.githubusercontent.com/hackersground-kr/operations/${{ github.ref_name }}/set-teamrepository/Set-TeamRepository.ps1"
+        $scriptUrl = "https://raw.githubusercontent.com/hackersground-kr/operations/main/set-teamrepository/Set-TeamRepository.ps1"
         Invoke-RestMethod $scriptUrl | Out-File ~/Set-TeamRepository.ps1
         ~/Set-TeamRepository.ps1 -RepositoryName "${{ github.event.inputs.repository }}") -TeamLeader "${{ github.event.inputs.leader }}" -TeamMembers "${{ github.event.inputs.members }}"
 
