@@ -1,18 +1,45 @@
+# Microsoft Learn 챌린지 완료 확인 도구
+
+이 스크립트를 사용하면 Microsoft Learn 웹 사이트에서 특정 챌린지의 완료 상태를 확인할 수 있습니다. Microsoft Learn 프로필 링크와 챌린지 코드를 제공하여 해당 챌린지가 완료되었는지 여부를 확인할 수 있습니다.
+
+## 사전 요구사항
+
+- Python 3.x
+- 필요한 패키지:
+  - playwright==1.11.1
+  - playwright-sync==1.11.1
+
+## 설치
+
+1. 이 저장소를 클론하거나 `main.py` 파일을 다운로드합니다.
+2. pip를 사용하여 필요한 패키지를 설치합니다:
+   ```
+   pip install playwright==1.11.1 playwright-sync==1.11.1
+   ```
+
 ## 사용법
 
-1. `from playwright.sync_api import sync_playwright`를 통해 `sync_playwright` 모듈을 가져옵니다.
-2. `check_challenge_completion(url, challenge)` 함수를 정의합니다. 이 함수는 Microsoft Learn 프로필의 링크와 확인하고자 하는 챌린지 코드를 매개변수로 받습니다.
-3. `profile_link` 변수에 Microsoft Learn 프로필 링크를 입력합니다. (예: `https://example.microsoft.com/learn/profile/your-profile`)
-4. `challenge_code` 변수에 확인하고자 하는 챌린지 코드를 입력합니다. (예: `AZ-900`)
-5. `check_challenge_completion(profile_link, challenge_code)`를 호출하여 챌린지 완료 여부를 확인합니다.
+1. 스크립트를 실행합니다:
+   ```
+   python check-csc-trophies.py
+   ```
 
-### 주의사항
+2. Microsoft Learn 프로필 링크와 확인하려는 챌린지 코드를 입력하라는 메시지가 표시됩니다. 프로필 링크는 `https://learn.microsoft.com/profile/프로필_사용자_이름` 형식이어야 합니다. 다음 옵션 중에서 확인하려는 챌린지 코드를 선택합니다:
+   - `AZ-900`: Azure 기초 챌린지
+   - `AI-900`: Azure AI 기초 챌린지
+   - `DP-900`: Azure 데이터 기초 챌린지
+   - `PL-900`: 파워 플랫폼 기초 챌린지
+   - `SC-900`: 보안 기초 챌린지
+   - `MS-900`: Microsoft 365 기초 챌린지
 
-- 코드 실행 전에 `playwright` 패키지가 설치되어 있는지 확인해주세요. 설치되어 있지 않다면 다음 명령을 사용하여 설치할 수 있습니다:
-  ```
-  pip install playwright
-  ```
+3. 스크립트는 지정한 챌린지의 완료 상태를 확인하고 결과를 표시합니다. 챌린지가 완료되었으면 "챌린지 코드 완료 /ok"를 출력하고, 완료되지 않았으면 "챌린지 코드 NO"를 출력합니다.
 
-- 코드 실행 시 브라우저가 자동으로 실행되며 웹 페이지를 엽니다. 이때, `headless=True`로 설정되어 있어 브라우저가 백그라운드에서 실행됩니다. 만약 브라우저를 시각적으로 보고 싶다면 `headless=False`로 변경해주세요.
+## 주의사항
 
-- 웹 페이지가 로드되는 동안 대기 시간을 설정하기 위해 `time.sleep()` 함수를 사용합니다. 대기 시간은 필요에 따라 조정할 수 있습니다.
+- 이 스크립트는 Microsoft Learn 웹 페이지의 특정 클래스 구조와 클래스 이름을 가정합니다. 웹 페이지 구조가 변경되면 스크립트를 업데이트해야 할 수 있습니다.
+- 챌린지 정보가 로드될 때까지 대기 시간이 필요합니다. 대기 시간은 코드에서 조정할 수 있습니다. 현재는 5초로 설정되어 있습니다.
+- 스크립트는 브라우저를 자동화하기 위해 Playwright 라이브러리를 사용합니다. 헤드리스 Chromium 브라우저를 실행하여 웹 페이지를 로드합니다.
+
+이 스크립트를 사용하여 Microsoft Learn 웹 사
+
+이트에서 챌린지 완료 상태를 확인하고 필요에 따라 결과를 활용하세요.
