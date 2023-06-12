@@ -13,10 +13,10 @@
 
 2. 터미널 또는 명령 프롬프트를 열고 프로젝트 디렉토리로 이동합니다.
 
-3. Playwright를 설치합니다:
+3. 필요한 패키지를 설치합니다:
 
    ```shell
-   python -m playwright install
+   pip install -r requirements.txt
    ```
 
 4. 위 명령을 실행하면 Playwright가 필요한 브라우저(Chromium, Firefox, WebKit)의 실행 가능한 파일을 다운로드합니다. 이때 Chromium 브라우저에 대한 실행 가능한 파일이 설치되어야 합니다.
@@ -41,10 +41,10 @@
      source myenv/bin/activate
      ```
 
-7. 필요한 패키지를 설치합니다:
+7. Playwright를 설치합니다:
 
    ```shell
-   pip install -r requirements.txt
+   python -m playwright install
    ```
 
 
