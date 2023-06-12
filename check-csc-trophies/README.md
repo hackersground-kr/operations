@@ -52,7 +52,7 @@
 다음과 같은 방법으로 챌린지 완료 여부를 확인할 수 있습니다:
 
 ```shell
-python script.py -p "https://learn.microsoft.com/profile/프로필_사용자_링크" -c "챌린지_코드"
+python check-csc-trophies.py -p "https://learn.microsoft.com/profile/프로필_사용자_링크" -c "챌린지_코드"
 ```
 
 - `-p` 옵션에는 Microsoft Learn 프로필 링크를 입력합니다.
@@ -61,7 +61,7 @@ python script.py -p "https://learn.microsoft.com/profile/프로필_사용자_링
 예를 들어, AZ-900 챌린지 완료 여부를 확인하려면 다음과 같이 실행합니다:
 
 ```shell
-python script.py -p "https://learn.microsoft.com/profile/your-profile-link" -c "AZ-900"
+python check-csc-trophies.py -p "https://learn.microsoft.com/profile/your-profile-link" -c "AZ-900"
 ```
 
 ## 참고 사항
