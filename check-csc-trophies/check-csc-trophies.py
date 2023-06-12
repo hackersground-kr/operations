@@ -64,4 +64,3 @@ if __name__ == "__main__":
     challenge = args.challenge_code
 
     check_challenge_completion(url, challenge)
-    
