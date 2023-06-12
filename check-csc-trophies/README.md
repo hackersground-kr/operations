@@ -7,19 +7,27 @@
 - Python 3.6 이상
 - `requirements.txt`에 명시된 패키지
 
-## 설치
+## 설치 및 설정
 
 1. 이 저장소를 클론하거나 다운로드합니다.
 
-2. 명령 프롬프트 또는 터미널을 열고 프로젝트 디렉토리로 이동합니다.
+2. 터미널 또는 명령 프롬프트를 열고 프로젝트 디렉토리로 이동합니다.
 
-3. 가상 환경을 생성합니다:
+3. Playwright를 설치합니다:
+
+   ```shell
+   python -m playwright install
+   ```
+
+4. 위 명령을 실행하면 Playwright가 필요한 브라우저(Chromium, Firefox, WebKit)의 실행 가능한 파일을 다운로드합니다. 이때 Chromium 브라우저에 대한 실행 가능한 파일이 설치되어야 합니다.
+
+5. 가상 환경을 생성합니다:
 
    ```shell
    python -m venv myenv
    ```
 
-4. 가상 환경을 활성화합니다:
+6. 가상 환경을 활성화합니다:
 
    - Windows:
 
@@ -33,11 +41,12 @@
      source myenv/bin/activate
      ```
 
-5. 필요한 패키지를 설치합니다:
+7. 필요한 패키지를 설치합니다:
 
    ```shell
    pip install -r requirements.txt
    ```
+
 
 ## 사용법
 
