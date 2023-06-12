@@ -1,4 +1,4 @@
-name: Set Team Repository
+name: On TeamBuilding Submitted
 
 on:
   workflow_dispatch:
@@ -23,11 +23,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # - name: Check event payload
-    #   shell: pwsh
-    #   run: |
-    #     $eventPayload = ${{ toJson(github) }}
-
     - name: Set team repository
       shell: pwsh
       env:
