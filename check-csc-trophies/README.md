@@ -1,43 +1,62 @@
-# Microsoft Learn 챌린지 완료 확인 도구
+# Check CSC Trophies
 
-이 스크립트를 사용하면 Microsoft Learn 웹 사이트에서 특정 챌린지의 완료 상태를 확인할 수 있습니다. Microsoft Learn 프로필 링크와 챌린지 코드를 제공하여 해당 챌린지가 완료되었는지 여부를 확인할 수 있습니다.
+이 스크립트는 Microsoft Learn의 CSC (Cloud Skills Challenge) 챌린지를 완료한 여부를 확인하기 위한 도구입니다.
 
-## 사전 요구사항
+## 요구 사항
 
-- Python 3.x
-- 필요한 패키지:
-  - playwright==1.11.1
-  - playwright-sync==1.11.1
+- Python 3.6 이상
+- `requirements.txt`에 명시된 패키지
 
 ## 설치
 
-1. 이 저장소를 클론하거나 `check-csc-trophies.py` 파일을 다운로드합니다.
-2. pip를 사용하여 필요한 패키지를 설치합니다:
+1. 이 저장소를 클론하거나 다운로드합니다.
+
+2. 명령 프롬프트 또는 터미널을 열고 프로젝트 디렉토리로 이동합니다.
+
+3. 가상 환경을 생성합니다:
+
+   ```shell
+   python -m venv myenv
    ```
-   pip install playwright==1.11.1 playwright-sync==1.11.1
+
+4. 가상 환경을 활성화합니다:
+
+   - Windows:
+
+     ```shell
+     myenv\Scripts\activate
+     ```
+
+   - macOS/Linux:
+
+     ```shell
+     source myenv/bin/activate
+     ```
+
+5. 필요한 패키지를 설치합니다:
+
+   ```shell
+   pip install -r requirements.txt
    ```
 
 ## 사용법
 
-1. 스크립트를 실행합니다:
-   ```
-   python check-csc-trophies.py
-   ```
+다음과 같은 방법으로 챌린지 완료 여부를 확인할 수 있습니다:
 
-2. Microsoft Learn 프로필 링크와 확인하려는 챌린지 코드를 입력하라는 메시지가 표시됩니다. 프로필 링크는 `https://learn.microsoft.com/profile/프로필_사용자_이름` 형식이어야 합니다. 다음 옵션 중에서 확인하려는 챌린지 코드를 선택합니다:
-   - `AZ-900`: Azure 기초 챌린지
-   - `AI-900`: Azure AI 기초 챌린지
-   - `DP-900`: Azure 데이터 기초 챌린지
-   - `PL-900`: 파워 플랫폼 기초 챌린지
-   - `SC-900`: 보안 기초 챌린지
-   - `MS-900`: Microsoft 365 기초 챌린지
+```shell
+python script.py -p "https://learn.microsoft.com/profile/프로필_사용자_링크" -c "챌린지_코드"
+```
 
-3. 스크립트는 지정한 챌린지의 완료 상태를 확인하고 결과를 표시합니다. 챌린지가 완료되었으면 "챌린지 코드 완료 /ok"를 출력하고, 완료되지 않았으면 "챌린지 코드 NO"를 출력합니다.
+- `-p` 옵션에는 Microsoft Learn 프로필 링크를 입력합니다.
+- `-c` 옵션에는 완료를 확인하고 싶은 챌린지 코드를 입력합니다.
 
-## 주의사항
+예를 들어, AZ-900 챌린지 완료 여부를 확인하려면 다음과 같이 실행합니다:
 
-- 이 스크립트는 Microsoft Learn 웹 페이지의 특정 클래스 구조와 클래스 이름을 가정합니다. 웹 페이지 구조가 변경되면 스크립트를 업데이트해야 할 수 있습니다.
-- 챌린지 정보가 로드될 때까지 대기 시간이 필요합니다. 대기 시간은 코드에서 조정할 수 있습니다. 현재는 5초로 설정되어 있습니다.
-- 스크립트는 브라우저를 자동화하기 위해 Playwright 라이브러리를 사용합니다. 헤드리스 Chromium 브라우저를 실행하여 웹 페이지를 로드합니다.
+```shell
+python script.py -p "https://learn.microsoft.com/profile/your-profile-link" -c "AZ-900"
+```
 
-이 스크립트를 사용하여 Microsoft Learn 웹 사이트에서 챌린지 완료 상태를 확인하고 필요에 따라 결과를 활용하세요.
+## 참고 사항
+
+- 이 스크립트는 [Playwright](https://playwright.dev/)를 사용하여 웹 페이지를 자동으로 탐색합니다.
+- 챌린지 완료 여부는 Microsoft Learn 웹 페이지의 내용에 따라 확인됩니다.
