@@ -46,7 +46,6 @@
    ```
 
    위 명령을 실행하면 Playwright가 필요한 브라우저(Chromium, Firefox, WebKit)의 실행 가능한 파일을 다운로드합니다. 이때 Chromium 브라우저에 대한 실행 가능한 파일이 설치되어야 합니다.
-   ```
 
 ## 사용법
 
