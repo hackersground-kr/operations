@@ -1,4 +1,4 @@
-name: On Round 1 Verified
+name: On Team Topic Verified
 
 on:
   workflow_dispatch:

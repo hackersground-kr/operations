@@ -1,14 +1,36 @@
-name: On Round 1 Submitted
+name: On Team Building Submitted
 
 on:
-  issues:
-    types:
-    - opened
   workflow_dispatch:
     inputs:
-      issue-number:
-        description: 'Issue number'
+      team-name:
+        description: 'Team name'
         required: true
+        default: ''
+      repository:
+        description: 'Repository name'
+        required: true
+        default: ''
+      leader:
+        description: 'GitHub ID for leader'
+        required: true
+        default: ''
+      members:
+        description: 'Comma-delimited GitHub IDs for members'
+        required: true
+        default: ''
+      emails:
+        description: 'Comma-delimited email addresses for members'
+        required: true
+        default: ''
+      date-submitted:
+        description: 'Date submitted'
+        required: true
+        default: ''
+      label:
+        description: 'Label for issue'
+        required: true
+        default: ''
 
 permissions:
   contents: read
@@ -16,57 +38,24 @@ permissions:
   issues: write
   pull-requests: write
 
+env:
+  AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+  AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+  AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
 jobs:
-  verification-start:
-    name: 'Starting verification'
+  team-repository:
+    name: Set team repository
 
     runs-on: ubuntu-latest
 
     steps:
-    # - name: Check event payload
-    #   shell: pwsh
-    #   run: |
-    #     $eventPayload = ${{ toJson(github) }}
-
-    - name: Check issue details
-      id: issue
-      shell: pwsh
-      env:
-        GH_TOKEN: ${{ secrets.GH_PAT }}
-      run: |
-        if ("${{ github.event_name}}" -eq "workflow_dispatch") {
-          echo "number=${{ github.event.inputs.issue-number }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8
-
-          $issue = $(gh api /repos/${{ github.repository }}/issues/${{ github.event.inputs.issue-number }} | ConvertFrom-Json)
-          echo "title=$($issue.title)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-
-          $body = $($issue.body) | ConvertTo-Json -Compress
-          echo "body=$body" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-
-          $created_at=$($issue.created_at.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"))
-          echo "created_at=$created_at" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-
-          echo "githubId=$($issue.user.login)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-          echo "assignee=$($issue.assignee)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-        } else {
-          echo "number=${{ github.event.issue.number }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8
-
-          echo "title=$('${{ github.event.issue.title }}')" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-
-          $body = $("${{ github.event.issue.body }}") | ConvertTo-Json -Compress
-          echo "body=$body" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-
-          echo "created_at=$('${{ github.event.issue.created_at }}')" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-          echo "githubId=$('${{ github.event.issue.user.login }}')" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-          echo "assignee=$('${{ github.event.issue.assignee }}')" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-        }
-
     - name: Check issue date/time
       id: checkpoint
       shell: pwsh
       run: |
         $tz = [TimeZoneInfo]::FindSystemTimeZoneById("Asia/Seoul")
-        $dateSubmitted = [DateTimeOffset]::Parse("${{ steps.issue.outputs.created_at }}")
+        $dateSubmitted = [DateTimeOffset]::Parse("${{ github.event.inputs.date-submitted }}")
         $offset = $tz.GetUtcOffset($dateSubmitted)
 
         $dateSubmitted = $dateSubmitted.ToOffset($offset)
@@ -80,127 +69,85 @@ jobs:
         echo "dateDue=$dateDueValue" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         echo "isOverdue=$isOverdue" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
 
-    - name: Check issue type
-      id: issue-type
+    - name: Get team members
+      id: members
       shell: pwsh
       run: |
-        $title = "${{ steps.issue.outputs.title }}"
+        $members = ("${{ github.event.inputs.members }}" -split "," | `
+          ForEach-Object { $_.Trim() } | `
+          Where-Object { $_ -ne "" } | `
+          ForEach-Object { "@$_" }) `
+            -join ", "
 
-        $isCsc = $title.Contains("챌린지 완료 인증")
-        $isTeamTopic = $title.Contains("해커톤 주제 제출")
-        $isTeamApp = $title.Contains("해커톤 앱 제출")
-        $isTeamPitch = $title.Contains("해커톤 발표자료 제출")
-
-        echo "isCsc=$isCsc" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-        echo "isTeamTopic=$isTeamTopic" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-        echo "isTeamApp=$isTeamApp" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-        echo "isTeamPitch=$isTeamPitch" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-
-    - name: Check team name
-      if: steps.issue-type.outputs.isTeamTopic == 'true'
-      id: team
-      shell: pwsh
-      run: |
-        $title = "${{ steps.issue.outputs.title }}"
-        $teamName = $title.Contains("]") ? $title.Substring(0, $title.IndexOf(']')).Replace("[", "").Replace("]", "").Trim().ToLowerInvariant() : ""
-
-        echo "name=$teamName" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-
-    - name: Extract team repository link
-      if: steps.issue-type.outputs.isTeamTopic == 'true'
-      id: repository
-      shell: pwsh
-      run: |
-        $scriptUrl = "https://raw.githubusercontent.com/hackersground-kr/operations/main/get-teamrepository/Get-TeamRepository.ps1"
-        Invoke-RestMethod $scriptUrl | Out-File ~/Get-TeamRepository.ps1
-
-        $repositoryName = $(~/Get-TeamRepository.ps1 -Text ${{ steps.issue.outputs.body }})
-
-        echo "name=$repositoryName" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-
-    - name: Add a label - Overdue
-      if: steps.issue-type.outputs.isTeamTopic == 'true' && steps.checkpoint.outputs.isOverdue == 'true'
-      shell: bash
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        gh issue edit ${{ steps.issue.outputs.number }} \
-          --add-label "hackathon,team-topic,overdue" \
-          -R ${{ github.event.repository.full_name }}
-
-    - name: Comment to issue - Overdue
-      if: steps.issue-type.outputs.isTeamTopic == 'true' && steps.checkpoint.outputs.isOverdue == 'true'
-      uses: actions-cool/issues-helper@v3
-      with:
-        actions: 'create-comment'
-        token: ${{ secrets.GITHUB_TOKEN }}
-        issue-number: ${{ steps.issue.outputs.number }}
-        body: |
-          👋🏼 @${{ steps.issue.outputs.githubId }} 님!
-
-          * 이슈 제출 시각: ${{ steps.checkpoint.outputs.dateSubmitted }}
-          * 이슈 마감 시각: ${{ steps.checkpoint.outputs.dateDue }}
-
-          안타깝게도 제출하신 이슈는 마감 기한인 ${{ steps.checkpoint.outputs.dateDue }}을 넘기셨습니다. 😭 따라서, 향후 심사시 감점 요소로 작용하게 됩니다.
-
-          하지만, 그렇다고 해서 해커톤이 끝난 건 아니잖아요? 다음 라운드가 더 중요합니다! 💪
-          
-          부지런히 코딩하고, 팀원들과 소통하며, 더 좋은 결과물을 만들어봅시다. 🚀 그리고 필요하면 기술 멘토님과 비기술 멘토님들께 도움을 요청하세요. 🙏
-
-    - name: Add a label - Acknowledge
-      if: steps.issue-type.outputs.isTeamTopic == 'true' && steps.checkpoint.outputs.isOverdue == 'false'
-      shell: bash
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        gh issue edit ${{ steps.issue.outputs.number }} \
-          --add-label "hackathon,team-topic,submitted,verifying" \
-          -R ${{ github.event.repository.full_name }}
+        echo "githubIds=$members" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
 
     - name: Get random assignee
-      if: steps.issue-type.outputs.isTeamTopic == 'true' && steps.checkpoint.outputs.isOverdue == 'false' && steps.issue.outputs.assignee == ''
       id: assignee
       shell: pwsh
       run: |
         $scriptUrl = "https://raw.githubusercontent.com/hackersground-kr/operations/main/get-randomassignee/Get-RandomAssignee.ps1"
         Invoke-RestMethod $scriptUrl | Out-File ~/Get-RandomAssignee.ps1
         $assignee = $(~/Get-RandomAssignee.ps1 -Assignees "${{ vars.INSPECTORS }}")
-
+  
         echo "githubId=$assignee" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+  
+    - name: Set team repository
+      shell: pwsh
+      env:
+        GH_TOKEN: ${{ secrets.GH_PAT }}
+      run: |
+        $scriptUrl = "https://raw.githubusercontent.com/hackersground-kr/operations/main/set-teamrepository/Set-TeamRepository.ps1"
+        Invoke-RestMethod $scriptUrl | Out-File ~/Set-TeamRepository.ps1
+        ~/Set-TeamRepository.ps1 -RepositoryName "${{ github.event.inputs.repository }}" -TeamLeader "${{ github.event.inputs.leader }}" -TeamMembers "${{ github.event.inputs.members }}"
 
-    - name: Assign an inspector
-      if: steps.issue-type.outputs.isTeamTopic == 'true' && steps.checkpoint.outputs.isOverdue == 'false' && steps.issue.outputs.assignee == ''
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        client-id: ${{ env.AZURE_CLIENT_ID }}
+        tenant-id: ${{ env.AZURE_TENANT_ID }}
+        subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}        
+
+    - name: Create Azure resource group
+      id: resource-group
+      shell: pwsh
+      run: |
+        $rg = $(az group create --name rg-hg-${{ github.event.inputs.repository }} --location koreacentral) | ConvertFrom-Json
+
+        $resourceGroupId = $rg.id
+        $resourceGroupName = $rg.name
+
+        echo "id=$resourceGroupId" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "name=$resourceGroupName" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+
+    - name: Assign role to members to resource group
+      shell: pwsh
+      run: |
+        $scriptUrl = "https://raw.githubusercontent.com/hackersground-kr/operations/main/assign-role-to-resourcegroup/Assign-RoleToResourceGroup.ps1"
+        Invoke-RestMethod $scriptUrl | Out-File ~/Assign-RoleToResourceGroup.ps1
+        $assigned = $(~/Assign-RoleToResourceGroup.ps1 -Members "${{ github.event.inputs.emails }}" -ResourceGroup "${{ steps.resource-group.outputs.name }}")
+
+    - name: Create an issue
       uses: actions-cool/issues-helper@v3
       with:
-        actions: 'add-assignees'
-        token: ${{ secrets.GITHUB_TOKEN }}
-        issue-number: ${{ steps.issue.outputs.number }}
-        assignees: ${{ steps.assignee.outputs.githubId }}
-
-    - name: Comment to issue - Acknowledge
-      if: steps.issue-type.outputs.isTeamTopic == 'true' && steps.checkpoint.outputs.isOverdue == 'false'
-      uses: actions-cool/issues-helper@v3
-      with:
-        actions: 'create-comment'
-        token: ${{ secrets.GITHUB_TOKEN }}
-        issue-number: ${{ steps.issue.outputs.number }}
-        emoji: '+1,rocket'
+        actions: 'create-issue'
+        title: '`${{ github.event.inputs.team-name }}`팀 팀빌딩 제출'
         body: |
-          👋🏼 @${{ steps.issue.outputs.githubId }} 님!
+          ## `${{ github.event.inputs.team-name }}`팀 팀빌딩 결과 제출
 
-          해커톤 주제를 제출해 주셔서 감사합니다.
+          - 제출 시각: ${{ steps.checkpoint.outputs.dateSubmitted }}
+          - 마감 시각: ${{ steps.checkpoint.outputs.dateDue }}
 
-          @${{ steps.assignee.outputs.githubId }} 님께서 최대한 빠르게 확인해 드리겠습니다! 😊
+          ### 팀원
 
-          이제 바로 애플리케이션 개발을 시작해 주세요. 더 중요한 다음 라운드가 다가오고 있습니다! 💪
-          
-          부지런히 코딩하고, 팀원들과 소통하며, 더 좋은 결과물을 만들어봅시다. 🚀 그리고 필요하면 기술 멘토님과 비기술 멘토님들께 도움을 요청하세요. 🙏
+          - 팀장: @${{ github.event.inputs.leader }}
+          - 팀원: ${{ steps.members.outputs.githubIds }}
 
-    - name: Call Power Automate workflow
-      if: steps.issue-type.outputs.isTeamTopic == 'true' && steps.checkpoint.outputs.isOverdue == 'false'
-      id: request
-      uses: fjogeleit/http-request-action@v1
-      with:
-        url: ${{ secrets.PAU_ON_ROUND_2_SUBMITTED_URL }}
-        method: 'POST'
-        data: '{ "issueNumber": ${{ steps.issue.outputs.number }}, "githubId": "${{ steps.issue.outputs.githubId }}", "teamName": "${{ steps.team.outputs.name }}", "repositoryName": "${{ steps.repository.outputs.name }}", "dateSubmitted": "${{ steps.checkpoint.outputs.dateSubmitted }}" }'
+          ### 팀 레포지토리
+
+          - https://github.com/hackersground-kr/${{ github.event.inputs.repository }}
+
+          ### 애저 클라우드 리소스
+
+          - https://portal.azure.com/#@hackersground.kr/resource${{ steps.resource-group.outputs.id }}/overview
+        labels: 'round-1,team-building,${{ github.event.inputs.label }}'
+        assignees: ${{ steps.assignee.outputs.githubId }}
