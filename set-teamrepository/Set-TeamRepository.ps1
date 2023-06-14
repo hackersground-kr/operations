@@ -78,7 +78,7 @@ if ($members.Length -gt 3) {
 gh repo create hackersground-kr/$repository --public --template hackersground-kr/team-template
 
 # Add team leader
-gh api -X PUT /repos/hackersground-kr/$repository/collaborators/$leader -f permission=maintain
+gh api -X PUT /repos/hackersground-kr/$repository/collaborators/$leader -f permission=admin
 
 # Add team members
 foreach ($member in $members) {
