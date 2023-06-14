@@ -4,55 +4,42 @@
 
 ## 요구 사항
 
-- Python 3.6 이상
-- `requirements.txt`에 명시된 패키지
+- Python 3.7 이상
 
 ## 설치 및 설정
 
 1. 이 저장소를 클론하거나 다운로드합니다.
+1. 아래 명령어를 순서대로 실행시켜 파이썬 가상 환경을 설정합니다.
 
-2. 터미널 또는 명령 프롬프트를 열고 프로젝트 디렉토리로 이동합니다.
+   > 여기서는 [`virtualenv`](https://pypi.org/project/virtualenv/)를 사용하는 것으로 가정합니다. 만약 필요하다면 아래 명령어를 이용해 먼저 설치하세요.
+   > 
+   > ```bash
+   > pip install --user virtualenv
+   > ```
 
-3. 가상 환경을 생성합니다:
+    ```bash
+    # On Windows
+    python -m virtualenv venv
+    ./venv/Scripts/activate
+ 
+    # On Linux/MacOS
+    virtualenv venv
+    source venv/bin/activate
+    ```
 
-   ```bash
-   python -m venv myenv
-   ```
+1. 아래 명령어를 순서대로 실행시켜 필요한 패키지를 설치합니다.
 
-4. 가상 환경을 활성화합니다:
-
-   - Windows:
-
-     ```powershell
-     myenv/Scripts/activate
-     ```
-
-   - macOS/Linux:
-
-     ```bash
-     source myenv/bin/activate
-     ```
-
-5. 필요한 패키지를 설치합니다:
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-6. Playwright를 설치합니다:
-
-   ```bash
-   python -m playwright install
-   ```
-
-   위 명령을 실행하면 Playwright가 필요한 브라우저(Chromium, Firefox, WebKit)의 실행 가능한 파일을 다운로드합니다. 이때 Chromium 브라우저에 대한 실행 가능한 파일이 설치되어야 합니다.
+    ```bash
+    pip install -r requirements.txt
+    playwright install
+    ```
 
 ## 사용법
 
 다음과 같은 방법으로 챌린지 완료 여부를 확인할 수 있습니다:
 
 ```bash
-python check-csc-trophies.py -p "https://learn.microsoft.com/profile/프로필_사용자_링크" -c "챌린지_코드"
+python check-csc-trophies.py -p "https://learn.microsoft.com/ko-kr/users/{{ 계정명 }}" -c "{{ 챌린지 코드 }}"
 ```
 
 - `-p` 옵션에는 Microsoft Learn 프로필 링크를 입력합니다.
@@ -61,10 +48,10 @@ python check-csc-trophies.py -p "https://learn.microsoft.com/profile/프로필_�
 예를 들어, AZ-900 챌린지 완료 여부를 확인하려면 다음과 같이 실행합니다:
 
 ```bash
-python check-csc-trophies.py -p "https://learn.microsoft.com/profile/your-profile-link" -c "AZ-900"
+python check-csc-trophies.py -p "https://learn.microsoft.com/ko-kr/users/your-profile-link" -c "AZ-900"
 ```
 
 ## 참고 사항
 
-- 이 스크립트는 [Playwright](https://playwright.dev/)를 사용하여 웹 페이지를 자동으로 탐색합니다.
+- 이 스크립트는 [Playwright for Python](https://playwright.dev/python/)을 사용하여 웹 페이지를 자동으로 탐색합니다.
 - 챌린지 완료 여부는 Microsoft Learn 웹 페이지의 내용에 따라 확인됩니다.
