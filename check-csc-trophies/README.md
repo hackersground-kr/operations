@@ -15,7 +15,7 @@
 
 3. 가상 환경을 생성합니다:
 
-   ```shell
+   ```bash
    python -m venv myenv
    ```
 
@@ -23,25 +23,25 @@
 
    - Windows:
 
-     ```shell
-     myenv\Scripts\activate
+     ```powershell
+     myenv/Scripts/activate
      ```
 
    - macOS/Linux:
 
-     ```shell
+     ```bash
      source myenv/bin/activate
      ```
 
 5. 필요한 패키지를 설치합니다:
 
-   ```shell
+   ```bash
    pip install -r requirements.txt
    ```
 
 6. Playwright를 설치합니다:
 
-   ```shell
+   ```bash
    python -m playwright install
    ```
 
@@ -51,7 +51,7 @@
 
 다음과 같은 방법으로 챌린지 완료 여부를 확인할 수 있습니다:
 
-```shell
+```bash
 python check-csc-trophies.py -p "https://learn.microsoft.com/profile/프로필_사용자_링크" -c "챌린지_코드"
 ```
 
@@ -60,7 +60,7 @@ python check-csc-trophies.py -p "https://learn.microsoft.com/profile/프로필_�
 
 예를 들어, AZ-900 챌린지 완료 여부를 확인하려면 다음과 같이 실행합니다:
 
-```shell
+```bash
 python check-csc-trophies.py -p "https://learn.microsoft.com/profile/your-profile-link" -c "AZ-900"
 ```
 
