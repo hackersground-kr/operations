@@ -80,7 +80,7 @@ jobs:
         echo "dateDue=$dateDueValue" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         echo "isOverdue=$isOverdue" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
 
-    - name: Check issue
+    - name: Check issue type
       id: issue-type
       shell: pwsh
       run: |
