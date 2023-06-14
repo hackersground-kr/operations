@@ -45,12 +45,12 @@ if ([String]::IsNullOrWhiteSpace($ResourceGroup) -eq $true) {
     Exit 0
 }
 
-$emails = $Members
-if ([String]::IsNullOrWhiteSpace($emails) -eq $true) {
+$emails = $Members -split "," | ForEach-Object { $_.Trim() } | Where-Object { [String]::IsNullOrWhiteSpace($_) -eq $false }
+if ($emails.Length -eq 0) {
     $emails = $(Get-Content -Path ./emails.txt)
 }
 
-if ([String]::IsNullOrWhiteSpace($emails) -eq $true) {
+if ($emails.Length -eq 0) {
     Write-Host "No members given" -ForegroundColor Red
     Show-Usage
     Exit 0

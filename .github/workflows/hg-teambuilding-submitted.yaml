@@ -73,10 +73,11 @@ jobs:
       id: members
       shell: pwsh
       run: |
-        $members = $("$({{ github.event.inputs.members }})".Split(",") | `
+        $members = ("${{ github.event.inputs.members }}" -split "," | `
           ForEach-Object { $_.Trim() } | `
           Where-Object { $_ -ne "" } | `
-          ForEach-Object { "@$_" }) -join ", "
+          ForEach-Object { "@$_" }) `
+            -join ", "
 
         echo "githubIds=$members" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
 
@@ -110,10 +111,13 @@ jobs:
       id: resource-group
       shell: pwsh
       run: |
-        $rg = $(az group create --name rg-hg-${{ github.event.inputs.repository }} --location koreacentral)
+        $rg = $(az group create --name rg-hg-${{ github.event.inputs.repository }} --location koreacentral) | ConvertFrom-Json
 
-        echo "id=$($rg | ConvertFrom-Json).id | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-        echo "name=$($rg | ConvertFrom-Json).name | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        $resourceGroupId = $rg.id
+        $resourceGroupName = $rg.name
+
+        echo "id=$resourceGroupId" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "name=$resourceGroupName" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
 
     - name: Assign role to members to resource group
       shell: pwsh
@@ -126,9 +130,9 @@ jobs:
       uses: actions-cool/issues-helper@v3
       with:
         actions: 'create-issue'
-        title: '${{ github.event.inputs.team-name }}팀 팀빌딩 제출'
+        title: '`${{ github.event.inputs.team-name }}`팀 팀빌딩 제출'
         body: |
-          ## ${{ github.event.inputs.team-name }}팀 팀빌딩 결과 제출
+          ## `${{ github.event.inputs.team-name }}`팀 팀빌딩 결과 제출
 
           - 제출 시각: ${{ steps.checkpoint.outputs.dateSubmitted }}
           - 마감 시각: ${{ steps.checkpoint.outputs.dateDue }}
