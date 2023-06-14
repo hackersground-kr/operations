@@ -1,4 +1,4 @@
-name: On TeamBuilding Submitted
+name: On Team Building Submitted
 
 on:
   workflow_dispatch:
