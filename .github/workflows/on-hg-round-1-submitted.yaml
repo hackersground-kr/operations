@@ -203,4 +203,4 @@ jobs:
       with:
         url: ${{ secrets.PAU_ON_ROUND_2_SUBMITTED_URL }}
         method: 'POST'
-        data: '{ "githubId": "${{ steps.issue.outputs.githubId }}", "teamName": "${{ steps.team.outputs.name }}", "repositoryName": "${{ steps.repository.outputs.name }}", "dateSubmitted": "${{ steps.checkpoint.outputs.dateSubmitted }}" }'
+        data: '{ "issueNumber": ${{ steps.issue.outputs.number }}, "githubId": "${{ steps.issue.outputs.githubId }}", "teamName": "${{ steps.team.outputs.name }}", "repositoryName": "${{ steps.repository.outputs.name }}", "dateSubmitted": "${{ steps.checkpoint.outputs.dateSubmitted }}" }'
