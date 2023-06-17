@@ -1,4 +1,4 @@
-name: On Team Topic Submitted
+name: On Team App Submitted
 
 on:
   issues:
@@ -70,7 +70,7 @@ jobs:
         $offset = $tz.GetUtcOffset($dateSubmitted)
 
         $dateSubmitted = $dateSubmitted.ToOffset($offset)
-        $dateDue = $([DateTimeOffset]::Parse("${{ vars.HG_DUE_ROUND_2 }}"))
+        $dateDue = $([DateTimeOffset]::Parse("${{ vars.HG_DUE_ROUND_3 }}"))
         $isOverdue = "$($dateSubmitted -gt $dateDue)".ToLowerInvariant()
 
         $dateSubmittedValue = $dateSubmitted.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
@@ -97,7 +97,7 @@ jobs:
         echo "isTeamPitch=$isTeamPitch" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
 
     - name: Check team name
-      if: steps.issue-type.outputs.isTeamTopic == 'true'
+      if: steps.issue-type.outputs.isTeamApp == 'true'
       id: team
       shell: pwsh
       run: |
@@ -107,7 +107,7 @@ jobs:
         echo "name=$teamName" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
 
     - name: Extract team repository link
-      if: steps.issue-type.outputs.isTeamTopic == 'true'
+      if: steps.issue-type.outputs.isTeamApp == 'true'
       id: repository
       shell: pwsh
       run: |
@@ -119,7 +119,7 @@ jobs:
         echo "name=$repositoryName" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
 
     - name: Add a label - Overdue
-      if: steps.issue-type.outputs.isTeamTopic == 'true' && steps.checkpoint.outputs.isOverdue == 'true'
+      if: steps.issue-type.outputs.isTeamApp == 'true' && steps.checkpoint.outputs.isOverdue == 'true'
       shell: bash
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -129,7 +129,7 @@ jobs:
           -R ${{ github.event.repository.full_name }}
 
     - name: Comment to issue - Overdue
-      if: steps.issue-type.outputs.isTeamTopic == 'true' && steps.checkpoint.outputs.isOverdue == 'true'
+      if: steps.issue-type.outputs.isTeamApp == 'true' && steps.checkpoint.outputs.isOverdue == 'true'
       uses: actions-cool/issues-helper@v3
       with:
         actions: 'create-comment'
@@ -148,7 +148,7 @@ jobs:
           부지런히 코딩하고, 팀원들과 소통하며, 더 좋은 결과물을 만들어봅시다. 🚀 그리고 필요하면 기술 멘토님과 비기술 멘토님들께 도움을 요청하세요. 🙏
 
     - name: Add a label - Acknowledge
-      if: steps.issue-type.outputs.isTeamTopic == 'true' && steps.checkpoint.outputs.isOverdue == 'false'
+      if: steps.issue-type.outputs.isTeamApp == 'true' && steps.checkpoint.outputs.isOverdue == 'false'
       shell: bash
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -158,7 +158,7 @@ jobs:
           -R ${{ github.event.repository.full_name }}
 
     - name: Get random assignee
-      if: steps.issue-type.outputs.isTeamTopic == 'true' && steps.checkpoint.outputs.isOverdue == 'false' && steps.issue.outputs.assignee == ''
+      if: steps.issue-type.outputs.isTeamApp == 'true' && steps.checkpoint.outputs.isOverdue == 'false' && steps.issue.outputs.assignee == ''
       id: assignee
       shell: pwsh
       run: |
@@ -169,7 +169,7 @@ jobs:
         echo "githubId=$assignee" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
 
     - name: Assign an inspector
-      if: steps.issue-type.outputs.isTeamTopic == 'true' && steps.checkpoint.outputs.isOverdue == 'false' && steps.issue.outputs.assignee == ''
+      if: steps.issue-type.outputs.isTeamApp == 'true' && steps.checkpoint.outputs.isOverdue == 'false' && steps.issue.outputs.assignee == ''
       uses: actions-cool/issues-helper@v3
       with:
         actions: 'add-assignees'
@@ -178,7 +178,7 @@ jobs:
         assignees: ${{ steps.assignee.outputs.githubId }}
 
     - name: Comment to issue - Acknowledge
-      if: steps.issue-type.outputs.isTeamTopic == 'true' && steps.checkpoint.outputs.isOverdue == 'false'
+      if: steps.issue-type.outputs.isTeamApp == 'true' && steps.checkpoint.outputs.isOverdue == 'false'
       uses: actions-cool/issues-helper@v3
       with:
         actions: 'create-comment'
@@ -188,19 +188,19 @@ jobs:
         body: |
           👋🏼 @${{ steps.issue.outputs.githubId }} 님!
 
-          해커톤 주제를 제출해 주셔서 감사합니다.
+          해커톤 앱을 제출해 주셔서 감사합니다.
 
           @${{ steps.assignee.outputs.githubId }} 님께서 최대한 빠르게 확인해 드리겠습니다! 😊
 
-          이제 바로 애플리케이션 개발을 시작해 주세요. 더 중요한 다음 라운드가 다가오고 있습니다! 💪
+          계속해서 앱을 개발해 주세요! 💪 저희가 앱이 잘 도는지 검증한 후 결과를 말씀드리겠습니다.
           
           부지런히 코딩하고, 팀원들과 소통하며, 더 좋은 결과물을 만들어봅시다. 🚀 그리고 필요하면 기술 멘토님과 비기술 멘토님들께 도움을 요청하세요. 🙏
 
     - name: Call Power Automate workflow
-      if: steps.issue-type.outputs.isTeamTopic == 'true' && steps.checkpoint.outputs.isOverdue == 'false'
+      if: steps.issue-type.outputs.isTeamApp == 'true' && steps.checkpoint.outputs.isOverdue == 'false'
       id: request
       uses: fjogeleit/http-request-action@v1
       with:
-        url: ${{ secrets.PAU_ON_ROUND_2_SUBMITTED_URL }}
+        url: ${{ secrets.PAU_ON_ROUND_3_SUBMITTED_URL }}
         method: 'POST'
         data: '{ "issueNumber": ${{ steps.issue.outputs.number }}, "githubId": "${{ steps.issue.outputs.githubId }}", "teamName": "${{ steps.team.outputs.name }}", "repositoryName": "${{ steps.repository.outputs.name }}", "dateSubmitted": "${{ steps.checkpoint.outputs.dateSubmitted }}" }'
