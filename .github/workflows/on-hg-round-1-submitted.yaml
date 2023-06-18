@@ -167,5 +167,5 @@ jobs:
           ### 애저 클라우드 리소스
 
           - https://portal.azure.com/#@hackersground.kr/resource${{ steps.resource-group.outputs.id }}/overview
-        labels: 'round-1,team-building,${{ github.event.inputs.label }}'
+        labels: 'round-1,hackathon,team-building,${{ github.event.inputs.label }}'
         assignees: ${{ steps.assignee.outputs.githubId }}
