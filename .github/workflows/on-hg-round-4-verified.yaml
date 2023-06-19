@@ -1,4 +1,4 @@
-name: On Team App Verified
+name: On Team Pitch Verified
 
 on:
   issue_comment:
