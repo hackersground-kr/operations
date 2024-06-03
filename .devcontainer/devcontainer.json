@@ -30,7 +30,11 @@
         "GitHub.vscode-github-actions",
         "ms-dotnettools.csdevkit",
         "ms-vscode.powershell"
-      ]
+      ],
+
+      "settings": {
+        "terminal.integrated.fontFamily": "CaskaydiaCove Nerd Font"
+      }
     }
   },
 
