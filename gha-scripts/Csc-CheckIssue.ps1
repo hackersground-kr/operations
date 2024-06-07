@@ -75,9 +75,9 @@ if ($eventName -eq "workflow_dispatch") {
     $body = $GitHubPayload.event.issue.body
 }
 
-$title = $GitHubPayload.title
+$title = if ($GitHubPayload.title) { $GitHubPayload.title.ToString().ToLower() } else { $null }
 $created_at=$($GitHubPayload.created_at.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"))
-$githubID=$GitHubPayload.user.login
+$githubID=$GitHubPayload.user.login.ToString()
 $assignee=if ($GitHubPayload.assignee) { $GitHubPayload.assignee.ToString() } else { $null }
 
 $result = @{
