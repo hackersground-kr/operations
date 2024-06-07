@@ -15,7 +15,7 @@ param(
 )
 
 function Show-Usage {
-    Write-Output "    This checks the challenge code from the event payload
+    Write-Output "    This checks the issue details from the event payload
 
     Usage: $(Split-Path $MyInvocation.ScriptName -Leaf) ``
             [-IssueNumber       <GitHub issue number>] ``

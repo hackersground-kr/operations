@@ -69,38 +69,30 @@ jobs:
       id: checkpoint
       shell: pwsh
       run: |
-        $outputs = ../gha-scripts/Csc-Check-Issue-DateTime.ps1 -dateSubmittedInput "${{ steps.issue.outputs.created_at }}" -dateDueInput "${{ vars.CSC_DUE_DATE }}"
+        $result = ../gha-scripts/Csc-Check-Issue-DateTime.ps1 -dateSubmittedInput "${{ steps.issue.outputs.created_at }}" -dateDueInput "${{ vars.CSC_DUE_DATE }}"
 
-        echo "dateSubmittedValue=$($dateSubmittedValue)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-        echo "dateDueValue=$($dateDueValue)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-        echo "isOverdue=$($isOverdue)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "dateSubmittedValue=$($result.dateSubmittedValue)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "dateDueValue=$($result.dateDueValue)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "isOverdue=$($result.isOverdue)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
 
     - name: Check issue type
       id: issue-type
       shell: pwsh
       run: |
-        $title = "${{ steps.issue.outputs.title }}" - githubpayload 한번에 받아와서 처리 
 
-        $isCsc = $title.Contains("챌린지 완료 인증")
-        $isTeamTopic = $title.Contains("해커톤 주제 제출")
-        $isTeamApp = $title.Contains("해커톤 앱 제출")
-        $isTeamPitch = $title.Contains("해커톤 발표자료 제출")
+        $result = ../gha-scripts/Csc-Check-IssueType.ps1 -eventtitle "${{ steps.issue.outputs.title }}"
 
-        echo "isCsc=$isCsc" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-        echo "isTeamTopic=$isTeamTopic" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-        echo "isTeamApp=$isTeamApp" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-        echo "isTeamPitch=$isTeamPitch" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "isCsc=$($result.isCsc)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "isTeamTopic=$($result.isTeamTopic)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "isTeamApp=$($result.isTeamApp)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "isTeamPitch=$($result.isTemaPitch)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
 
     - name: Check challenge code
       if: steps.issue-type.outputs.isCsc == 'true'
       id: challenge
       shell: pwsh
       run: |
-        $title = "${{ steps.issue.outputs.title }}"
-        $code = $title.Contains("]") ? $title.Substring(0, $title.IndexOf(']')).Replace("[", "").Replace("]", "").Trim().ToLowerInvariant() : ""
-        $codeUpper = ($code -ne "") ? $code.ToUpperInvariant() : ""
-        $codes = @("az-900", "ai-900", "dp-900", "pl-900", "sc-900", "ms-900")
-        $isValidCode = ($code -ne "") ? $($codes.Contains($code)).ToString().ToLowerInvariant() : $false
+        $result = ../gha-scripts/Csc-Check-ChallengeCode.ps1 -eventtitle "${{ steps.issue.outputs.title }}"
 
         echo "code=$code" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         echo "codeUpper=$codeUpper" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
@@ -111,10 +103,8 @@ jobs:
       id: profile
       shell: pwsh
       run: |
-        $scriptUrl = "https://raw.githubusercontent.com/hackersground-kr/operations/main/get-learnprofile/Get-LearnProfile.ps1"
-        Invoke-RestMethod $scriptUrl | Out-File ~/Get-LearnProfile.ps1
 
-        $profileLink = $(~/Get-LearnProfile.ps1 -Text ${{ steps.issue.outputs.body }})
+        $link = ../gha-scripts/Csc-Extract-LearnProfile.ps1 -body "${{ steps.issue.outputs.body }}"
 
         echo "link=$profileLink" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
 
@@ -207,9 +197,7 @@ jobs:
       id: assignee
       shell: pwsh
       run: |
-        $scriptUrl = "https://raw.githubusercontent.com/hackersground-kr/operations/main/get-randomassignee/Get-RandomAssignee.ps1"
-        Invoke-RestMethod $scriptUrl | Out-File ~/Get-RandomAssignee.ps1
-        $assignee = $(~/Get-RandomAssignee.ps1 -Assignees "${{ vars.INSPECTORS }}")
+        $assignee = ./gha-scripts/Csc-Get-RandomAssignee.ps1 -Assignees "${{ vars.INSPECTORS }}"
 
         echo "githubId=$assignee" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
 
