@@ -58,16 +58,16 @@ jobs:
           echo "Issue number is not null or empty"
         }
         $payload = '${{ toJson(github) }}'
-        
+
         if (-not $payload) {
           throw "GitHub payload is null or empty"
         }
         else {
           echo "GitHub payload is not null or empty"}
 
-        $result = $(./gha-scripts/Csc-Check-Issue.ps1 `
+        $result = $(./gha-scripts/Check-ChallengeCode.ps1 `
           -IssueNumber "${{ github.event.inputs.issue-number }}" `
-          -GitHubPayload $payload -GitHubAccessToken "") | ConvertFrom-Json
+          -GitHubPayload $($payload | ConvertFrom-Json)) | ConvertFrom-Json
 
         echo "number=$($result.IssueNumber)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         echo "title=$($result.title)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
