@@ -3,7 +3,7 @@
 param(
     [string]
     [Parameter(Mandatory=$false)]
-    $Issuenumber= "",
+    $IssueNumber= "",
 
     [psobject]
     [Parameter(Mandatory=$false)]
@@ -63,6 +63,7 @@ if (($eventName -eq "workflow_dispatch") -and ([string]::IsNullOrWhiteSpace($Iss
 if ($eventName -ne "workflow_dispatch") {
     $IssueNumber = $GitHubPayload.event.issue.number
 }
+
 
 $accessToken = [string]::IsNullOrWhiteSpace($GitHubAccessToken) ? $env:GH_TOKEN : $GitHubAccessToken
 if (($eventName -eq "workflow_dispatch") -and ([string]::IsNullOrWhiteSpace($accessToken))) {
