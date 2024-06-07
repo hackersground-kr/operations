@@ -50,7 +50,19 @@ jobs:
       env:
         GH_TOKEN: ${{ steps.github-connect.outputs.token }}
       run: |
+        $issueNumber = "${{ github.event.inputs.issue-number }}"
+        if (-not $issueNumber) {
+          throw "Issue number is null or empty"
+        }
+        else{
+          echo "Issue number is not null or empty"
+        }
         $payload = '${{ toJson(github) }}'
+        if (-not $payload) {
+          throw "GitHub payload is null or empty"
+        }
+        else {
+          echo "GitHub payload is not null or empty"}
 
         $result = $(./gha-scripts/Csc-Check-Issue.ps1 `
           -IssueNumber "${{ github.event.inputs.issue-number }}" `
