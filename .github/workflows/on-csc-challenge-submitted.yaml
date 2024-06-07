@@ -51,7 +51,7 @@ jobs:
       run: |
         $payload = '${{ toJson(github) }}'
         
-        $IssueNumber =${{ github.event.inputs.issue-number }}" 
+        $IssueNumber =${{ github.event.inputs.issue-number }}
         $github= $($payload | ConvertFrom-Json)
 
         $result = $(./gha-scripts/Csc-Check-Issue.ps1`
@@ -64,7 +64,7 @@ jobs:
         echo "body=$($result.body)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         echo "create_at=$($result.create_at)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         echo "githubID=$($result.githubID)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-        
+
         echo "assignee=$($result.assignee)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
   
     # - name: Debug challenge code
