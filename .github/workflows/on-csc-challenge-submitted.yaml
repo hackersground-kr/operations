@@ -53,10 +53,10 @@ jobs:
 
         echo "${github.event.inputs.issue-number}"
         echo "${payload}"
-        
+
         $result = $(./gha-scripts/Csc-Check-Issue.ps1`
-          -IssueNumber "${{ github.event.inputs.issue-number }}" `
-          -GitHubPayload $($payload | ConvertFrom-Json)) | ConvertFrom-Json
+        -IssueNumber "${{ github.event.inputs.issue-number }}" `
+        -GitHubPayload $($payload | ConvertFrom-Json)) | ConvertFrom-Json
 
         echo "number=$($result.IssueNumber)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         echo "title=$($result.title)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
@@ -101,8 +101,8 @@ jobs:
       run: |
         $payload = '${{ toJson(github) }}'
         $result = $(./gha-scripts/Check-ChallengeCode.ps1 `
-          -IssueNumber "${{ github.event.inputs.issue-number }}" `
-          -GitHubPayload $($payload | ConvertFrom-Json)) | ConvertFrom-Json
+        -IssueNumber "${{ github.event.inputs.issue-number }}" `
+        -GitHubPayload $($payload | ConvertFrom-Json)) | ConvertFrom-Json
 
         echo "code=$code" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         echo "codeUpper=$codeUpper" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
