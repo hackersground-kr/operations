@@ -55,9 +55,8 @@ if (($eventName -eq "workflow_dispatch") -and ([string]::IsNullOrWhiteSpace($Iss
 }
 
 if ($eventName -ne "workflow_dispatch") {
-    $IssueNumber = "${github.event.issue.number}"
+    $IssueNumber = $GitHubPayload.event.issue.number
 }
-
 
 $body = ""
 if ($eventName -eq "workflow_dispatch") {
@@ -68,7 +67,7 @@ if ($eventName -eq "workflow_dispatch") {
 }
 
 $title = $GitHubPayload.title
-$created_at=$GitHubPayload.created_at.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
+$created_at=$GitHubPayload.event.repository.created_at.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
 $githubID=$GitHubPayload.user.login
 $assignee=$GitHubPayload.assignee
 
