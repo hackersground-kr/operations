@@ -23,10 +23,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Check event payload
-      shell: pwsh
-      run: |
-        $eventPayload = ${{ toJson(github) }}
 
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -42,6 +38,11 @@ jobs:
 
         echo "::add-mask::$token"
         echo "token=$token" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8
+
+    - name: Check event payload
+      shell: pwsh
+      run: |
+        $eventPayload = ${{ toJson(github) }}
 
     - name: Check issue details
       id: issue
