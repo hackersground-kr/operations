@@ -58,6 +58,7 @@ jobs:
           echo "Issue number is not null or empty"
         }
         $payload = '${{ toJson(github) }}'
+        
         if (-not $payload) {
           throw "GitHub payload is null or empty"
         }
