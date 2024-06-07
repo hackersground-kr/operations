@@ -41,7 +41,6 @@ jobs:
           -ApimApiKey "${{ secrets.APIM_SUBSCRIPTION_KEY }}"
 
         echo "::add-mask::$token"
-        echo "token=${token}"
         echo "token=$token" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8
 
     - name: Check issue details
@@ -51,6 +50,7 @@ jobs:
         GH_TOKEN: ${{ steps.github-connect.outputs.token }}
       run: |
         $payload = '${{ toJson(github) }}'
+        $GitHubPayload = $(gh api /repos/$($GitHubPayload.repository)/issues/$IssueNumber | ConvertFrom-Json)
         $result = $(./gha-scripts/Csc-Check-Issue.ps1`
           -IssueNumber "${{ github.event.inputs.issue-number }}" `
           -GitHubPayload $($payload | ConvertFrom-Json)) | ConvertFrom-Json
