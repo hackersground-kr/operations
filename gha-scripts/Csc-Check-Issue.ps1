@@ -5,7 +5,7 @@ param(
     [Parameter(Mandatory=$false)]
     $Issuenumber= "",
 
-    [string]
+    [psobject]
     [Parameter(Mandatory=$false)]
     $GitHubPayload=$null,
 
