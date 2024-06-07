@@ -53,7 +53,7 @@ if($GitHubPayload -eq $null) {
     Exit 0
 }
 else{
-    $GitHubPayload = $GitHubPayload | ConvertFrom-Json
+    echo $GitHubPayload
 }
 
 if (($eventName -eq "workflow_dispatch") -and ([string]::IsNullOrWhiteSpace($IssueNumber))) {
