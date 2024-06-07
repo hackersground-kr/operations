@@ -32,16 +32,10 @@ jobs:
       id: github-connect
       shell: pwsh
       run: |
-        $ids = "${{ vars.ACCESS_TOKEN_IDS }}" -split ","
-  
-        # Get a random number
-        $random = Get-Random -Minimum 0 -Maximum $ids.Length
-  
-        # Get the random assignee
-        $id = $ids[$random]
-
-        $tokenUrl = "${{ vars.ACCESS_TOKEN_BASE_URL }}/github/access-token?id=$id"
-        $token = $(Invoke-RestMethod $tokenUrl -Headers @{ "Ocp-Apim-Subscription-Key" = "${{ secrets.APIM_SUBSCRIPTION_KEY }}" })
+        $token = ./gha-scripts/Get-GitHubAccessToken.ps1 `
+          -AccessTokenIDs "${{ vars.ACCESS_TOKEN_IDS }}" `
+          -ApimBaseUrl "${{ vars.APIM_BASE_URL }}" `
+          -ApimApiKey "${{ secrets.APIM_SUBSCRIPTION_KEY }}"
 
         echo "::add-mask::$token"
         echo "token=$token" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8
@@ -52,57 +46,40 @@ jobs:
       env:
         GH_TOKEN: ${{ steps.github-connect.outputs.token }}
       run: |
-        if ("${{ github.event_name}}" -eq "workflow_dispatch") {
-          echo "number=${{ github.event.inputs.issue-number }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8
+        $payload = '${{ toJson(github) }}'
+        $result = $(./gha-scripts/Csc-Check-Issue.ps1 `
+          -IssueNumber "${{ github.event.inputs.issue-number }}" `
+          -GitHubPayload $($payload | ConvertFrom-Json)) | ConvertFrom-Json
 
-          $issue = $(gh api /repos/${{ github.repository }}/issues/${{ github.event.inputs.issue-number }} | ConvertFrom-Json)
-          echo "title=$($issue.title)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-
-          $body = $($issue.body) | ConvertTo-Json -Compress
-          echo "body=$body" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-
-          $created_at=$($issue.created_at.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"))
-          echo "created_at=$created_at" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-
-          echo "githubId=$($issue.user.login)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-          echo "assignee=$($issue.assignee)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-        } else {
-          echo "number=${{ github.event.issue.number }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8
-
-          echo "title=$('${{ github.event.issue.title }}')" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-
-          $body = $("${{ github.event.issue.body }}") | ConvertTo-Json -Compress
-          echo "body=$body" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-
-          echo "created_at=$('${{ github.event.issue.created_at }}')" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-          echo "githubId=$('${{ github.event.issue.user.login }}')" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-          echo "assignee=$('${{ github.event.issue.assignee }}')" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-        }
-
+        echo "number=$($result.IssueNumber)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "title=$($result.title)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "body=$($result.body)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "create_at=$($result.create_at)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "githubID=$($result.githubID)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "assignee=$($result.assignee)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+  
+    # - name: Debug challenge code
+    #   shell: pwsh
+    #   run: |
+    #     echo "code: ${{ steps.challenge.outputs.code }}"
+    #     echo "codeUpper: ${{ steps.challenge.outputs.codeUpper }}"
+    #     echo "isValidCode: ${{ steps.challenge.outputs.isValidCode }}"
+        
     - name: Check issue date/time
       id: checkpoint
       shell: pwsh
       run: |
-        $tz = [TimeZoneInfo]::FindSystemTimeZoneById("Asia/Seoul")
-        $dateSubmitted = [DateTimeOffset]::Parse("${{ steps.issue.outputs.created_at }}")
-        $offset = $tz.GetUtcOffset($dateSubmitted)
+        $outputs = ../gha-scripts/Csc-Check-Issue-DateTime.ps1 -dateSubmittedInput "${{ steps.issue.outputs.created_at }}" -dateDueInput "${{ vars.CSC_DUE_DATE }}"
 
-        $dateSubmitted = $dateSubmitted.ToOffset($offset)
-        $dateDue = $([DateTimeOffset]::Parse("${{ vars.CSC_DUE_DATE }}"))
-        $isOverdue = "$($dateSubmitted -gt $dateDue)".ToLowerInvariant()
-
-        $dateSubmittedValue = $dateSubmitted.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
-        $dateDueValue = $dateDue.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
-
-        echo "dateSubmitted=$dateSubmittedValue" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-        echo "dateDue=$dateDueValue" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-        echo "isOverdue=$isOverdue" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "dateSubmittedValue=$($dateSubmittedValue)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "dateDueValue=$($dateDueValue)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "isOverdue=$($isOverdue)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
 
     - name: Check issue type
       id: issue-type
       shell: pwsh
       run: |
-        $title = "${{ steps.issue.outputs.title }}"
+        $title = "${{ steps.issue.outputs.title }}" - githubpayload 한번에 받아와서 처리 
 
         $isCsc = $title.Contains("챌린지 완료 인증")
         $isTeamTopic = $title.Contains("해커톤 주제 제출")
