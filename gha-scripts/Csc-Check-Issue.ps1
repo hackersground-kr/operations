@@ -32,7 +32,7 @@ function Show-Usage {
         -IssueNumber:       GitHub issue number. If the event is 'workflow_dispatch', it must be provided.
         -GitHubPayload:     GitHub event payload.
         -GitHubAccessToken: GitHub access token. If not provided, it will look for the 'GH_TOKEN' environment variable.
-        
+
         -Help:          Show this message.
 "
 
@@ -73,7 +73,7 @@ if (($eventName -eq "workflow_dispatch") -and ([string]::IsNullOrWhiteSpace($acc
 
 $body = ""
 if ($eventName -eq "workflow_dispatch") {
-    $GitHubPayload = $(gh api /repos/$repository/issues/$IssueNumber | ConvertFrom-Json)
+    $GitHubPayload = $(gh api /repos/$($GitHubPayload.repository)/issues/$IssueNumber | ConvertFrom-Json)
     $body = $GitHubPayload.body
 } else {
     $body = $GitHubPayload.event.issue.body
