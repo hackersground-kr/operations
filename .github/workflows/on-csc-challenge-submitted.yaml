@@ -56,7 +56,7 @@ jobs:
         
         $IssueNumber =${{ github.event.inputs.issue-number }}
         $GitHubPayload = $payload | ConvertFrom-Json
-        $GitHubAccessToken = $env: GH_TOKEN
+        $GitHubAccessToken = ${env: GH_TOKEN}
 
         $result = $(./gha-scripts/Csc-Check-Issue.ps1`
           -IssueNumber "${{ github.event.inputs.issue-number }}" `
