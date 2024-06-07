@@ -73,7 +73,7 @@ if (($eventName -eq "workflow_dispatch") -and ([string]::IsNullOrWhiteSpace($acc
 
 $body = ""
 if ($eventName -eq "workflow_dispatch") {
-    $GitHubPayload = $(gh api /repos/$($GitHubPayload.repository)/issues/$IssueNumber | ConvertFrom-Json)
+    $GitHubPayload = $(gh api /repos/$($(GitHubPayload.repository))/issues/$IssueNumber | ConvertFrom-Json)
     $body = $GitHubPayload.body
 } else {
     $body = $GitHubPayload.event.issue.body
