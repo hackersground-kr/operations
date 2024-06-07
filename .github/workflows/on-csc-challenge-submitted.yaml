@@ -51,7 +51,11 @@ jobs:
       run: |
         $payload = '${{ toJson(github) }}'
         $issue='${{ github.event.inputs.issue-number }}'
-        
+        $title = $GitHubPayload.title
+        $created_at=$GitHubPayload.event.repository.created_at.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
+        $githubID=$GitHubPayload.user.login
+        $assignee=$GitHubPayload.assignee
+
         $result = $(./gha-scripts/Csc-Check-Issue.ps1`
           -IssueNumber "${{ github.event.inputs.issue-number }}" `
           -GitHubPayload $($payload | ConvertFrom-Json)) | ConvertFrom-Json
