@@ -41,6 +41,7 @@ jobs:
           -ApimApiKey "${{ secrets.APIM_SUBSCRIPTION_KEY }}"
 
         echo "::add-mask::$token"
+        echo "token=${token}"
         echo "token=$token" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8
 
     - name: Check issue details

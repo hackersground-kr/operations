@@ -73,12 +73,7 @@ if (($eventName -eq "workflow_dispatch") -and ([string]::IsNullOrWhiteSpace($acc
 
 $body = ""
 if ($eventName -eq "workflow_dispatch") {
-    $apiUrl = "https://api.github.com/repos/$($GitHubPayload.repository)/issues/$IssueNumber"
-    $headers = @{
-        "Authorization" = "Bearer $accessToken"
-    }
-    $GitHubPayload = Invoke-RestMethod -Uri $apiUrl -Headers $headers -Method Get
-    #$GitHubPayload = $(gh api /repos/$($GitHubPayload.repository)/issues/$IssueNumber | ConvertFrom-Json)
+    $GitHubPayload = $(gh api /repos/$($GitHubPayload.repository)/issues/$IssueNumber | ConvertFrom-Json)
     $body = $GitHubPayload.body
 } else {
     $body = $GitHubPayload.event.issue.body
