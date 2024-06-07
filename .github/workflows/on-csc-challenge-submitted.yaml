@@ -43,16 +43,20 @@ jobs:
         echo "::add-mask::$token"
         echo "token=$token" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8
 
+        $token1=$token
+
     - name: Check issue details
       id: issue
       shell: pwsh
       env:
         GH_TOKEN: ${{ steps.github-connect.outputs.token }}
       run: |
+        
         $payload = '${{ toJson(github) }}'
         
         $IssueNumber =${{ github.event.inputs.issue-number }}
-        $github= $($payload | ConvertFrom-Json)
+        $GitHubPayload = $payload | ConvertFrom-Json
+        $GitHubAccessToken = $env: GH_TOKEN
 
         $result = $(./gha-scripts/Csc-Check-Issue.ps1`
           -IssueNumber "${{ github.event.inputs.issue-number }}" `
@@ -115,7 +119,6 @@ jobs:
       id: profile
       shell: pwsh
       run: |
-
         $link = ./gha-scripts/Csc-Extract-LearnProfile.ps1 -body "${{ steps.issue.outputs.body }}"
 
         echo "Profilelink=$link" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append

@@ -53,7 +53,7 @@ if($GitHubPayload -eq $null) {
     Exit 0
 }
 
-$eventName = $GitHubPayload.event_name
+Write-Output $($GitHubPayload | ConvertTo-Json -Depth 100)
 if (($eventName -eq "workflow_dispatch") -and ([string]::IsNullOrWhiteSpace($IssueNumber))) {
     Write-Host "'IssueNumber' must be provided for the 'workflow_dispatch' event" -ForegroundColor Red
     Show-Usage
@@ -64,7 +64,7 @@ if ($eventName -ne "workflow_dispatch") {
     $IssueNumber = $GitHubPayload.event.issue.number
 }
 
-
+Write-Out $env:GH_TOKEN
 $accessToken = [string]::IsNullOrWhiteSpace($GitHubAccessToken) ? $env:GH_TOKEN : $GitHubAccessToken
 if (($eventName -eq "workflow_dispatch") -and ([string]::IsNullOrWhiteSpace($accessToken))) {
     Write-Host "'GitHubAccessToken' must be provided through either environment variable or parameter" -ForegroundColor Red
