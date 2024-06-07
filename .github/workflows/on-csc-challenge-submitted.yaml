@@ -42,7 +42,7 @@ jobs:
     - name: Check event payload
       shell: pwsh
       run: |
-        $eventPayload = ${{ toJson(github) }}
+        $eventPayload = '${{ toJson(github) }}'
 
     - name: Check issue details
       id: issue
