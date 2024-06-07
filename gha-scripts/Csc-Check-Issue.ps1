@@ -9,6 +9,10 @@ param(
     [Parameter(Mandatory=$false)]
     $GitHubPayload=$null,
 
+    [string]
+    [Parameter(Mandatory=$false)]
+    $GitHubAccessToken = "",
+
     [switch]
     [Parameter(Mandatory=$false)]
     $Help
@@ -20,13 +24,15 @@ function Show-Usage {
     Usage: $(Split-Path $MyInvocation.ScriptName -Leaf) ``
             [-IssueNumber       <GitHub issue number>] ``
             [-GitHubPayload     <GitHub event payload>] ``
+            [-GitHubAccessToken <GitHub access token>] ``
 
             [-Help]
 
     Options:
         -IssueNumber:       GitHub issue number. If the event is 'workflow_dispatch', it must be provided.
         -GitHubPayload:     GitHub event payload.
-
+        -GitHubAccessToken: GitHub access token. If not provided, it will look for the 'GH_TOKEN' environment variable.
+        
         -Help:          Show this message.
 "
 
@@ -56,6 +62,13 @@ if (($eventName -eq "workflow_dispatch") -and ([string]::IsNullOrWhiteSpace($Iss
 
 if ($eventName -ne "workflow_dispatch") {
     $IssueNumber = $GitHubPayload.event.issue.number
+}
+
+$accessToken = [string]::IsNullOrWhiteSpace($GitHubAccessToken) ? $env:GH_TOKEN : $GitHubAccessToken
+if (($eventName -eq "workflow_dispatch") -and ([string]::IsNullOrWhiteSpace($accessToken))) {
+    Write-Host "'GitHubAccessToken' must be provided through either environment variable or parameter" -ForegroundColor Red
+    Show-Usage
+    Exit 0
 }
 
 $body = ""
