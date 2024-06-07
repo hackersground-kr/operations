@@ -18,13 +18,6 @@ param(
     $Help
 )
 
-if (-not $GitHubPayload) {
-    throw "GitHub payload is null or empty"
-}
-
-$GitHubPayload = $GitHubPayload | ConvertFrom-Json
-
-
 function Show-Usage {
     Write-Output "    This checks the issue details from the event payload
 
