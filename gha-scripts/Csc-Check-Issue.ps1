@@ -58,7 +58,7 @@ if ($eventName -ne "workflow_dispatch") {
     $IssueNumber = "${github.event.issue.number}"
 }
 
-$GitHubPayload = $(gh api /repos/$repository/issues/$issue_number | ConvertFrom-Json)
+$GitHubPayload = $(gh api /repos/$repository/issues/$IssueNumber | ConvertFrom-Json)
 
 $body = ""
 if ($eventName -eq "workflow_dispatch") {
