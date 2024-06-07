@@ -32,7 +32,7 @@ function Show-Usage {
         -IssueNumber:       GitHub issue number. If the event is 'workflow_dispatch', it must be provided.
         -GitHubPayload:     GitHub event payload.
         -GitHubAccessToken: GitHub access token. If not provided, it will look for the 'GH_TOKEN' environment variable.
-
+        
         -Help:          Show this message.
 "
 
@@ -80,11 +80,7 @@ if ($eventName -eq "workflow_dispatch") {
 }
 
 $title = $GitHubPayload.title
-if ($GitHubPayload.event.repository.created_at -ne $null) {
-    $created_at=$($GitHubPayload.event.repository.created_at).ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
-} else {
-    $created_at = $null
-}
+$created_at=$($GitHubPayload.created_at.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"))
 $githubID=$GitHubPayload.user.login
 $assignee=$GitHubPayload.assignee
 
