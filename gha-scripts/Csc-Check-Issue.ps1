@@ -52,8 +52,10 @@ if($GitHubPayload -eq $null) {
     Show-Usage
     Exit 0
 }
+else{
+    $GitHubPayload = $GitHubPayload | ConvertFrom-Json
+}
 
-Write-Output $($GitHubPayload | ConvertTo-Json -Depth 100)
 if (($eventName -eq "workflow_dispatch") -and ([string]::IsNullOrWhiteSpace($IssueNumber))) {
     Write-Host "'IssueNumber' must be provided for the 'workflow_dispatch' event" -ForegroundColor Red
     Show-Usage
