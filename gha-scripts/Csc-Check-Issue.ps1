@@ -48,7 +48,6 @@ if ($needHelp -eq $true) {
 }
 
 if($GitHubPayload -eq $null) {
-    echo "!!!!"
     Write-Host "'GitHubPayload' must be provided" -ForegroundColor Red
     Show-Usage
     Exit 0
