@@ -43,8 +43,6 @@ jobs:
         echo "::add-mask::$token"
         echo "token=$token" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8
 
-        $token1=$token
-
     - name: Check issue details
       id: issue
       shell: pwsh
@@ -55,8 +53,7 @@ jobs:
         $payload = '${{ toJson(github) }}'
         
         $IssueNumber =${{ github.event.inputs.issue-number }}
-        $GitHubPayload = $payload | ConvertFrom-Json
-        $GitHubAccessToken = ${env: GH_TOKEN}
+        $GitHubAccessToken = ${{env: GH_TOKEN}}
 
         $result = $(./gha-scripts/Csc-Check-Issue.ps1`
           -IssueNumber "${{ github.event.inputs.issue-number }}" `
