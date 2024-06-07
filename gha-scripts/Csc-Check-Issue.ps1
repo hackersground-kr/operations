@@ -74,7 +74,9 @@ if ($eventName -eq "workflow_dispatch") {
 } else {
     $body = $GitHubPayload.event.issue.body
 }
-
+if (-not $body) {
+    throw "GitHub body is null or empty"
+}
 
 $title = $GitHubPayload.title
 $created_at=$($GitHubPayload.created_at.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"))
