@@ -77,8 +77,8 @@ if ($eventName -eq "workflow_dispatch") {
 
 $segments = $body.Split("###", [System.StringSplitOptions]::RemoveEmptyEntries)
 
-$body=$segments.Trim() -replace '\n','' -replace "'", "''"
-$title = $segments[0].Trim() -replace '\n','' -replace "'", "''"
+$body=$segments.Trim() -replace '\n',' ' -replace "'", "''"
+$title = $segments[0].Trim() -replace '\n',' ' -replace "'", "''"
 
 $githubID=$GitHubPayload.user.login.ToString()
 $created_at= $GitHubPayload.created_at
