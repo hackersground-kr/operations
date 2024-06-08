@@ -2,11 +2,11 @@
 
 param(
     [string]
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory=$true)]
     $dateInput= "",
 
     [string]
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory=$true)]
     $dateDueInput="",
 
     [switch]

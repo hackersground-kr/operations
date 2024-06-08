@@ -68,7 +68,9 @@ jobs:
       run: |
         $dateSubmitted = "${{ steps.issue.outputs.created_at }}"
         $dateDue = "${{ vars.CSC_DUE_DATE }}"
-        $result = $(./gha-scripts/Csc-Check-Issue-DateTime.ps1 -dateInput "${{ steps.issue.outputs.created_at }}" -dateDueInput "${{ vars.CSC_DUE_DATE }}") | ConvertFrom-Json
+        $result = $(./gha-scripts/Csc-Check-Issue-DateTime.ps1 `
+         -dateInput "${{ steps.issue.outputs.created_at }}" `
+         -dateDueInput "${{ vars.CSC_DUE_DATE }}") | ConvertFrom-Json
 
         echo "dateSubmittedValue=$($result.dateSubmittedValue)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         echo "dateDueValue=$($result.dateDueValue)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
