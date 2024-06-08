@@ -40,10 +40,10 @@ if (([string]::IsNullOrWhiteSpace($eventtitle))) {
     Exit 0
 }
 
-$isCsc = $eventtitle.Contains("챌린지 완료 인증")
-$isTeamTopic = $eventtitle.Contains("해커톤 주제 제출")
-$isTeamApp = $eventtitle.Contains("해커톤 앱 제출")
-$isTeamPitch = $eventtitle.Contains("해커톤 발표자료 제출")
+$isCsc = $eventtitle.Contains("챌린지 코드") 
+$isTeamTopic = $eventtitle.Contains("해커톤 주제 제출") #api body 다시 확인
+$isTeamApp = $eventtitle.Contains("해커톤 앱 제출") #api body 다시 확인
+$isTeamPitch = $eventtitle.Contains("해커톤 발표자료 제출") #api body 다시 확인
 
 $result = @{
     isCsc=$isCsc
