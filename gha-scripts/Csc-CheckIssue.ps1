@@ -70,12 +70,12 @@ if (($eventName -eq "workflow_dispatch") -and ([string]::IsNullOrWhiteSpace($acc
 $body = ""
 if ($eventName -eq "workflow_dispatch") {
     $GitHubPayload = $(gh api /repos/$($GitHubPayload.repository)/issues/$IssueNumber) | ConvertFrom-Json
-    $body = $GitHubPayload.body
+    $body = $GitHubPayload.body -replace "'", "''"
 } else {
     $body = $GitHubPayload.event.issue.body
 }
 $segments = $body.Split("###", [System.StringSplitOptions]::RemoveEmptyEntries)
-$title = $segments[0].Trim() -replace '\n',''
+$title = $segments[0].Trim() -replace '\n','' -replace "'", "''"
 $githubID=$GitHubPayload.user.login.ToString()
 $created_at= $GitHubPayload.created_at.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
 $assignee=$GitHubPayload.assignee
