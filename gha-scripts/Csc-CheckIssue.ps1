@@ -2,19 +2,19 @@
 
 param(
     [string]
-    [Parameter(Mandatory=$false)]
-    $IssueNumber= "",
+    [Parameter(Mandatory = $false)]
+    $IssueNumber = "",
 
     [psobject]
-    [Parameter(Mandatory=$false)]
-    $GitHubPayload=$null,
+    [Parameter(Mandatory = $false)]
+    $GitHubPayload = $null,
 
     [string]
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory = $false)]
     $GitHubAccessToken = "",
 
     [switch]
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory = $false)]
     $Help
 )
 
@@ -50,10 +50,9 @@ if ($null -eq $GitHubPayload) {
 # Show usage
 $needHelp = $Help -eq $true
 if ($needHelp -eq $true) {
-  Show-Usage
-  Exit 0
+    Show-Usage
+    Exit 0
 }
-
 
 $eventName = $GitHubPayload.event_name
 if (($eventName -eq "workflow_dispatch") -and ([string]::IsNullOrWhiteSpace($IssueNumber))) {
@@ -80,21 +79,21 @@ $body = $GitHubPayload.body -replace "'", "''"
 
 $segments = $body.Split("###", [System.StringSplitOptions]::RemoveEmptyEntries)
 
-$body=$segments.Trim() -replace '\n',' ' -replace "'", "''"
-$title = $segments[0].Trim() -replace '\n',' ' -replace "'", "''"
+$body = $segments.Trim() -replace '\n', ' ' -replace "'", "''"
+$title = $segments[0].Trim() -replace '\n', ' ' -replace "'", "''"
 
-$githubID=$GitHubPayload.user.login.ToString()
-$created_at= $GitHubPayload.created_at
+$githubID = $GitHubPayload.user.login.ToString()
+$created_at = $GitHubPayload.created_at
 $created_at = $created_at.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
-$assignee=$GitHubPayload.assignee
+$assignee = $GitHubPayload.assignee
 
 $result = @{
     IssueNumber = $IssueNumber;
-    title = $title;
-    body = $body;
-    created_at = $created_at;
-    githubID = $githubID;
-    assignee = $assignee;
+    title       = $title;
+    body        = $body;
+    created_at  = $created_at;
+    githubID    = $githubID;
+    assignee    = $assignee;
 }
 
 Write-Output $($result | ConvertTo-Json -Depth 100)
