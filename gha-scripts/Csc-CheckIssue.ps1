@@ -38,14 +38,6 @@ function Show-Usage {
 
     Exit 0
 }
-if ($null -eq $IssueNumber) {
-    Write-Host "IssueNumber is null"
-    return
-}
-if ($null -eq $GitHubPayload) {
-    Write-Host "GitHubPayload is null"
-    return
-}
 
 # Show usage
 $needHelp = $Help -eq $true
