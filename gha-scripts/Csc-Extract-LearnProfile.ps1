@@ -39,10 +39,14 @@ if (([string]::IsNullOrWhiteSpace($body))) {
     Exit 0
 }
 
-$scriptUrl = "https://raw.githubusercontent.com/hackersground-kr/operations/main/get-learnprofile/Get-LearnProfile.ps1"
-Invoke-RestMethod $scriptUrl | Out-File ~/Get-LearnProfile.ps1
+#$scriptUrl = "https://raw.githubusercontent.com/hackersground-kr/operations/main/get-learnprofile/Get-LearnProfile.ps1"
+#Invoke-RestMethod $scriptUrl | Out-File ~/Get-LearnProfile.ps1
 
-$profileLink = $(~/Get-LearnProfile.ps1 -Text $body)
+#$profileLink = $(~/Get-LearnProfile.ps1 -Text $body)
+
+$profileLink = ./get-learnprofile/Get-LearnProfile.ps1 -Text $body
+
+echo "$profileLink"
 
 Write-Output $profileLink
 
