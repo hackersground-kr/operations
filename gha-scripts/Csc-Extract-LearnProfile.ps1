@@ -2,7 +2,7 @@
 
 param(
     [string]
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory=$true)]
     $body= "",
 
     [switch]
