@@ -1,9 +1,7 @@
-# Check issue date time
-
 param(
     [string]
     [Parameter(Mandatory=$true)]
-    $dateInput= "",
+    $dateSubmittedInput= "",
 
     [string]
     [Parameter(Mandatory=$true)]
@@ -18,13 +16,13 @@ function Show-Usage {
     Write-Output "    This checks the date/time that made issue from the event payload
 
     Usage: $(Split-Path $MyInvocation.ScriptName -Leaf) ``
-            [-dataSubmittedInput      <Issue create_at>] ``
+            [-dateSubmittedInput      <Issue create_at>] ``
             [-dateDueInput     <Challenge due_date>] ``
 
             [-Help]
 
     Options:
-        -dataSubmittedInput :       User create_at.
+        -dateSubmittedInput :       User create_at.
         -dateDueInput :          Challenge due date.
 
         -Help:          Show this message.
@@ -41,7 +39,7 @@ if ($needHelp -eq $true) {
   Exit 0
 }
 
-if (([string]::IsNullOrWhiteSpace($dateInput)) -or ([string]::IsNullOrWhiteSpace($dateDueInput))) {
+if (([string]::IsNullOrWhiteSpace($dateSubmittedInput)) -or ([string]::IsNullOrWhiteSpace($dateDueInput))) {
     Write-Host "'you must write issue created at and challenge due date." -ForegroundColor Red
     Show-Usage
     Exit 0
@@ -49,11 +47,11 @@ if (([string]::IsNullOrWhiteSpace($dateInput)) -or ([string]::IsNullOrWhiteSpace
 
 $tz = [TimeZoneInfo]::FindSystemTimeZoneById("Asia/Seoul")
 
-$dateSubmitted = [DateTimeOffset]::Parse("$(dateInput)")
+$dateSubmitted = [DateTimeOffset]::Parse($dateSubmittedInput)
 $offset = $tz.GetUtcOffset($dateSubmitted)
 $dateSubmitted = $dateSubmitted.ToOffset($offset)
 
-$dateDue = $([DateTimeOffset]::Parse("$(dateDueInput)"))
+$dateDue = [DateTimeOffset]::Parse($dateDueInput)
 $isOverdue = "$($dateSubmitted -gt $dateDue)".ToLowerInvariant()
 
 $dateSubmittedValue = $dateSubmitted.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
@@ -71,4 +69,3 @@ Remove-Variable dateDue
 Remove-Variable dateSubmitted
 Remove-Variable offset
 Remove-Variable tz
-
