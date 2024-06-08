@@ -60,10 +60,6 @@ if (($eventName -eq "workflow_dispatch") -and ([string]::IsNullOrWhiteSpace($Iss
     Exit 0
 }
 
-if (($eventName -ne "workflow_dispatch") -and ([string]::IsNullOrWhiteSpace($IssueNumber))) {
-    $IssueNumber = $GitHubPayload.event.issue.number
-}
-
 $accessToken = [string]::IsNullOrWhiteSpace($GitHubAccessToken) ? $env:GH_TOKEN : $GitHubAccessToken
 if (($eventName -eq "workflow_dispatch") -and ([string]::IsNullOrWhiteSpace($accessToken))) {
     Write-Host "'GitHubAccessToken' must be provided through either environment variable or parameter" -ForegroundColor Red
@@ -80,14 +76,13 @@ if ($eventName -eq "workflow_dispatch") {
 }
 
 $segments = $body.Split("###", [System.StringSplitOptions]::RemoveEmptyEntries)
-
 $body=$segments.Trim() -replace '\n',' ' -replace "'", "''"
 $title = $segments[0].Trim() -replace '\n',' ' -replace "'", "''"
 
 $githubID=$GitHubPayload.user.login.ToString()
 $created_at= $GitHubPayload.created_at
 $created_at = $created_at.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
-$assignee=$GitHubPayload.assignee
+$assignee=$GitHubPayload.assignee.ToString()
 
 $result = @{
     IssueNumber = $IssueNumber;
