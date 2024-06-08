@@ -139,11 +139,15 @@ $segments = $body.Split("###", [System.StringSplitOptions]::RemoveEmptyEntries)
 
 $body=$segments.Trim() -replace '\n',' ' -replace "'", "''"
 $title = $segments[0].Trim() -replace '\n',' ' -replace "'", "''"
-
+Write-Host "$title" -ForegroundColor Red
 $githubID=$GitHubPayload.user.login.ToString()
+Write-Host "$githubID" -ForegroundColor Red
 $created_at= $GitHubPayload.created_at
+Write-Host "$created_at" -ForegroundColor Red
 $created_at = $created_at.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
 $assignee=$GitHubPayload.assignee
+Write-Host "$assignee" -ForegroundColor Red
+Write-Host "$IssueNumber" -ForegroundColor Red
 
 $result = @{
     IssueNumber = $IssueNumber;
