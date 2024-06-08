@@ -18,14 +18,14 @@ function Show-Usage {
     Write-Output "    This checks the date/time that made issue from the event payload
 
     Usage: $(Split-Path $MyInvocation.ScriptName -Leaf) ``
-            [-create_at      <Issue create_at>] ``
-            [-due_date     <Challenge due_date>] ``
+            [-dataSubmittedInput      <Issue create_at>] ``
+            [-dateDueInput     <Challenge due_date>] ``
 
             [-Help]
 
     Options:
-        -create_at:       User create_at.
-        -due_date:          Challenge due date.
+        -dataSubmittedInput :       User create_at.
+        -dateDueInput :          Challenge due date.
 
         -Help:          Show this message.
 "
@@ -41,7 +41,7 @@ if ($needHelp -eq $true) {
   Exit 0
 }
 
-if (([string]::IsNullOrWhiteSpace($dateSubmittedInput)) -or ([string]::IsNullOrWhiteSpace($due_date))) {
+if (([string]::IsNullOrWhiteSpace($dateSubmittedInput)) -or ([string]::IsNullOrWhiteSpace($dateDueInput))) {
     Write-Host "'you must write issue created at and challenge due date." -ForegroundColor Red
     Show-Usage
     Exit 0
