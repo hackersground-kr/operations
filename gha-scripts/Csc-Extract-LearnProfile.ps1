@@ -50,6 +50,6 @@ echo "$profileLink"
 
 Write-Output $profileLink
 
-Remove-Variable scriptUrl
+#Remove-Variable scriptUrl
 Remove-Variable profileLink
 
