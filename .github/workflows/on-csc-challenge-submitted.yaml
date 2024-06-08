@@ -55,7 +55,6 @@ jobs:
           -IssueNumber "${{ github.event.inputs.issue-number }}" `
           -GitHubPayload $($payload | ConvertFrom-Json)) | ConvertFrom-Json
 
-        echo "$($result.body)"
         echo "create_at=$($result.created_at)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         echo "githubID=$($result.githubID)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         echo "number=$($result.IssueNumber)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append

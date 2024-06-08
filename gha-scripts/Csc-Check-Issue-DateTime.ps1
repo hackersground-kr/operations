@@ -3,11 +3,11 @@
 param(
     [string]
     [Parameter(Mandatory=$false)]
-    $create_at= "",
+    $dateSubmittedInput= "",
 
     [string]
     [Parameter(Mandatory=$false)]
-    $due_date="",
+    $dateDueInput="",
 
     [switch]
     [Parameter(Mandatory=$false)]
@@ -41,18 +41,19 @@ if ($needHelp -eq $true) {
   Exit 0
 }
 
-if (([string]::IsNullOrWhiteSpace($create_at)) -or ([string]::IsNullOrWhiteSpace($due_date))) {
+if (([string]::IsNullOrWhiteSpace($dateSubmittedInput)) -or ([string]::IsNullOrWhiteSpace($due_date))) {
     Write-Host "'you must write issue created at and challenge due date." -ForegroundColor Red
     Show-Usage
     Exit 0
 }
 
 $tz = [TimeZoneInfo]::FindSystemTimeZoneById("Asia/Seoul")
-$dateSubmitted = [DateTimeOffset]::Parse("$(create_at)")
-$offset = $tz.GetUtcOffset($dateSubmitted)
 
+$dateSubmitted = [DateTimeOffset]::Parse("$(dateSubmittedInput)")
+$offset = $tz.GetUtcOffset($dateSubmitted)
 $dateSubmitted = $dateSubmitted.ToOffset($offset)
-$dateDue = $([DateTimeOffset]::Parse("$(due_date)"))
+
+$dateDue = $([DateTimeOffset]::Parse("$(dateDueInput)"))
 $isOverdue = "$($dateSubmitted -gt $dateDue)".ToLowerInvariant()
 
 $dateSubmittedValue = $dateSubmitted.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
