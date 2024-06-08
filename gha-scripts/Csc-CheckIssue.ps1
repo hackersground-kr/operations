@@ -74,8 +74,9 @@ if ($eventName -eq "workflow_dispatch") {
 } else {
     $body = $GitHubPayload.event.issue.body
 }
+$segments = $body.Split("###", [System.StringSplitOptions]::RemoveEmptyEntries)
+$title = $segments[0].Trim()
 
-$title = $GitHubPayload.title
 $created_at=$($GitHubPayload.created_at.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"))
 $githubID=$GitHubPayload.user.login.ToString()
 $assignee=$GitHubPayload.assignee
