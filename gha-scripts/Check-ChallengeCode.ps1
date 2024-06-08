@@ -76,8 +76,8 @@ if ($eventName -eq "workflow_dispatch") {
 $segments = $body.Split("###", [System.StringSplitOptions]::RemoveEmptyEntries)
 $title = $segments[0].Trim()
 
-$code = $title.Replace("챌린지 코드", "").Trim().ToLowerInvariant() -replace "'", "''"
-$codeUpper = $code.ToUpperInvariant() -replace "'", "''"
+$code = $title.Replace("챌린지 코드", "").Trim().ToLowerInvariant() #-replace "'", "''"
+$codeUpper = $code.ToUpperInvariant() #-replace "'", "''"
 $codes = @( "az-900", "ai-900" )
 $isValidCode = $($codes.Contains($code)).ToString().ToLowerInvariant()
 

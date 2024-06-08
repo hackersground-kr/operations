@@ -89,6 +89,8 @@ jobs:
         echo "isTeamPitch=$($result.isTemaPitch)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
 
     - name: Check challenge code
+      env:
+        GH_TOKEN: ${{ steps.github-connect.outputs.token }}
       if: steps.issue-type.outputs.isCsc == 'true'
       id: challenge
       shell: pwsh
