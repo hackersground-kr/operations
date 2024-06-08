@@ -115,13 +115,15 @@ else {
     Write-Host "$accessToken" -ForegroundColor Red
 }
 #debug
+$GitHubPayload = $(gh api /repos/$($GitHubPayload.repository)/issues/$IssueNumber) | ConvertFrom-Json
 
 $body = ""
 if ($eventName -eq "workflow_dispatch") {
-    $GitHubPayload = $(gh api /repos/$($GitHubPayload.repository)/issues/$IssueNumber) | ConvertFrom-Json
+    #$GitHubPayload = $(gh api /repos/$($GitHubPayload.repository)/issues/$IssueNumber) | ConvertFrom-Json
     $body = $GitHubPayload.body -replace "'", "''"
 } else {
-    $body = $GitHubPayload.event.issue.body
+    #$body = $GitHubPayload.event.issue.body
+    $body = $GitHubPayload.body -replace "'", "''"
 }
 
 #debug
@@ -140,6 +142,7 @@ $segments = $body.Split("###", [System.StringSplitOptions]::RemoveEmptyEntries)
 $body=$segments.Trim() -replace '\n',' ' -replace "'", "''"
 $title = $segments[0].Trim() -replace '\n',' ' -replace "'", "''"
 Write-Host "$title" -ForegroundColor Red
+
 $githubID=$GitHubPayload.user.login.ToString()
 Write-Host "$githubID" -ForegroundColor Red
 $created_at= $GitHubPayload.created_at
