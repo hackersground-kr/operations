@@ -44,8 +44,10 @@ Invoke-RestMethod $scriptUrl | Out-File ~/Get-LearnProfile.ps1
 
 $profileLink = $(~/Get-LearnProfile.ps1 -Text $body)
 
+#$profileLink = ./get-learnprofile/Get-LearnProfile.ps1 -Text $body
+
 Write-Output $profileLink
 
-Remove-Variable scriptUrl
+#Remove-Variable scriptUrl
 Remove-Variable profileLink
 
