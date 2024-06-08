@@ -54,14 +54,16 @@ if ($needHelp -eq $true) {
   Exit 0
 }
 
+#debug
 if($GitHubPayload -eq $null) {
     Write-Host "'GitHubPayload' must be provided" -ForegroundColor Red
     Show-Usage
     Exit 0
 }
 else {
-    Write-Host "'GitHubPayload'" -ForegroundColor Red
+    Write-Host "$GitHubPayload'" -ForegroundColor Red
 }
+#debug
 
 $eventName = $GitHubPayload.event_name
 if (($eventName -eq "workflow_dispatch") -and ([string]::IsNullOrWhiteSpace($IssueNumber))) {
@@ -70,9 +72,31 @@ if (($eventName -eq "workflow_dispatch") -and ([string]::IsNullOrWhiteSpace($Iss
     Exit 0
 }
 
+#debug
+if($eventName -eq "") {
+    Write-Host "'eventName' must be provided" -ForegroundColor Red
+    Show-Usage
+    Exit 0
+}
+else {
+    Write-Host "$eventName" -ForegroundColor Red
+}
+#debug
+
 if (($eventName -ne "workflow_dispatch")) {
     $IssueNumber = $GitHubPayload.event.issue.number
 }
+
+#debug
+if($IssueNumber -eq "") {
+    Write-Host "'issuenumber' must be provided" -ForegroundColor Red
+    Show-Usage
+    Exit 0
+}
+else {
+    Write-Host "$IssueNumber" -ForegroundColor Red
+}
+#debug
 
 $accessToken = [string]::IsNullOrWhiteSpace($GitHubAccessToken) ? $env:GH_TOKEN : $GitHubAccessToken
 if (($eventName -eq "workflow_dispatch") -and ([string]::IsNullOrWhiteSpace($accessToken))) {
@@ -81,6 +105,17 @@ if (($eventName -eq "workflow_dispatch") -and ([string]::IsNullOrWhiteSpace($acc
     Exit 0
 }
 
+#debug
+if($accessToken -eq $null) {
+    Write-Host "accesstoken must be provided" -ForegroundColor Red
+    Show-Usage
+    Exit 0
+}
+else {
+    Write-Host "$accessToken" -ForegroundColor Red
+}
+#debug
+
 $body = ""
 if ($eventName -eq "workflow_dispatch") {
     $GitHubPayload = $(gh api /repos/$($GitHubPayload.repository)/issues/$IssueNumber) | ConvertFrom-Json
@@ -88,6 +123,17 @@ if ($eventName -eq "workflow_dispatch") {
 } else {
     $body = $GitHubPayload.event.issue.body
 }
+
+#debug
+if($body -eq "") {
+    Write-Host "body must be provided" -ForegroundColor Red
+    Show-Usage
+    Exit 0
+}
+else {
+    Write-Host "$body" -ForegroundColor Red
+}
+#debug
 
 $segments = $body.Split("###", [System.StringSplitOptions]::RemoveEmptyEntries)
 
