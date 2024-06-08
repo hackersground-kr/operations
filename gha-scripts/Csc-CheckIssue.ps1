@@ -54,14 +54,6 @@ if ($needHelp -eq $true) {
   Exit 0
 }
 
-if($GitHubPayload -eq $null) {
-    Write-Host "'GitHubPayload' must be provided" -ForegroundColor Red
-    Show-Usage
-    Exit 0
-}
-else {
-    Write-Host "'GitHubPayload'" -ForegroundColor Red
-}
 
 $eventName = $GitHubPayload.event_name
 if (($eventName -eq "workflow_dispatch") -and ([string]::IsNullOrWhiteSpace($IssueNumber))) {
@@ -81,13 +73,10 @@ if (($eventName -eq "workflow_dispatch") -and ([string]::IsNullOrWhiteSpace($acc
     Exit 0
 }
 
+$GitHubPayload = $(gh api /repos/$($GitHubPayload.repository)/issues/$IssueNumber) | ConvertFrom-Json
+
 $body = ""
-if ($eventName -eq "workflow_dispatch") {
-    $GitHubPayload = $(gh api /repos/$($GitHubPayload.repository)/issues/$IssueNumber) | ConvertFrom-Json
-    $body = $GitHubPayload.body -replace "'", "''"
-} else {
-    $body = $GitHubPayload.event.issue.body
-}
+$body = $GitHubPayload.body -replace "'", "''"
 
 $segments = $body.Split("###", [System.StringSplitOptions]::RemoveEmptyEntries)
 
