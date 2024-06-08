@@ -76,9 +76,8 @@ if ($eventName -eq "workflow_dispatch") {
 }
 $segments = $body.Split("###", [System.StringSplitOptions]::RemoveEmptyEntries)
 $title = $segments[0].Trim()
-
-$created_at=$GitHubPayload.created_at.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
 $githubID=$GitHubPayload.user.login.ToString()
+$created_at= $GitHubPayload.created_at.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
 $assignee=$GitHubPayload.assignee
 
 $result = @{
@@ -90,7 +89,7 @@ $result = @{
     assignee = $assignee;
 }
 
-Write-Output $($result | ConvertTo-Json -Depth 50)
+Write-Output $($result | ConvertTo-Json -Depth 100)
 
 Remove-Variable result
 Remove-Variable assignee
