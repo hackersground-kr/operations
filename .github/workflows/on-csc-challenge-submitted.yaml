@@ -110,7 +110,7 @@ jobs:
       shell: pwsh
       run: |
         $body="${{ steps.issue.outputs.body }}"
-        $link = ./gha-scripts/Csc-Extract-LearnProfile.ps1 -body "${{ steps.issue.outputs.body }}"
+        $link = /workspaces/operations/gha-scripts/Csc-Extract-LearnProfile.ps1 -body "${{ steps.issue.outputs.body }}"
         echo "Profilelink=$link" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
 
     - name: Add a label - Overdue
