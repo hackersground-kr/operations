@@ -115,6 +115,13 @@ jobs:
         $link = ./gha-scripts/Csc-Extract-LearnProfile.ps1 `
          -body "${{ steps.issue.outputs.body }}"
         
+        if ($link -ne $null) {
+          echo "$link"
+        }
+        else {
+            echo "No learn profile link found."
+        }
+        
         echo "Profilelink=$link" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
 
     - name: Add a label - Overdue

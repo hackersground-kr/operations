@@ -46,12 +46,6 @@ $profileLink = $(~/Get-LearnProfile.ps1 -Text $body)
 
 #$profileLink = ./get-learnprofile/Get-LearnProfile.ps1 -Text $body
 
-if ($profileLink -ne $null) {
-    echo "$profileLink"
-}
-else {
-    echo "No learn profile link found."
-}
 Write-Output $profileLink
 
 #Remove-Variable scriptUrl
