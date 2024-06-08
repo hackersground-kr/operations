@@ -74,22 +74,10 @@ if ($eventName -eq "workflow_dispatch") {
 } else {
     $body = $GitHubPayload.event.issue.body
 }
-$bodySegments = $body -split "###"
-foreach ($segment in $bodySegments) {
-    if ($segment.Trim().StartsWith("챌린지 코드")) {
-        $code = $segment.Trim().Substring("챌린지 코드".Length).Trim()
-        break
-    }
-}
 
 $title = $GitHubPayload.title
-if ($title -match "\[(.*?)\] 챌린지 완료 인증") {
-    $title = $matches[1]
-} else {
-    $title = ""
-}
 $created_at=$($GitHubPayload.created_at.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"))
-$githubID=$GitHubPayload.user.login
+$githubID=$GitHubPayload.user.login.ToString()
 $assignee=$GitHubPayload.assignee
 
 $result = @{
