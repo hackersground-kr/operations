@@ -51,7 +51,8 @@ jobs:
         GH_TOKEN: ${{ steps.github-connect.outputs.token }}
       run: |
         $payload = '${{ toJson(github) }}'
-
+        $Issuenumber = "${{ github.event.inputs.issue-number }}"
+        
         $result = $(./gha-scripts/Csc-CheckIssue.ps1 `
           -IssueNumber "${{ github.event.inputs.issue-number }}" `
           -GitHubPayload $($payload | ConvertFrom-Json)) | ConvertFrom-Json
