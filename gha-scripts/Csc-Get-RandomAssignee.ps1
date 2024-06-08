@@ -39,6 +39,7 @@ if (([string]::IsNullOrWhiteSpace($Assignees))) {
     Exit 0
 }
 
+
 $scriptUrl = "https://raw.githubusercontent.com/hackersground-kr/operations/main/get-randomassignee/Get-RandomAssignee.ps1"
 Invoke-RestMethod $scriptUrl | Out-File ~/Get-RandomAssignee.ps1
 $assignee = $(~/Get-RandomAssignee.ps1 -Assignees "$Assignees")

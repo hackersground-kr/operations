@@ -11,7 +11,7 @@ param(
 )
 
 function Show-Usage {
-    Write-Output "    This checks the issue type from the event payload
+    Write-Output "   This checks the issue type from the event payload
 
     Usage: $(Split-Path $MyInvocation.ScriptName -Leaf) ``
             [-eventtitle      <Issue event title>] ``

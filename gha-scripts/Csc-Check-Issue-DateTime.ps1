@@ -11,7 +11,6 @@ param(
     [Parameter(Mandatory=$false)]
     $Help
 )
-
 function Show-Usage {
     Write-Output "    This checks the date/time that made issue from the event payload
 

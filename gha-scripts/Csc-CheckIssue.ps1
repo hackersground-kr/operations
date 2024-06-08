@@ -65,7 +65,6 @@ if (($eventName -eq "workflow_dispatch") -and ([string]::IsNullOrWhiteSpace($acc
 }
 
 $GitHubPayload = $(gh api /repos/$($GitHubPayload.repository)/issues/$IssueNumber) | ConvertFrom-Json
-
 $body = ""
 $body = $GitHubPayload.body -replace "'", "''"
 
