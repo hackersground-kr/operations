@@ -74,6 +74,7 @@ jobs:
          -dateSubmittedInput "${{ steps.issue.outputs.created_at }}" `
          -dateDueInput "${{ vars.CSC_DUE_DATE }}") | ConvertFrom-Json
 
+        $dateDue = $([DateTimeOffset]::Parse("${{ vars.CSC_DUE_DATE }}"))
         echo "dateSubmittedValue=$($result.dateSubmittedValue)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         echo "dateDueValue=$($result.dateDueValue)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         echo "isOverdue=$($result.isOverdue)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
@@ -137,8 +138,8 @@ jobs:
         body: |
           👋🏼 @${{ steps.issue.outputs.githubId }} 님!
 
-          * 이슈 제출 시각: ${{ steps.checkpoint.outputs.dateSubmitted }}
-          * 이슈 마감 시각: ${{ steps.checkpoint.outputs.dateDue }}
+          * 이슈 제출 시각: ${{ steps.checkpoint.outputs.dateSubmittedValue }}
+          * 이슈 마감 시각: ${{ steps.checkpoint.outputs.dateDueValue }}
 
           안타깝게도 제출하신 이슈는 마감 기한인 ${{ steps.checkpoint.outputs.dateDue }}을 넘기셨습니다. 😭 따라서, 이번 클라우드 스킬 챌린지 이벤트에 반영되지 않습니다.
 
