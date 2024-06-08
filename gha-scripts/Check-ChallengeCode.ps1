@@ -89,6 +89,7 @@ $result = @{
 
 Write-Output $($result | ConvertTo-Json -Depth 100)
 
+
 Remove-Variable result
 Remove-Variable isValidCode
 Remove-Variable codes
