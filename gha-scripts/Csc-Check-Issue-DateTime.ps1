@@ -3,7 +3,7 @@
 param(
     [string]
     [Parameter(Mandatory=$false)]
-    $dateSubmittedInput= "",
+    $dateInput= "",
 
     [string]
     [Parameter(Mandatory=$false)]
@@ -41,7 +41,7 @@ if ($needHelp -eq $true) {
   Exit 0
 }
 
-if (([string]::IsNullOrWhiteSpace($dateSubmittedInput)) -or ([string]::IsNullOrWhiteSpace($dateDueInput))) {
+if (([string]::IsNullOrWhiteSpace($dateInput)) -or ([string]::IsNullOrWhiteSpace($dateDueInput))) {
     Write-Host "'you must write issue created at and challenge due date." -ForegroundColor Red
     Show-Usage
     Exit 0
@@ -49,7 +49,7 @@ if (([string]::IsNullOrWhiteSpace($dateSubmittedInput)) -or ([string]::IsNullOrW
 
 $tz = [TimeZoneInfo]::FindSystemTimeZoneById("Asia/Seoul")
 
-$dateSubmitted = [DateTimeOffset]::Parse("$(dateSubmittedInput)")
+$dateSubmitted = [DateTimeOffset]::Parse("$(dateInput)")
 $offset = $tz.GetUtcOffset($dateSubmitted)
 $dateSubmitted = $dateSubmitted.ToOffset($offset)
 
