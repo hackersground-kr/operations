@@ -81,7 +81,8 @@ $body=$segments.Trim() -replace '\n','' -replace "'", "''"
 $title = $segments[0].Trim() -replace '\n','' -replace "'", "''"
 
 $githubID=$GitHubPayload.user.login.ToString()
-$created_at= $GitHubPayload.created_at.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
+#$created_at= $GitHubPayload.created_at.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
+$created_at = $created_at.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
 $assignee=$GitHubPayload.assignee
 
 $result = @{
