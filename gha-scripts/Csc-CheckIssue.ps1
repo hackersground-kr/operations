@@ -2,19 +2,19 @@
 
 param(
     [string]
-    [Parameter(Mandatory=$false)]
-    $IssueNumber= "",
+    [Parameter(Mandatory = $false)]
+    $IssueNumber = "",
 
     [psobject]
-    [Parameter(Mandatory=$false)]
-    $GitHubPayload=$null,
+    [Parameter(Mandatory = $false)]
+    $GitHubPayload = $null,
 
     [string]
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory = $false)]
     $GitHubAccessToken = "",
 
     [switch]
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory = $false)]
     $Help
 )
 
@@ -38,32 +38,13 @@ function Show-Usage {
 
     Exit 0
 }
-if ($null -eq $IssueNumber) {
-    Write-Host "IssueNumber is null"
-    return
-}
-if ($null -eq $GitHubPayload) {
-    Write-Host "GitHubPayload is null"
-    return
-}
 
 # Show usage
 $needHelp = $Help -eq $true
 if ($needHelp -eq $true) {
-  Show-Usage
-  Exit 0
-}
-
-#debug
-if($GitHubPayload -eq $null) {
-    Write-Host "'GitHubPayload' must be provided" -ForegroundColor Red
     Show-Usage
     Exit 0
 }
-else {
-    Write-Host "$GitHubPayload'" -ForegroundColor Red
-}
-#debug
 
 $eventName = $GitHubPayload.event_name
 if (($eventName -eq "workflow_dispatch") -and ([string]::IsNullOrWhiteSpace($IssueNumber))) {
@@ -72,31 +53,9 @@ if (($eventName -eq "workflow_dispatch") -and ([string]::IsNullOrWhiteSpace($Iss
     Exit 0
 }
 
-#debug
-if($eventName -eq "") {
-    Write-Host "'eventName' must be provided" -ForegroundColor Red
-    Show-Usage
-    Exit 0
-}
-else {
-    Write-Host "$eventName" -ForegroundColor Red
-}
-#debug
-
 if (($eventName -ne "workflow_dispatch")) {
     $IssueNumber = $GitHubPayload.event.issue.number
 }
-
-#debug
-if($IssueNumber -eq "") {
-    Write-Host "'issuenumber' must be provided" -ForegroundColor Red
-    Show-Usage
-    Exit 0
-}
-else {
-    Write-Host "$IssueNumber" -ForegroundColor Red
-}
-#debug
 
 $accessToken = [string]::IsNullOrWhiteSpace($GitHubAccessToken) ? $env:GH_TOKEN : $GitHubAccessToken
 if (($eventName -eq "workflow_dispatch") -and ([string]::IsNullOrWhiteSpace($accessToken))) {
@@ -105,60 +64,28 @@ if (($eventName -eq "workflow_dispatch") -and ([string]::IsNullOrWhiteSpace($acc
     Exit 0
 }
 
-#debug
-if($accessToken -eq $null) {
-    Write-Host "accesstoken must be provided" -ForegroundColor Red
-    Show-Usage
-    Exit 0
-}
-else {
-    Write-Host "$accessToken" -ForegroundColor Red
-}
-#debug
 $GitHubPayload = $(gh api /repos/$($GitHubPayload.repository)/issues/$IssueNumber) | ConvertFrom-Json
 
 $body = ""
-if ($eventName -eq "workflow_dispatch") {
-    #$GitHubPayload = $(gh api /repos/$($GitHubPayload.repository)/issues/$IssueNumber) | ConvertFrom-Json
-    $body = $GitHubPayload.body -replace "'", "''"
-} else {
-    #$body = $GitHubPayload.event.issue.body
-    $body = $GitHubPayload.body -replace "'", "''"
-}
-
-#debug
-if($body -eq "") {
-    Write-Host "body must be provided" -ForegroundColor Red
-    Show-Usage
-    Exit 0
-}
-else {
-    Write-Host "$body" -ForegroundColor Red
-}
-#debug
+$body = $GitHubPayload.body -replace "'", "''"
 
 $segments = $body.Split("###", [System.StringSplitOptions]::RemoveEmptyEntries)
 
-$body=$segments.Trim() -replace '\n',' ' -replace "'", "''"
-$title = $segments[0].Trim() -replace '\n',' ' -replace "'", "''"
-Write-Host "$title" -ForegroundColor Red
+$body = $segments.Trim() -replace '\n', ' ' -replace "'", "''"
+$title = $segments[0].Trim() -replace '\n', ' ' -replace "'", "''"
 
-$githubID=$GitHubPayload.user.login.ToString()
-Write-Host "$githubID" -ForegroundColor Red
-$created_at= $GitHubPayload.created_at
-Write-Host "$created_at" -ForegroundColor Red
+$githubID = $GitHubPayload.user.login.ToString()
+$created_at = $GitHubPayload.created_at
 $created_at = $created_at.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
-$assignee=$GitHubPayload.assignee
-Write-Host "$assignee" -ForegroundColor Red
-Write-Host "$IssueNumber" -ForegroundColor Red
+$assignee = $GitHubPayload.assignee
 
 $result = @{
     IssueNumber = $IssueNumber;
-    title = $title;
-    body = $body;
-    created_at = $created_at;
-    githubID = $githubID;
-    assignee = $assignee;
+    title       = $title;
+    body        = $body;
+    created_at  = $created_at;
+    githubID    = $githubID;
+    assignee    = $assignee;
 }
 
 Write-Output $($result | ConvertTo-Json -Depth 100)
