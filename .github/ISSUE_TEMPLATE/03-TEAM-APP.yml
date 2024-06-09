@@ -11,7 +11,7 @@ body:
 - type: dropdown
   id: title
   attributes:
-    label: '팀 앱 제출'
+    label: '제목'
     options:
       - '팀 앱 제출'
     default: 0
