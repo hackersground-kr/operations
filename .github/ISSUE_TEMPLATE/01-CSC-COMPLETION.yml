@@ -15,7 +15,7 @@ body:
 - type: dropdown
   id: title
   attributes:
-    label: '클라우드 스킬 챌린지'
+    label: '제목'
     options:
       - '클라우드 스킬 챌린지'
     default: 0
