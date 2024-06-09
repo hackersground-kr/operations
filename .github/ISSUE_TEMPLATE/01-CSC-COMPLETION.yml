@@ -13,6 +13,14 @@ body:
       **이슈 하나당 챌린지 하나씩 인증 가능합니다**
 
 - type: dropdown
+  id: title
+  attributes:
+    label: '클라우드 스킬 챌린지'
+    options:
+      - '클라우드 스킬 챌린지'
+    default: 0
+
+- type: dropdown
   id: challenge_code
   attributes:
     label: '챌린지 코드'
