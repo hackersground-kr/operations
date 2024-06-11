@@ -23,6 +23,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Check event payload
+      shell: pwsh
+      run: |
+        $eventPayload = '${{ toJson(github) }}'
 
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -39,11 +43,6 @@ jobs:
         echo "::add-mask::$token"
         echo "token=$token" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8
 
-    # - name: Check event payload
-    #   shell: pwsh
-    #   run: |
-    #     $eventPayload = '${{ toJson(github) }}'
-
     - name: Check issue details
       id: issue
       shell: pwsh
@@ -53,195 +52,227 @@ jobs:
         $payload = '${{ toJson(github) }}'
         $Issuenumber = "${{ github.event.inputs.issue-number }}"
         
-        $result = $(./gha-scripts/Csc-CheckIssue.ps1 `
+        $result = $(./gha-scripts/Check-IssueDetails.ps1 `
           -IssueNumber "${{ github.event.inputs.issue-number }}" `
+          -DueDate "${{ vars.CSC_DUE_DATE }}" `
           -GitHubPayload $($payload | ConvertFrom-Json)) | ConvertFrom-Json
 
-        echo "created_at=$($result.created_at)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-        echo "githubID=$($result.githubID)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-        echo "number=$($result.IssueNumber)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-        echo "assignee=$($result.assignee)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append 
+        echo "issueNumber=$($result.issueNumber)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "issueType=$($result.issueType)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "createdAt=$($result.createdAt)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "assignee=$($result.assignee)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         echo "title=$($result.title)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-        echo "body=$($result.body)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append   
-    
-    - name: Check issue date/time
-      id: checkpoint
-      shell: pwsh
-      run: |
-        $dateSubmitted = "${{ steps.issue.outputs.created_at }}"
-        $dateDue = "${{ vars.CSC_DUE_DATE }}"
-        $result = $(./gha-scripts/Csc-Check-Issue-DateTime.ps1 `
-         -dateSubmittedInput "${{ steps.issue.outputs.created_at }}" `
-         -dateDueInput "${{ vars.CSC_DUE_DATE }}") | ConvertFrom-Json
-
-        $dateDue = $([DateTimeOffset]::Parse("${{ vars.CSC_DUE_DATE }}"))
-        echo "dateSubmittedValue=$($result.dateSubmittedValue)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-        echo "dateDueValue=$($result.dateDueValue)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "challengeCode=$($result.challengeCode)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "isValidChallengeCode=$($result.isValidChallengeCode)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "githubProfile=$($result.githubProfile)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "githubID=$($result.githubID)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "isValidGitHubID=$($result.isValidGitHubID)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "microsoftLearnProfile=$($result.microsoftLearnProfile)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "teamName=$($result.teamName)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "isValidTeamName=$($result.isValidTeamName)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "teamRepository=$($result.teamRepository)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "dateSubmitted=$($result.dateSubmitted)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "dateDue=$($result.dateDue)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         echo "isOverdue=$($result.isOverdue)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
 
-    - name: Check issue type
-      id: issue-type
-      shell: pwsh
-      run: |
-
-        $result = $(./gha-scripts/Csc-Check-IssueType.ps1 -eventtitle "${{ steps.issue.outputs.title }}") | ConvertFrom-Json
-
-        echo "isCsc=$($result.isCsc)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-        echo "isTeamTopic=$($result.isTeamTopic)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-        echo "isTeamApp=$($result.isTeamApp)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-        echo "isTeamPitch=$($result.isTemaPitch)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-
-    - name: Check challenge code
-      env:
-        GH_TOKEN: ${{ steps.github-connect.outputs.token }}
-      if: steps.issue-type.outputs.isCsc == 'true'
-      id: challenge
-      shell: pwsh
-      run: |
-        $payload = '${{ toJson(github) }}'
-        $result = $(./gha-scripts/Check-ChallengeCode.ps1 `
-        -IssueNumber "${{ github.event.inputs.issue-number }}" `
-        -GitHubPayload $($payload | ConvertFrom-Json)) | ConvertFrom-Json
-
-        echo "code=$($result.code)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-        echo "codeUpper=$($result.codeUpper)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-        echo "isValidCode=$($result.isValidCode)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-
-    - name: Extract Microsoft Learn profile link
-      if: steps.issue-type.outputs.isCsc == 'true'
-      id: profile
-      shell: pwsh
-      run: |
-        $body="${{ steps.issue.outputs.body }}"
-        $link = ./gha-scripts/Csc-Extract-LearnProfile.ps1 `
-         -body "${{ steps.issue.outputs.body }}"
-        
-        echo "link=$link" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-
-    - name: Add a label - Overdue
-      if: steps.issue-type.outputs.isCsc == 'true' && steps.checkpoint.outputs.isOverdue == 'true'
+    - name: Add a label - Overdue #늦은경우
+      if: steps.issue.outputs.issueType == 'CSC' && steps.issue.outputs.isOverdue == 'true'
       shell: bash
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        gh issue edit ${{ steps.issue.outputs.number }} \
+        gh issue edit ${{ steps.issue.outputs.issueNumber }} \
           --add-label "overdue" \
           -R ${{ github.event.repository.full_name }}
 
     - name: Comment to issue - Overdue
-      if: steps.issue-type.outputs.isCsc == 'true' && steps.checkpoint.outputs.isOverdue == 'true'
+      if: steps.issue.outputs.issueType == 'CSC' && steps.issue.outputs.isOverdue == 'true'
       uses: actions-cool/issues-helper@v3
       with:
         actions: 'create-comment'
         token: ${{ secrets.GITHUB_TOKEN }}
-        issue-number: ${{ steps.issue.outputs.number }}
+        issue-number: ${{ steps.issue.outputs.issueNumber }}
         body: |
           👋🏼 @${{ steps.issue.outputs.githubId }} 님!
 
-          * 이슈 제출 시각: ${{ steps.checkpoint.outputs.dateSubmittedValue }}
-          * 이슈 마감 시각: ${{ steps.checkpoint.outputs.dateDueValue }}
+          * 이슈 제출 시각: ${{ steps.issue.outputs.dateSubmitted }}
+          * 이슈 마감 시각: ${{ steps.issue.outputs.dateDue }}
 
-          안타깝게도 제출하신 이슈는 마감 기한인 ${{ steps.checkpoint.outputs.dateDue }}을 넘기셨습니다. 😭 따라서, 이번 클라우드 스킬 챌린지 이벤트에 반영되지 않습니다.
+          안타깝게도 제출하신 이슈는 마감 기한인 ${{ steps.issue.outputs.dateDue }}을 넘기셨습니다. 😭 따라서, 이번 "기초교육 - 클라우드 스킬 챌린지" 완주에 반영되지 않습니다.
 
-          그동안 클라우드 스킬 챌린지 이벤트에 참여해 주셔서 감사 드립니다. 하지만 우리는 해커톤이 있잖아요? 거기서 다시 만나요!
+          이번 2024 해커그라운드 해커톤 본선 행사에는 참여하실 수 없게 되었지만, 다음 해커그라운드 해커톤에서는 꼭 완주하셔서 본선에서 뵈었으면 좋겠습니다! 🚀
+
+          그동안 클라우드 스킬 챌린지 이벤트에 참여해 주셔서 감사드립니다.
+
+          🔹 해커그라운드 운영진 일동 🔹
 
     - name: Close issue - Overdue
-      if: steps.issue-type.outputs.isCsc == 'true' && steps.checkpoint.outputs.isOverdue == 'true'
+      if: steps.issue.outputs.issueType == 'CSC' && steps.issue.outputs.isOverdue == 'true'
       shell: bash
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        gh issue close ${{ steps.issue.outputs.number }} \
+        gh issue close ${{ steps.issue.outputs.issueNumber }} \
           -c "챌린지 제출 기한이 종료되었습니다. 이슈를 닫습니다." \
           -R ${{ github.event.repository.full_name }}
 
     - name: Add a label - Invalid challenge code
-      if: steps.issue-type.outputs.isCsc == 'true' && steps.checkpoint.outputs.isOverdue == 'false' && steps.challenge.outputs.isValidCode == 'false'
+      if: steps.issue.outputs.issueType == 'CSC' && steps.issue.outputs.isOverdue == 'false' && steps.issue.outputs.isValidChallengeCode == 'false'
       shell: bash
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        gh issue edit ${{ steps.issue.outputs.number }} \
+        gh issue edit ${{ steps.issue.outputs.issueNumber }} \
           --add-label "invalid" \
           -R ${{ github.event.repository.full_name }}
   
     - name: Comment to issue - Invalid challenge code
-      if: steps.issue-type.outputs.isCsc == 'true' && steps.checkpoint.outputs.isOverdue == 'false' && steps.challenge.outputs.isValidCode == 'false'
+      if: steps.issue.outputs.issueType == 'CSC' && steps.issue.outputs.isOverdue == 'false' && steps.issue.outputs.isValidChallengeCode == 'false'
       uses: actions-cool/issues-helper@v3
       with:
         actions: 'create-comment'
         token: ${{ secrets.GITHUB_TOKEN }}
-        issue-number: ${{ steps.issue.outputs.number }}
+        issue-number: ${{ steps.issue.outputs.issueNumber }}
         body: |
           👋🏼 @${{ steps.issue.outputs.githubId }} 님!
 
-          * 제출 챌린지 코드: `${{ steps.challenge.outputs.codeUpper }}`
+          * 제출 챌린지 코드: `${{ steps.issue.outputs.challengeCode }}`
           * 예상 챌린지 코드: `AZ-900`, `AI-900`
 
-          안타깝게도 제출하신 이슈는 정확한 챌린지 코드가 제목에 포함되어 있지 않아 확인을 할 수가 없습니다. 😱 챌린지 코드는 위에 언급한 여섯 가지 중 하나여야 합니다.
+          안타깝게도 제출하신 이슈는 정확한 챌린지 코드가 제목에 포함되어 있지 않아 확인을 할 수가 없습니다. 😱 챌린지 코드는 위에 언급한 두 가지 중 하나여야 합니다.
 
           이 이슈는 자동으로 닫힐 예정이니, 새롭게 이슈를 생성해 주시기 바랍니다.
   
     - name: Close issue - Invalid challenge code
-      if: steps.issue-type.outputs.isCsc == 'true' && steps.checkpoint.outputs.isOverdue == 'false' && steps.challenge.outputs.isValidCode == 'false'
+      if: steps.issue.outputs.issueType == 'CSC' && steps.issue.outputs.isOverdue == 'false' && steps.issue.outputs.isValidChallengeCode == 'false'
       shell: bash
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        gh issue close ${{ steps.issue.outputs.number }} \
+        gh issue close ${{ steps.issue.outputs.issueNumber }} \
           -c "챌린지 코드를 확인할 수 없습니다. 이슈를 닫습니다." \
           -R ${{ github.event.repository.full_name }}
   
     - name: Add a label - Acknowledge
-      if: steps.issue-type.outputs.isCsc == 'true' && steps.checkpoint.outputs.isOverdue == 'false' && steps.challenge.outputs.isValidCode == 'true'
+      if: steps.issue.outputs.issueType == 'CSC' && steps.issue.outputs.isOverdue == 'false' && steps.issue.outputs.isValidChallengeCode == 'true'
       shell: bash
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        gh issue edit ${{ steps.issue.outputs.number }} \
-          --add-label "csc,${{ steps.challenge.outputs.code }},verifying" \
+        gh issue edit ${{ steps.issue.outputs.issueNumber }} \
+          --add-label "csc,${{ steps.issue.outputs.challengeCode }},verifying" \
           -R ${{ github.event.repository.full_name }}
 
     - name: Get random assignee
-      if: steps.issue-type.outputs.isCsc == 'true' && steps.checkpoint.outputs.isOverdue == 'false' && steps.challenge.outputs.isValidCode == 'true' && steps.issue.outputs.assignee == ''
+      if: steps.issue.outputs.issueType == 'CSC' && steps.issue.outputs.isOverdue == 'false' && steps.issue.outputs.isValidChallengeCode == 'true' && steps.issue.outputs.assignee == ''
       id: assignee
       shell: pwsh
       run: |
-        $assignee = ./gha-scripts/Csc-Get-RandomAssignee.ps1 -Assignees "${{ vars.INSPECTORS }}"
+        $assignee = ./get-randomassignee/Get-RandomAssignee.ps1 -Assignees "${{ vars.INSPECTORS }}"
 
         echo "githubId=$assignee" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
 
     - name: Assign an inspector
-      if: steps.issue-type.outputs.isCsc == 'true' && steps.checkpoint.outputs.isOverdue == 'false' && steps.challenge.outputs.isValidCode == 'true' && steps.issue.outputs.assignee == ''
+      if: steps.issue.outputs.issueType == 'CSC' && steps.issue.outputs.isOverdue == 'false' && steps.issue.outputs.isValidChallengeCode == 'true' && steps.issue.outputs.assignee == ''
       uses: actions-cool/issues-helper@v3
+
       with:
         actions: 'add-assignees'
         token: ${{ secrets.GITHUB_TOKEN }}
-        issue-number: ${{ steps.issue.outputs.number }}
+        issue-number: ${{ steps.issue.outputs.issueNumber }}
         assignees: ${{ steps.assignee.outputs.githubId }}
 
     - name: Comment to issue - Acknowledge
-      if: steps.issue-type.outputs.isCsc == 'true' && steps.checkpoint.outputs.isOverdue == 'false' && steps.challenge.outputs.isValidCode == 'true'
+      if: steps.issue.outputs.issueType == 'CSC' && steps.issue.outputs.isOverdue == 'false' && steps.issue.outputs.isValidChallengeCode == 'true'
       uses: actions-cool/issues-helper@v3
       with:
         actions: 'create-comment'
         token: ${{ secrets.GITHUB_TOKEN }}
-        issue-number: ${{ steps.issue.outputs.number }}
+        issue-number: ${{ steps.issue.outputs.issueNumber }}
         emoji: '+1,rocket'
         body: |
           👋🏼 @${{ steps.issue.outputs.githubId }} 님!
 
-          ${{ steps.challenge.outputs.codeUpper }} 챌린지 완료 이슈를 생성해 주셔서 감사합니다! 🎉 참가자님의 해커톤 완주를 응원해요! 💪🏼
-
-          @${{ steps.assignee.outputs.githubId }} 님께서 최대한 빠르게 확인해 드리겠습니다! 😊
+          ${{ steps.issue.outputs.ChallengeCode }} 챌린지 완료 이슈를 생성해 주셔서 감사합니다! 🎉 참가자님의 해커톤 완주를 응원해요! 💪🏼
 
           🔹 해커그라운드 운영진 일동 🔹
 
-    - name: Call Power Automate workflow
-      if: steps.issue-type.outputs.isCsc == 'true' && steps.checkpoint.outputs.isOverdue == 'false' && steps.challenge.outputs.isValidCode == 'true'
-      id: request
-      uses: fjogeleit/http-request-action@v1
-      with:
-        url: ${{ secrets.PAU_ON_CHALLENGE_SUBMITTED_URL }}
-        method: 'POST'
-        data: '{ "githubId": "${{ steps.issue.outputs.githubId }}", "msLearnProfileLink": "${{ steps.profile.outputs.link }}", "challengeCode": "${{ steps.challenge.outputs.codeUpper }}" }'
+    # - name: Call Power Automate workflow
+    #   if: steps.issue-type.outputs.isCsc == 'true' && steps.checkpoint.outputs.isOverdue == 'false' && steps.challenge.outputs.isValidCode == 'true'
+    #   id: request
+    #   uses: fjogeleit/http-request-action@v1
+    #   with:
+    #     url: ${{ secrets.PAU_ON_CHALLENGE_SUBMITTED_URL }}
+    #     method: 'POST'
+    #     data: '{ "githubId": "${{ steps.issue.outputs.githubId }}", "msLearnProfileLink": "${{ steps.profile.outputs.link }}", "challengeCode": "${{ steps.challenge.outputs.codeUpper }}" }'
+
+    - name: Check trophies
+      id : check-trophies
+      shell: pwsh
+      run: |
+        $result='OK'
+        echo "result=$result" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+#        $result = dotnet run --project ./check-csc-trophy/Check-CscTrophy.csproj -- ${{ steps.issue.outputs.link }} ${{ steps.issue.outputs.challengeCode }}
+#        Write-Host "Result: $result"
+#완주 성공 가정
+
+    - name: Remove label
+      if: |
+        steps.check-trophies.outputs.result == 'OK'
+      shell: bash
+      env: 
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+          gh issue edit ${{ steps.issue.outputs.issueNumber }} \
+          --remove-label "verifying" \
+          -R ${{ github.event.repository.full_name }}
+  
+    - name: Aad label
+      if: |
+        steps.check-trophies.outputs.result == 'OK'
+      shell: bash
+      env: 
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        gh issue edit ${{ steps.issue.outputs.issueNumber }} \
+        --add-label "verified" \
+        -R ${{ github.event.repository.full_name }}
+  
+#    - name: Post message to Discord
+#      if: |
+#        steps.check-trophies.outputs.result == 'OK'
+#      uses: Ilshidur/action-discord@master
+#      env:
+#        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+#      with:
+#        args: 'GitHub ID @${{ steps.issue.outputs.githubID }}님께서 ${{ steps.issue.outputs.ChallengeCode }} 과정을 달성하셨습니다.'
+  
+    - name: Comment and close Issue
+      if: |
+        steps.check-trophies.outputs.result == 'OK'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        gh issue close ${{ steps.issue.outputs.issueNumber }} \
+          -c "축하드립니다, ${{ steps.issue.outputs.githubID }}님!
+  
+          ${{ steps.issue.outputs.ChallengeCode }} 과정을 끝내서 수고했다는 말씀 드리고 싶어요!
+  
+          ${{ steps.issue.outputs.ChallengeCode }} 과정을 마치고 느낀 감정이나 어려웠던 점을 공유해주시면 더욱 좋겠어요.
+  
+          앞으로도 화이팅하세요! 🎉🎉🎉💪💪💪" \
+          -R ${{ github.event.repository.full_name }}
+          
+
+#    - name: Call Power Automate workflow
+#      if: |
+#        github.event.comment.user.login == github.event.issue.assignee.login &&
+#        steps.challenge.outputs.isValidCode == 'true' &&
+#        contains(github.event.comment.body, '/approve')
+#      uses: fjogeleit/http-request-action@v1
+#      with:
+#        url: ${{ secrets.PAU_ON_CHALLENGE_VERIFIED_URL }}
+#        method: 'POST'
+#        data: '{ "githubId": "${{ github.event.issue.user.login }}", "challengeCode": "${{ steps.challenge.outputs.codeUpper }}" }'
+        
