@@ -214,7 +214,22 @@ jobs:
         echo "result=$result" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
 #        $result = dotnet run --project ./check-csc-trophy/Check-CscTrophy.csproj -- ${{ steps.issue.outputs.link }} ${{ steps.issue.outputs.challengeCode }}
 #        Write-Host "Result: $result"
-#완주 성공 가정
+
+#실패 하면 vaild : 코멘트 : 검증에 실패했습니다. 아직까지 모든 모듈을 완료 하신 후 다시 시도해주세요.
+#이슈는 닫힙니다.   
+
+    - name: Aadd label
+      if: |
+        steps.check-trophies.outputs.result == 'OK'
+      shell: bash
+      env: 
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        gh issue edit ${{ steps.issue.outputs.issueNumber }} \
+        --add-label "verified" \
+        -R ${{ github.event.repository.full_name }}
+
+#완주 성공 가정 => 코멘트 넣기 폭죽넣기.
 
     - name: Remove label
       if: |
@@ -227,16 +242,6 @@ jobs:
           --remove-label "verifying" \
           -R ${{ github.event.repository.full_name }}
   
-    - name: Aad label
-      if: |
-        steps.check-trophies.outputs.result == 'OK'
-      shell: bash
-      env: 
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        gh issue edit ${{ steps.issue.outputs.issueNumber }} \
-        --add-label "verified" \
-        -R ${{ github.event.repository.full_name }}
   
 #    - name: Post message to Discord
 #      if: |
@@ -255,7 +260,7 @@ jobs:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         gh issue close ${{ steps.issue.outputs.issueNumber }} \
-          -c "축하드립니다, ${{ steps.issue.outputs.githubID }}님!
+          -c "축하드립니다, @${{ steps.issue.outputs.githubID }}님!
   
           ${{ steps.issue.outputs.ChallengeCode }} 과정을 끝내서 수고했다는 말씀 드리고 싶어요!
   

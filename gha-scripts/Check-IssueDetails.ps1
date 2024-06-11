@@ -91,6 +91,7 @@ if ($eventName -eq "workflow_dispatch") {
 # "body": "### 제목\n\n팀 주제 제출\n\n### 팀 이름\n\nmy awesome team\n\n### 팀 리포지토리\n\nhttps://github.com/hackersground-kr/my-awesome-team",
 # "body": "### 제목\n\n팀 앱 제출\n\n### 팀 이름\n\nmy awesome team\n\n### 팀 리포지토리\n\nhttps://github.com/hackersground-kr/my-awesome-team",
 # "body": "### 제목\n\n팀 발표자료 제출\n\n### 팀 이름\n\nmy awesome team\n\n### 팀 리포지토리\n\nhttps://github.com/hackersground-kr/my-awesome-team",
+
 $sections = $body.Split("###", [System.StringSplitOptions]::RemoveEmptyEntries)
 
 $segments = $sections[0].Split("`n", [System.StringSplitOptions]::RemoveEmptyEntries)
