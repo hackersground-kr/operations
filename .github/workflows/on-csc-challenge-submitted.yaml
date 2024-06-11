@@ -219,20 +219,24 @@ jobs:
     - name: Remove label
       if: |
         steps.check-trophies.outputs.result == 'OK'
-      uses: buildsville/add-remove-label@v2.0.0
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        labels: verifying
-        type: remove
+      shell: bash
+      env: 
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+          gh issue edit ${{ steps.issue.outputs.issueNumber }} \
+          --remove-label "verifying" \
+          -R ${{ github.event.repository.full_name }}
   
-    - name: Aadd label
+    - name: Aad label
       if: |
         steps.check-trophies.outputs.result == 'OK'
-      uses: buildsville/add-remove-label@v2.0.0
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        labels: verified
-        type: add
+      shell: bash
+      env: 
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        gh issue edit ${{ steps.issue.outputs.issueNumber }} \
+        --add-label "verified" \
+        -R ${{ github.event.repository.full_name }}
   
 #    - name: Post message to Discord
 #      if: |
