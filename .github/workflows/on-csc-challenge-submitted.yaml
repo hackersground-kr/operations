@@ -195,8 +195,6 @@ jobs:
 
           ${{ steps.issue.outputs.ChallengeCode }} 챌린지 완료 이슈를 생성해 주셔서 감사합니다! 🎉 참가자님의 해커톤 완주를 응원해요! 💪🏼
 
-          @${{ steps.assignee.outputs.githubId }} 님께서 최대한 빠르게 확인해 드리겠습니다! 😊
-
           🔹 해커그라운드 운영진 일동 🔹
 
     # - name: Call Power Automate workflow
@@ -248,17 +246,19 @@ jobs:
     - name: Comment and close Issue
       if: |
         steps.check-trophies.outputs.result == 'OK'
-      uses: peter-evans/close-issue@v3
-      with:
-        issue-number: ${{ steps.issue.outputs.issueNumber }}
-        comment: |
-          축하드립니다, ${{ steps.issue.outputs.githubID }}님!
+      shell: bash
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        gh issue close ${{ steps.issue.outputs.issueNumber }} \
+          -c "축하드립니다, ${{ steps.issue.outputs.githubID }}님!
   
           ${{ steps.issue.outputs.ChallengeCode }} 과정을 끝내서 수고했다는 말씀 드리고 싶어요!
   
           ${{ steps.issue.outputs.ChallengeCode }} 과정을 마치고 느낀 감정이나 어려웠던 점을 공유해주시면 더욱 좋겠어요.
   
-          앞으로도 화이팅하세요! 🎉🎉🎉💪💪💪
+          앞으로도 화이팅하세요! 🎉🎉🎉💪💪💪" \
+          -R ${{ github.event.repository.full_name }}
           
 
 #    - name: Call Power Automate workflow
