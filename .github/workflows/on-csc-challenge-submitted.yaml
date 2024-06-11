@@ -311,7 +311,6 @@ jobs:
 
            🔹 해커그라운드 운영진 일동 🔹 " \
           -R ${{ github.event.repository.full_name }}
-          
 
 #    - name: Call Power Automate workflow #호출 시 이슈 클로징 이유 넘기기(due date, invalid code, do not complete learn modules , success)
 #      if: |
