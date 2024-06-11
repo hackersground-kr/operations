@@ -159,7 +159,7 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        gh issue edit ${{ steps.issue.outputs.number }} \
+        gh issue edit ${{ steps.issue.outputs.issueNumber }} \
           --add-label "csc,${{ steps.issue.outputs.challengeCode }},verifying" \
           -R ${{ github.event.repository.full_name }}
 
