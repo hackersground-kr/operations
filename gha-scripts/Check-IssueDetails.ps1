@@ -181,15 +181,12 @@ Remove-Variable issueType
 Remove-Variable issueNumber
 Remove-Variable dateDueValue
 Remove-Variable dateSubmittedValue
-Remove-Variable dateDue
-Remove-Variable dateSubmitted
 Remove-Variable offset
 Remove-Variable tz
 Remove-Variable isValidTeamName
 Remove-Variable issue
 Remove-Variable segments
 Remove-Variable sections
-Remove-Variable githubID
 Remove-Variable body
 Remove-Variable accessToken
 Remove-Variable eventName
