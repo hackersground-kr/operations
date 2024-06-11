@@ -23,6 +23,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Check event payload
+      shell: pwsh
+      run: |
+        $eventPayload = '${{ toJson(github) }}'
 
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -39,11 +43,6 @@ jobs:
         echo "::add-mask::$token"
         echo "token=$token" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8
 
-    # - name: Check event payload
-    #   shell: pwsh
-    #   run: |
-    #     $eventPayload = '${{ toJson(github) }}'
-
     - name: Check issue details
       id: issue
       shell: pwsh
@@ -57,18 +56,28 @@ jobs:
           -IssueNumber "${{ github.event.inputs.issue-number }}" `
           -GitHubPayload $($payload | ConvertFrom-Json)) | ConvertFrom-Json
 
-        echo "created_at=$($result.created_at)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-        echo "githubID=$($result.githubID)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-        echo "number=$($result.IssueNumber)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-        echo "assignee=$($result.assignee)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append 
+        echo "issueType=$($result.issueType)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "createdAt=$($result.createdAt)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "assignee=$($result.assignee)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         echo "title=$($result.title)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-        echo "body=$($result.body)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append   
+        echo "challengeCode=$($result.challengeCode)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "isValidChallengeCode=$($result.isValidChallengeCode)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "githubProfile=$($result.githubProfile)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "githubID=$($result.githubID)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "isValidGitHubID=$($result.isValidGitHubID)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "microsoftLearnProfile=$($result.microsoftLearnProfile)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "teamName=$($result.teamName)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "isValidTeamName=$($result.isValidTeamName)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "teamRepository=$($result.teamRepository)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "dateSubmitted=$($result.dateSubmitted)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "dateDue=$($result.dateDue)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "isOverdue=$($result.isOverdue)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
     
     - name: Check issue date/time
       id: checkpoint
       shell: pwsh
       run: |
-        $dateSubmitted = "${{ steps.issue.outputs.created_at }}"
+        $dateSubmitted = "${{ steps.issue.outputs.createdAt }}"
         $dateDue = "${{ vars.CSC_DUE_DATE }}"
         $result = $(./gha-scripts/Csc-Check-Issue-DateTime.ps1 `
          -dateSubmittedInput "${{ steps.issue.outputs.created_at }}" `
@@ -236,11 +245,18 @@ jobs:
 
           🔹 해커그라운드 운영진 일동 🔹
 
-    - name: Call Power Automate workflow
-      if: steps.issue-type.outputs.isCsc == 'true' && steps.checkpoint.outputs.isOverdue == 'false' && steps.challenge.outputs.isValidCode == 'true'
-      id: request
-      uses: fjogeleit/http-request-action@v1
-      with:
-        url: ${{ secrets.PAU_ON_CHALLENGE_SUBMITTED_URL }}
-        method: 'POST'
-        data: '{ "githubId": "${{ steps.issue.outputs.githubId }}", "msLearnProfileLink": "${{ steps.profile.outputs.link }}", "challengeCode": "${{ steps.challenge.outputs.codeUpper }}" }'
+    # - name: Call Power Automate workflow
+    #   if: steps.issue-type.outputs.isCsc == 'true' && steps.checkpoint.outputs.isOverdue == 'false' && steps.challenge.outputs.isValidCode == 'true'
+    #   id: request
+    #   uses: fjogeleit/http-request-action@v1
+    #   with:
+    #     url: ${{ secrets.PAU_ON_CHALLENGE_SUBMITTED_URL }}
+    #     method: 'POST'
+    #     data: '{ "githubId": "${{ steps.issue.outputs.githubId }}", "msLearnProfileLink": "${{ steps.profile.outputs.link }}", "challengeCode": "${{ steps.challenge.outputs.codeUpper }}" }'
+
+    - name: Check trophies
+      shell: pwsh
+      run: |
+        # 트로피 체크 하는 스크립트 실행
+
+        # 이후 verified.yaml 워크플로우와 합치기
