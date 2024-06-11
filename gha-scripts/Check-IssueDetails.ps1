@@ -79,6 +79,7 @@ if ($eventName -eq "workflow_dispatch") {
     $createdAt = $GitHubPayload.created_at.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
     $assignee = $GitHubPayload.assignee
 } else {
+    $IssueNumber = $GitHubPayload.event.issue.number
     $body = $GitHubPayload.event.issue.body
 
     $title = $GitHubPayload.event.issue.title
@@ -170,8 +171,32 @@ $result = @{
 Write-Output $($result | ConvertTo-Json -Depth 100)
 
 Remove-Variable result
-Remove-Variable assignee
+Remove-Variable isOverdue
+Remove-Variable dateDue
+Remove-Variable dateSubmitted
+Remove-Variable offset
+Remove-Variable tz
+Remove-Variable isValidTeamName
+Remove-Variable teamRepository
+Remove-Variable teamName
+Remove-Variable microsoftLearnProfile
+Remove-Variable isValidGitHubID
 Remove-Variable githubID
-Remove-Variable createdAt
-Remove-Variable body
+Remove-Variable githubProfile
+Remove-Variable isValidChallengeCode
+Remove-Variable challengeCode
 Remove-Variable title
+Remove-Variable assignee
+Remove-Variable createdAt
+Remove-Variable issueType
+Remove-Variable issue
+Remove-Variable segments
+Remove-Variable sections
+Remove-Variable body
+Remove-Variable eventName
+Remove-Variable accessToken
+Remove-Variable IssueNumber
+Remove-Variable GitHubPayload
+Remove-Variable GitHubAccessToken
+Remove-Variable DueDate
+Remove-Variable Help

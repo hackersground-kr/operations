@@ -51,3 +51,13 @@ $randomAssignee = $assigneesCollection[$random]
 
 # Output the random assignee
 Write-Output $randomAssignee
+
+
+Remove-Variable randomAssignee
+Remove-Variable random
+Remove-Variable assigneesCollection
+Remove-Variable Assignees
+Remove-Variable Help
+Remove-Variable needHelp
+Remove-Variable MyInvocation
+Remove-Variable Assignees
