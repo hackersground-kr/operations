@@ -159,7 +159,6 @@ $result = @{
     githubID = $githubID;
     isValidGitHubID = $isValidGitHubID;
     microsoftLearnProfile = $issue.microsoftLearnProfile;
-    teamName = $issue.teamName;
     isValidTeamName = $isValidTeamName;
     dateSubmitted = $dateSubmittedValue;
     dateDue = $dateDueValue;
@@ -173,7 +172,6 @@ Remove-Variable isOverdue
 Remove-Variable dateDue
 Remove-Variable dateSubmitted
 Remove-Variable isValidTeamName
-Remove-Variable teamName
 Remove-Variable microsoftLearnProfile
 Remove-Variable isValidGitHubID
 Remove-Variable githubID
