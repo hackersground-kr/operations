@@ -8,6 +8,14 @@ body:
     value: |
       **👆👆👆 상단의 제목에 팀 이름을 반드시 적어 주세요 👆👆👆**
 
+- type: dropdown
+  id: title
+  attributes:
+    label: '제목'
+    options:
+      - '팀 주제 제출'
+    default: 0
+
 - type: input
   id: team_name
   attributes:
