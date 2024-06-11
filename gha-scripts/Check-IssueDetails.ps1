@@ -161,7 +161,6 @@ $result = @{
     microsoftLearnProfile = $issue.microsoftLearnProfile;
     teamName = $issue.teamName;
     isValidTeamName = $isValidTeamName;
-    teamRepository = $issue.teamRepository;
     dateSubmitted = $dateSubmittedValue;
     dateDue = $dateDueValue;
     isOverdue = $isOverdue;
@@ -173,7 +172,6 @@ Remove-Variable result
 Remove-Variable isOverdue
 Remove-Variable dateDue
 Remove-Variable dateSubmitted
-Remove-Variable teamRepository
 Remove-Variable isValidTeamName
 Remove-Variable teamName
 Remove-Variable microsoftLearnProfile
