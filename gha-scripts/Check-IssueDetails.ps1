@@ -183,7 +183,6 @@ Remove-Variable dateDueValue
 Remove-Variable dateSubmittedValue
 Remove-Variable offset
 Remove-Variable tz
-Remove-Variable isValidTeamName
 Remove-Variable issue
 Remove-Variable segments
 Remove-Variable sections
