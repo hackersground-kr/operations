@@ -87,7 +87,6 @@ if ($eventName -eq "workflow_dispatch") {
     $createdAt = $GitHubPayload.event.issue.created_at.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
     $assignee = $GitHubPayload.event.issue.assignee
 }
-Write-Host "Body: $body"
 # "body": "### 제목\n\n클라우드 스킬 챌린지\n\n### 챌린지 코드\n\nAZ-900\n\n### 깃헙 프로필\n\nhttps://github.com/hackersground-kr\n\n### Microsoft Learn 프로필\n\nhttps://learn.microsoft.com/ko-kr/users/hackersground-kr",
 # "body": "### 제목\n\n팀 주제 제출\n\n### 팀 이름\n\nmy awesome team\n\n### 팀 리포지토리\n\nhttps://github.com/hackersground-kr/my-awesome-team",
 # "body": "### 제목\n\n팀 앱 제출\n\n### 팀 이름\n\nmy awesome team\n\n### 팀 리포지토리\n\nhttps://github.com/hackersground-kr/my-awesome-team",
