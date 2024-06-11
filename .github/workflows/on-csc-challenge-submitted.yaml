@@ -250,6 +250,7 @@ jobs:
         steps.check-trophies.outputs.result == 'OK'
       uses: peter-evans/close-issue@v3
       with:
+        issue-number: ${{ steps.issue.outputs.issueNumber }}
         comment: |
           축하드립니다, ${{ steps.issue.outputs.githubID }}님!
   
