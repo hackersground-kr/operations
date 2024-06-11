@@ -181,7 +181,6 @@ Remove-Variable issueType
 Remove-Variable issueNumber
 Remove-Variable dateDueValue
 Remove-Variable dateSubmittedValue
-Remove-Variable isOverdue
 Remove-Variable dateDue
 Remove-Variable dateSubmitted
 Remove-Variable offset
