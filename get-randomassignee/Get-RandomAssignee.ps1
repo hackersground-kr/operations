@@ -59,5 +59,3 @@ Remove-Variable assigneesCollection
 Remove-Variable Assignees
 Remove-Variable Help
 Remove-Variable needHelp
-Remove-Variable MyInvocation
-Remove-Variable Assignees
