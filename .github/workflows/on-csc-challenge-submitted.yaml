@@ -238,6 +238,8 @@ jobs:
              🔹 해커그라운드 운영진 일동 🔹
 
       - name: Close issue - Do not complete the module
+        if: |
+          steps.check-trophies.outputs.result == 'Failed'
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
