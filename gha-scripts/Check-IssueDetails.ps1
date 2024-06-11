@@ -161,11 +161,8 @@ Remove-Variable result
 Remove-Variable isOverdue
 Remove-Variable dateDue
 Remove-Variable dateSubmitted
-Remove-Variable isValidTeamName
-Remove-Variable isValidGitHubID
 Remove-Variable githubID
 Remove-Variable isValidChallengeCode
-Remove-Variable assignee
 Remove-Variable createdAt
 Remove-Variable issueType
 Remove-Variable issueNumber
