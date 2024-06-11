@@ -193,5 +193,3 @@ Remove-Variable Help
 Remove-Variable DueDate
 Remove-Variable GitHubAccessToken
 Remove-Variable GitHubPayload
-Remove-Variable IssueNumber
-Remove-Variable GitHubPayload
