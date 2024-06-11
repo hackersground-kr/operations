@@ -172,13 +172,9 @@ Remove-Variable isOverdue
 Remove-Variable dateDue
 Remove-Variable dateSubmitted
 Remove-Variable isValidTeamName
-Remove-Variable microsoftLearnProfile
 Remove-Variable isValidGitHubID
 Remove-Variable githubID
-Remove-Variable githubProfile
 Remove-Variable isValidChallengeCode
-Remove-Variable challengeCode
-Remove-Variable title
 Remove-Variable assignee
 Remove-Variable createdAt
 Remove-Variable issueType
