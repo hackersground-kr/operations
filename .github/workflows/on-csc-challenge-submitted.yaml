@@ -258,6 +258,7 @@ jobs:
           ${{ steps.issue.outputs.ChallengeCode }} 과정을 마치고 느낀 감정이나 어려웠던 점을 공유해주시면 더욱 좋겠어요.
   
           앞으로도 화이팅하세요! 🎉🎉🎉💪💪💪
+          
 
 #    - name: Call Power Automate workflow
 #      if: |
