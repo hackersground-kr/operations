@@ -219,6 +219,9 @@ jobs:
 
       - name: Comment to issue - Do not complete the module
         if: |
+          steps.issue.outputs.issueType == 'CSC' &&
+          steps.issue.outputs.isOverdue == 'false' &&
+          steps.issue.outputs.isValidChallengeCode == 'true' &&
           steps.check-trophies.outputs.result == 'Failed'
         uses: actions-cool/issues-helper@v3
         with:
@@ -239,6 +242,9 @@ jobs:
 
       - name: Close issue - Do not complete the module
         if: |
+          steps.issue.outputs.issueType == 'CSC' &&
+          steps.issue.outputs.isOverdue == 'false' &&
+          steps.issue.outputs.isValidChallengeCode == 'true' &&
           steps.check-trophies.outputs.result == 'Failed'
         shell: bash
         env:
@@ -250,6 +256,9 @@ jobs:
 
       - name: Add label
         if: |
+          steps.issue.outputs.issueType == 'CSC' &&
+          steps.issue.outputs.isOverdue == 'false' &&
+          steps.issue.outputs.isValidChallengeCode == 'true'
           steps.check-trophies.outputs.result == 'OK'
         shell: bash
         env:
@@ -261,6 +270,9 @@ jobs:
 
       - name: Comment to issue - Complete Learn modules.
         if: |
+          steps.issue.outputs.issueType == 'CSC' &&
+          steps.issue.outputs.isOverdue == 'false' &&
+          steps.issue.outputs.isValidChallengeCode == 'true' &&
           steps.check-trophies.outputs.result == 'OK'
         uses: actions-cool/issues-helper@v3
         with:
@@ -277,6 +289,9 @@ jobs:
 
       - name: Remove label
         if: |
+          steps.issue.outputs.issueType == 'CSC' &&
+          steps.issue.outputs.isOverdue == 'false' &&
+          steps.issue.outputs.isValidChallengeCode == 'true' &&
           steps.check-trophies.outputs.result == 'OK'
         shell: bash
         env:
@@ -296,6 +311,9 @@ jobs:
 
       - name: Comment and close Issue
         if: |
+          steps.issue.outputs.issueType == 'CSC' &&
+          steps.issue.outputs.isOverdue == 'false' &&
+          steps.issue.outputs.isValidChallengeCode == 'true' &&
           steps.check-trophies.outputs.result == 'OK'
         shell: bash
         env:
