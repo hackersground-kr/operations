@@ -142,7 +142,7 @@ jobs:
           body: |
             👋🏼 @${{ steps.issue.outputs.githubId }} 님!
 
-            * 제출 챌린지 코드: `${{ steps.issue.outputs.challengeCode }}`
+            * 제출 챌린지 코드: `${{ steps.issue.outputs.challengeCodeUserWrited }}`
             * 예상 챌린지 코드: `AZ-900`, `AI-900`
 
             안타깝게도 제출하신 이슈는 정확한 챌린지 코드가 제목에 포함되어 있지 않아 확인을 할 수가 없습니다. 😱 챌린지 코드는 위에 언급한 두 가지 중 하나여야 합니다.
