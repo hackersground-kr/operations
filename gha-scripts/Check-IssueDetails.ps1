@@ -69,15 +69,14 @@ if (($eventName -eq "workflow_dispatch") -and ([string]::IsNullOrWhiteSpace($acc
     Exit 0
 }
 
+
 $body = ""
 if ($eventName -eq "workflow_dispatch") {
     $GitHubPayload = $(gh api /repos/$($GitHubPayload.repository)/issues/$IssueNumber | ConvertFrom-Json)
-    
     $body = $GitHubPayload.body
     $title = $GitHubPayload.title
     $githubID = $GitHubPayload.user.login
     $createdAt = $GitHubPayload.created_at.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
-    $assignee = $GitHubPayload.assignee
 } else {
     $IssueNumber = $GitHubPayload.event.issue.number
     $body = $GitHubPayload.event.issue.body
@@ -85,8 +84,9 @@ if ($eventName -eq "workflow_dispatch") {
     $title = $GitHubPayload.event.issue.title
     $githubID = $GitHubPayload.event.issue.user.login
     $createdAt = $GitHubPayload.event.issue.created_at.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
-    $assignee = $GitHubPayload.event.issue.assignee
 }
+
+
 $sections = $body.Split("###", [System.StringSplitOptions]::RemoveEmptyEntries)
 
 $segments = $sections[0].Split("`n", [System.StringSplitOptions]::RemoveEmptyEntries)
@@ -127,6 +127,7 @@ $issueType = switch ($issue.title) {
     default { $null }
 }
 
+$challengeCodeUserWrited = ($title -replace '.*\[(.*?)\].*', '$1')
 $isValidChallengeCode = $title.Contains($issue.challengeCode)
 
 $tz = [TimeZoneInfo]::FindSystemTimeZoneById("Asia/Seoul")
@@ -145,6 +146,7 @@ $result = @{
     issueNumber = $IssueNumber;
     issueType = $issueType;
     createdAt = $createdAt;
+    challengeCodeUserWrited = $challengeCodeUserWrited;
     title = $issue.title;
     challengeCode = $issue.challengeCode;
     isValidChallengeCode = $isValidChallengeCode;
@@ -163,6 +165,7 @@ Remove-Variable dateDue
 Remove-Variable dateSubmitted
 Remove-Variable githubID
 Remove-Variable isValidChallengeCode
+Remove-Variable challengeCodeUserWrited
 Remove-Variable createdAt
 Remove-Variable issueType
 Remove-Variable issueNumber
