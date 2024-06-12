@@ -209,6 +209,10 @@ jobs:
       #     data: '{ "githubId": "${{ steps.issue.outputs.githubId }}", "msLearnProfileLink": "${{ steps.profile.outputs.link }}", "challengeCode": "${{ steps.challenge.outputs.codeUpper }}" }'
 
       - name: Check trophies
+        if: |
+          steps.issue.outputs.issueType == 'CSC' &&
+          steps.issue.outputs.isOverdue == 'false' &&
+          steps.issue.outputs.isValidChallengeCode == 'true'
         id: check-trophies
         shell: pwsh
         run: |
@@ -258,7 +262,7 @@ jobs:
         if: |
           steps.issue.outputs.issueType == 'CSC' &&
           steps.issue.outputs.isOverdue == 'false' &&
-          steps.issue.outputs.isValidChallengeCode == 'true'
+          steps.issue.outputs.isValidChallengeCode == 'true' &&
           steps.check-trophies.outputs.result == 'OK'
         shell: bash
         env:
