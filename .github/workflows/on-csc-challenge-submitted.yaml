@@ -215,6 +215,7 @@ jobs:
           steps.issue.outputs.isOverdue == 'false' &&
           steps.issue.outputs.isValidChallengeCode == 'true'
         run: |
+          cat ./check-csc-trophies/properties/appsettings.json
           jq '.ChallengeInput = "${{ steps.issue.outputs.challengecode }}" | .Url = "${{ steps.issue.outputs.link }}"' ./check-csc-trophies/properties/appsettings.json > temp.json && mv temp.json ./check-csc-trophies/properties/appsettings.json
       
       - name: Check trophies
