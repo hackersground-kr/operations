@@ -216,7 +216,7 @@ jobs:
           steps.issue.outputs.isValidChallengeCode == 'true'
         run: |
           jq '.ChallengeInput = "${{ steps.issue.outputs.challengecode }}" | .Url = "${{ steps.issue.outputs.microsoftLearnProfile }}"' ./check-csc-trophies/properties/appsettings.json > temp.json && mv temp.json ./check-csc-trophies/properties/appsettings.json
-          cat ./check-csc-trophies/properties/appsettings.json
+    #      cat ./check-csc-trophies/properties/appsettings.json
       
       - name: Check trophies
         if: |
@@ -233,6 +233,8 @@ jobs:
           playwright install
           playwright install-deps
           $result = dotnet run --project ./check-csc-trophies.csproj
+          
+          Write-Host "result=$result"
           echo "result=$result" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
 
       - name: Comment to issue - Do not complete the module
