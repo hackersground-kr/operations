@@ -233,9 +233,23 @@ jobs:
           playwright install
           playwright install-deps
           $result = dotnet run --project ./check-csc-trophies.csproj
-          
+
           Write-Host "result=$result"
           echo "result=$result" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+
+      - name: Add label - Do not complete the module
+        if: |
+          steps.issue.outputs.issueType == 'CSC' &&
+          steps.issue.outputs.isOverdue == 'false' &&
+          steps.issue.outputs.isValidChallengeCode == 'true' &&
+          steps.check-trophies.outputs.result == 'Failed'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue edit ${{ steps.issue.outputs.issueNumber }} \
+          --add-label "incomplete" \
+          -R ${{ github.event.repository.full_name }}
 
       - name: Comment to issue - Do not complete the module
         if: |
@@ -259,6 +273,19 @@ jobs:
             이 이슈는 자동으로 닫힐 예정이니, 새롭게 이슈를 생성해 주시기 바랍니다.
 
              🔹 해커그라운드 운영진 일동 🔹
+          
+      - name: Remove label
+        if: |
+          steps.issue.outputs.issueType == 'CSC' &&
+          steps.issue.outputs.isOverdue == 'false' &&
+          steps.issue.outputs.isValidChallengeCode == 'Failed'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue edit ${{ steps.issue.outputs.issueNumber }} \
+          --remove-label "verifying" \
+          -R ${{ github.event.repository.full_name }}
 
       - name: Close issue - Do not complete the module
         if: |
@@ -311,8 +338,7 @@ jobs:
         if: |
           steps.issue.outputs.issueType == 'CSC' &&
           steps.issue.outputs.isOverdue == 'false' &&
-          steps.issue.outputs.isValidChallengeCode == 'true' &&
-          steps.check-trophies.outputs.result == 'OK'
+          steps.issue.outputs.isValidChallengeCode == 'true'
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -320,6 +346,7 @@ jobs:
           gh issue edit ${{ steps.issue.outputs.issueNumber }} \
           --remove-label "verifying" \
           -R ${{ github.event.repository.full_name }}
+
       #    - name: Post message to Discord
       #      if: |
       #        steps.check-trophies.outputs.result == 'OK'
