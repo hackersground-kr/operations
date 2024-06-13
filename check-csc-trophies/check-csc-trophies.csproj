@@ -3,7 +3,8 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
-    <RootNamespace>check_csc_trophies</RootNamespace>
+    <AssemblyName>HackersGround.Csc.Trophies</AssemblyName> 
+    <RootNamespace>HackersGround.Csc.Trophies</RootNamespace> 
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
