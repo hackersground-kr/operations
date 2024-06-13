@@ -209,6 +209,14 @@ jobs:
       #     method: 'POST'
       #     data: '{ "githubId": "${{ steps.issue.outputs.githubId }}", "msLearnProfileLink": "${{ steps.profile.outputs.link }}", "challengeCode": "${{ steps.challenge.outputs.codeUpper }}" }'
 
+      - name: Update appsettings.json
+        if: |
+          steps.issue.outputs.issueType == 'CSC' &&
+          steps.issue.outputs.isOverdue == 'false' &&
+          steps.issue.outputs.isValidChallengeCode == 'true'
+        run: |
+          jq '.ChallengeInput = "${{ steps.issue.outputs.challengecode }}" | .Url = "${{ steps.issue.outputs.link }}"' ./check-csc-trophies/properties/appsettings.json > temp.json && mv temp.json ./check-csc-trophies/properties/appsettings.json
+      
       - name: Check trophies
         if: |
           steps.issue.outputs.issueType == 'CSC' &&
@@ -217,10 +225,8 @@ jobs:
         id: check-trophies
         shell: pwsh
         run: |
-          $result='Failed'
+          $result = dotnet run --project ./check-csc-trophies/check-csc-trophies.csproj
           echo "result=$result" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-      #        $result = dotnet run --project ./check-csc-trophy/Check-CscTrophy.csproj -- ${{ steps.issue.outputs.link }} ${{ steps.issue.outputs.challengeCode }}
-      #        Write-Host "Result: $result"
 
       - name: Comment to issue - Do not complete the module
         if: |

@@ -1,9 +1,30 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using Microsoft.Extensions.Configuration;
+//using HackersGround.Csc.Trophies.Services;
 
+class Program
+{
+    static void Main(string[] args)
+    {
+        IConfiguration config = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("./properties/appsettings.json", optional: true, reloadOnChange: true)
+            .Build();
 
-//단위 테스트를 위한 테스트 코드 추가
+        string url = config["Url"];
+        string challenge = config["ChallengeInput"];
+        var challenges = config.GetSection("Challenges").Get<Dictionary<string, List<string>>>();
 
-//if ㄱ독성 줄이기
-// playwritght 쓰기
-//빌더 패턴쓰기
+        var trophyChecker = new TrophyCheckerBuilder()
+            .WithUrl(url)
+            .WithChallenge(challenge)
+            .WithFlags(challenges)
+            .Build();
 
+        trophyChecker.CheckChallengeCompletion(); // 트로피 획득 여부 확인
+
+        //Console.ReadLine(); // 프로그램이 바로 종료되지 않도록 대기
+    }
+}
