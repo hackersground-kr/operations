@@ -17,6 +17,11 @@ class Program
         string? challenge = config["ChallengeInput"];
         var challenges = config.GetSection("Challenges").Get<Dictionary<string, List<string>>>();
 
+        //예외 처리 (null 체크)
+        if (url == null) throw new ArgumentNullException(nameof(url));
+        if(challenge == null) throw new ArgumentNullException(nameof(challenge));
+        if (challenges == null) throw new ArgumentNullException(nameof(challenges));
+
         var trophyChecker = new TrophyCheckerBuilder()
             .WithUrl(url)
             .WithChallenge(challenge)
