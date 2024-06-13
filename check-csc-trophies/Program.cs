@@ -13,8 +13,8 @@ class Program
             .AddJsonFile("./properties/appsettings.json", optional: true, reloadOnChange: true)
             .Build();
 
-        string url = config["Url"];
-        string challenge = config["ChallengeInput"];
+        string? url = config["Url"];
+        string? challenge = config["ChallengeInput"];
         var challenges = config.GetSection("Challenges").Get<Dictionary<string, List<string>>>();
 
         var trophyChecker = new TrophyCheckerBuilder()
