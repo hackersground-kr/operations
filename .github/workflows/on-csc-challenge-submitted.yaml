@@ -225,10 +225,10 @@ jobs:
         id: check-trophies
         shell: pwsh
         run: |
+          cd ./check-csc-trophies
           dotnet add package Microsoft.Playwright
           dotnet tool install --global Microsoft.Playwright.CLI
           playwright install
-          cd ./check-csc-trophies
           playwright install-deps
           dotnet build
           $result = dotnet run --project ./check-csc-trophies.csproj
