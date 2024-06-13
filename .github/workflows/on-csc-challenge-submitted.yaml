@@ -230,7 +230,7 @@ jobs:
           playwright install
           dotnet add package Microsoft.Playwright
           dotnet build
-          $result = dotnet run --project ./check-csc-trophies/check-csc-trophies.csproj
+          $result = dotnet run --project ./check-csc-trophies.csproj
           echo "result=$result" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
 
       - name: Comment to issue - Do not complete the module
