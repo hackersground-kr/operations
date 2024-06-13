@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "check-csc-trophy", "check-csc-trophy\check-csc-trophy.csproj", "{0334AC50-FDDB-442F-8D91-3403CC3A9FB9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "check-csc-trophies", "check-csc-trophies.csproj", "{A157C421-5A18-4201-B2FB-B9C44DAD97D0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -14,9 +14,9 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{0334AC50-FDDB-442F-8D91-3403CC3A9FB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0334AC50-FDDB-442F-8D91-3403CC3A9FB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0334AC50-FDDB-442F-8D91-3403CC3A9FB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0334AC50-FDDB-442F-8D91-3403CC3A9FB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A157C421-5A18-4201-B2FB-B9C44DAD97D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A157C421-5A18-4201-B2FB-B9C44DAD97D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A157C421-5A18-4201-B2FB-B9C44DAD97D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A157C421-5A18-4201-B2FB-B9C44DAD97D0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
