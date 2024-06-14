@@ -251,6 +251,7 @@ jobs:
           --add-label "incomplete" \
           -R ${{ github.event.repository.full_name }}
 
+
       - name: Comment to issue - Do not complete the module
         if: |
           steps.issue.outputs.issueType == 'CSC' &&
