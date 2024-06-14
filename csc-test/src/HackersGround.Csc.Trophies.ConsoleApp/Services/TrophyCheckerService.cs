@@ -1,29 +1,27 @@
 ﻿namespace HackersGround.Csc.Trophies.Services;
 
-using Microsoft.Extensions.Configuration;
+using HackersGround.Csc.Trophies.Settings;
+using HackersGround.Csc.Trophies.Options;
+
 using System;
 using Microsoft.Playwright;
 using System.Collections.Generic;
 
 public class TrophyCheckService : ITrophyCheckerService
 {
-    private readonly IConfiguration Configuration;
-    private readonly string? url;
-    private readonly string? challengeInput;
-    private readonly Dictionary<string, List<string>>? challenges;
+    public async Task RunAsync(string args[])
+    {
+        var checkingmodules = AppSettings;
+        var options= Options.Parse(args); //code,url 값 가져오기
 
-    public TrophyCheckService(IConfiguration configuration)
-    {
-        Configuration = configuration;
-        url = Configuration["Url"];
-        challengeInput = Configuration["ChallengeInput"];
-        challenges = Configuration.GetSection("Challenges")
-                                  .Get<Dictionary<string, List<string>>>();
-    }
-    public async Task RunAsync()
-    {
         try
         {
+            if (options.Help)
+            {
+                this.DisplayHelp();
+                return;
+            }
+
             using var playwright = await Playwright.CreateAsync();
             var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = true });
             var page = await browser.NewPageAsync();
@@ -32,7 +30,7 @@ public class TrophyCheckService : ITrophyCheckerService
 
             await page.WaitForTimeoutAsync(5000); // 5초 대기
 
-            var elements = await page.QuerySelectorAllAsync(".card-content-title");
+            var elements = await page.QuerySelectorAllAsync(".card-content-title"); //경로 재설정 필요
             if (elements == null || elements.Count == 0)
             {
                 throw new Exception("No elements found");
@@ -74,5 +72,12 @@ public class TrophyCheckService : ITrophyCheckerService
         {
             Console.WriteLine(isCompleted ? "OK" : "Failed");
         }
+    }
+
+    private void DisplayHelp()
+    {
+        Console.WriteLine("Usage:");
+        Console.WriteLine("  -code, -url    Write Challenge Code to check trophies and Your MS Learn Profile URL"); 
+        Console.WriteLine("  -h, --help                                            Display help");
     }
 }
