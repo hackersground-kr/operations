@@ -1,4 +1,4 @@
-﻿Using HackersGround.Csc.Trophies.ChallengeSetting;
+﻿using HackersGround.Csc.Trophies.ChallengeSetting;
 using HackersGround.Csc.Trophies.Services;
 
 using System.IO;
@@ -7,21 +7,23 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
+IHostBuilder builder = Host.CreateDefaultBuilder(args);
 
-builder.Configuration.Sources.Clear();
+builder.ConfigureAppConfiguration((hostingContext, config) =>
+{
+    config.Sources.Clear();
 
-IHostEnvironment env = builder.Environment;
+    IHostEnvironment env = hostingContext.HostingEnvironment;
 
-builder.Configuration
-    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-    .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true);
+    config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+          .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true);
+});
 
 ChallengeSetting Challenges = new();
-builder.Configuration.GetSection(nameof(ChallengeSetting))
+builder.ConfigureServices.GetSection(nameof(ChallengeSetting))
     .Bind(Challenges);
 
-Console.WriteLine("{Challenges}");
+Console.WriteLine("${Challenges}");
 
 using IHost host = Host.CreateApplicationBuilder(args)
                 .UseConsoleLifetime()

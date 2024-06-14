@@ -1,32 +1,32 @@
 ﻿namespace HackersGround.Csc.Trophies.Services;
 
-using HackersGround.Csc.Trophies.Settings;
+using HackersGround.Csc.Trophies.ChallengeSetting;
 using HackersGround.Csc.Trophies.Options;
 
 using System;
 using Microsoft.Playwright;
 using System.Collections.Generic;
 
-public class TrophyCheckService : ITrophyCheckerService
+public class TrophyCheckService(Dictionary<string, List<string>> challenges) : ITrophyCheckerService
 {
-    public async Task RunAsync(string args[])
+    public async Task RunAsync(string []args)
     {
-        var checkingmodules = AppSettings;
         var options= Options.Parse(args); //code,url 값 가져오기
+
+        if (options.Help)
+        {
+             this.DisplayHelp();
+             return;
+        }
 
         try
         {
-            if (options.Help)
-            {
-                this.DisplayHelp();
-                return;
-            }
 
             using var playwright = await Playwright.CreateAsync();
             var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = true });
             var page = await browser.NewPageAsync();
 
-            await page.GotoAsync(url);
+            await page.GotoAsync(options.Url);
 
             await page.WaitForTimeoutAsync(5000); // 5초 대기
 
@@ -41,7 +41,7 @@ public class TrophyCheckService : ITrophyCheckerService
             var trophyResults = Task.WhenAll(trophyTasks).GetAwaiter().GetResult();
 
             var trophies = trophyResults.Select(trophy => trophy?.Replace("\n", "").Replace("\t", "").Trim()).ToList();
-            PrintResult(challengeInput, challenges, trophies);
+            PrintResult(options.Code, challenges, trophies);
 
             browser.CloseAsync().GetAwaiter().GetResult();
         }
