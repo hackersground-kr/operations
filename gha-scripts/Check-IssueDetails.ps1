@@ -69,8 +69,6 @@ if (($eventName -eq "workflow_dispatch") -and ([string]::IsNullOrWhiteSpace($acc
     Exit 0
 }
 
-
-$body = ""
 if ($eventName -eq "workflow_dispatch") {
     $GitHubPayload = $(gh api /repos/$($GitHubPayload.repository)/issues/$IssueNumber | ConvertFrom-Json)
     $body = $GitHubPayload.body
@@ -80,12 +78,10 @@ if ($eventName -eq "workflow_dispatch") {
 } else {
     $IssueNumber = $GitHubPayload.event.issue.number
     $body = $GitHubPayload.event.issue.body
-
     $title = $GitHubPayload.event.issue.title
     $githubID = $GitHubPayload.event.issue.user.login
     $createdAt = $GitHubPayload.event.issue.created_at.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
 }
-
 
 $sections = $body.Split("###", [System.StringSplitOptions]::RemoveEmptyEntries)
 
@@ -127,7 +123,6 @@ $issueType = switch ($issue.title) {
     default { $null }
 }
 
-$challengeCodeUserWrited = ($title -replace '.*\[(.*?)\].*', '$1')
 $isValidChallengeCode = $title.Contains($issue.challengeCode)
 
 $tz = [TimeZoneInfo]::FindSystemTimeZoneById("Asia/Seoul")
@@ -142,16 +137,22 @@ $isOverdue = "$($dateSubmitted -gt $dateDue)".ToLowerInvariant()
 $dateSubmittedValue = $dateSubmitted.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
 $dateDueValue = $dateDue.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
 
+$isValidGitHubProfile = $($($issue.githubProfile).StartsWith("https://github.com/") -eq $true) -and $($($issue.githubProfile).TrimEnd("/").EndsWith($githubID) -eq $true)
+$isValidMicrosoftLearnProfile = $($issue.microsoftLearnProfile).StartsWith("https://learn.microsoft.com/ko-kr/users/") -eq $true
+
 $result = @{
     issueNumber = $IssueNumber;
     issueType = $issueType;
     createdAt = $createdAt;
-    challengeCodeUserWrited = $challengeCodeUserWrited;
+    challengeCodeUserEntered = $($issue.challengeCode).ToLowerInvariant();
     title = $issue.title;
     challengeCode = $issue.challengeCode;
     isValidChallengeCode = $isValidChallengeCode;
     githubID = $githubID;
+    githubProfile = $issue.githubProfile;
+    isValidGitHubProfile = $isValidGitHubProfile;
     microsoftLearnProfile = $issue.microsoftLearnProfile;
+    isValidMicrosoftLearnProfile = $isValidMicrosoftLearnProfile;
     dateSubmitted = $dateSubmittedValue;
     dateDue = $dateDueValue;
     isOverdue = $isOverdue;
@@ -160,26 +161,24 @@ $result = @{
 Write-Output $($result | ConvertTo-Json -Depth 100)
 
 Remove-Variable result
+Remove-Variable isValidMicrosoftLearnProfile
+Remove-Variable isValidGitHubProfile
+Remove-Variable dateDueValue
+Remove-Variable dateSubmittedValue
 Remove-Variable isOverdue
 Remove-Variable dateDue
 Remove-Variable dateSubmitted
-Remove-Variable githubID
-Remove-Variable isValidChallengeCode
-Remove-Variable challengeCodeUserWrited
-Remove-Variable createdAt
-Remove-Variable issueType
-Remove-Variable issueNumber
-Remove-Variable dateDueValue
-Remove-Variable dateSubmittedValue
 Remove-Variable offset
 Remove-Variable tz
+Remove-Variable isValidChallengeCode
+Remove-Variable issueType
 Remove-Variable issue
 Remove-Variable segments
 Remove-Variable sections
+Remove-Variable createdAt
+Remove-Variable githubID
+Remove-Variable title
 Remove-Variable body
 Remove-Variable accessToken
 Remove-Variable eventName
-Remove-Variable Help
-Remove-Variable DueDate
-Remove-Variable GitHubAccessToken
-Remove-Variable GitHubPayload
+Remove-Variable needHelp
