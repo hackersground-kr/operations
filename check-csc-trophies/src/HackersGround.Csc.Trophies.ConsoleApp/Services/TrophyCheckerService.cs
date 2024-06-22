@@ -29,6 +29,16 @@ public interface ITrophyCheckerService
 public class TrophyCheckService(ChallengeSettings settings) : ITrophyCheckerService
 {
     private readonly ChallengeSettings _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+#pragma warning disable IDE1006 // Naming Styles
+    private static readonly List<Exception> exceptions = new()
+    {
+        new ArgumentException("TEST: No challenge code identified. It MUST be either AZ-900 or AI-900"),
+        new ArgumentException("TEST: No Microsoft Learn profile URL."),
+        new ArgumentException("TEST: Invalid Microsoft Learn profile URL. It MUST start with https://learn.microsoft.com/ko-kr/users/."),
+        new ArgumentException("TEST: No trophies found."),
+        new Exception("TEST: An error occurred."),
+    };
+#pragma warning restore IDE1006 // Naming Styles
 
     private static JsonSerializerOptions jso => new()
     {
@@ -55,6 +65,12 @@ public class TrophyCheckService(ChallengeSettings settings) : ITrophyCheckerServ
 
         try
         {
+            if (options.ForceError == true)
+            {
+                var index = options.ErrorCode.GetValueOrDefault() % exceptions.Count;
+                throw exceptions[index];
+            }
+
             if (options.ChallengeCode == ChallengeCodeType.Undefined)
             {
                 throw new ArgumentException("No challenge code identified. It MUST be either AZ-900 or AI-900");
@@ -140,6 +156,8 @@ public class TrophyCheckService(ChallengeSettings settings) : ITrophyCheckerServ
         Console.WriteLine("Usage:");
         Console.WriteLine("  -c, -code, --challenge-code <challenge-code>   Challenge Code to check trophies. Possible values are 'AZ-900' or 'AI-900'");
         Console.WriteLine("  -u, -url, --profile-url <profile-url>          Microsoft Learn Profile URL. It MUST start with 'https://learn.microsoft.com/ko-kr/users/'");
+        Console.WriteLine("  --force-error                                  Force error");
+        Console.WriteLine("  --error-code <error-code>                      Error code. It should be 0 to 4. Default is 0.");
         Console.WriteLine("  -h, --help                                     Display help");
     }
 }

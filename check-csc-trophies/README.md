@@ -32,3 +32,9 @@
     ```bash
     dotnet run --project ./src/HackersGround.Csc.Trophies.ConsoleApp -- -c AZ-900 -u https://learn.microsoft.com/ko-kr/users/<프로필ID>
     ```
+
+1. 만약 강제로 에러를 발생시키고 싶다면 아래 명령어를 실행합니다. 숫자는 0-4 사이의 아무 숫자를 입력합니다. (0: `No challenge code`, 1: `No MS Learn Profile`, 2: `Invalid MS Learn Profile`, 3: `No trophy found`, 4: `Unknown error`)
+
+    ```bash
+    dotnet run --project ./src/HackersGround.Csc.Trophies.ConsoleApp -- -c AZ-900 -u https://learn.microsoft.com/ko-kr/users/<프로필ID> --force-error --error-code <숫자>
+    ```
