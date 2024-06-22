@@ -21,8 +21,8 @@ permissions:
   pull-requests: write
 
 jobs:
-  verification-start:
-    name: "Starting verification"
+  verification:
+    name: "Verifying CSC completion"
 
     runs-on: ubuntu-latest
 
