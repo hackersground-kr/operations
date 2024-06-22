@@ -89,17 +89,29 @@ $segments = $sections[0].Split("`n", [System.StringSplitOptions]::RemoveEmptyEnt
 
 $issue = @{}
 $issue.Add("title", $segments[1].Trim())
+$issue.title = if ($issue.title -eq "클라우드 스킬 챌린지") {
+    "Cloud Skills Challenge"
+} elseif ($issue.title -eq "팀 주제 제출") {
+    "Team Topic"
+} elseif ($issue.title -eq "팀 앱 제출") {
+    "Team App"
+} elseif ($issue.title -eq "팀 발표자료 제출") {
+    "Team Pitch"
+} else {
+    $issue.title
+}
+
 $sections | ForEach-Object {
     $segments = $_.Split("`n", [System.StringSplitOptions]::RemoveEmptyEntries)
-    if ($issue.title -eq "클라우드 스킬 챌린지") {
+    if ($issue.title -eq "Cloud Skills Challenge") {
         switch ($segments[0].Trim()) {
             "챌린지 코드" {
                 $issue.Add("challengeCode", $segments[1].Trim())
             }
-            "깃헙 프로필" {
+            "깃헙 프로필 URL" {
                 $issue.Add("githubProfile", $segments[1].Trim())
             }
-            "Microsoft Learn 프로필" {
+            "Microsoft Learn 프로필 URL" {
                 $issue.Add("microsoftLearnProfile", $segments[1].Trim())
             }
         }
@@ -116,10 +128,10 @@ $sections | ForEach-Object {
 }
 
 $issueType = switch ($issue.title) {
-    "클라우드 스킬 챌린지" { "CSC" }
-    "팀 주제 제출" { "TOPIC" }
-    "팀 앱 제출" { "APP" }
-    "팀 발표자료 제출" { "PITCH" }
+    "Cloud Skills Challenge" { "CSC" }
+    "Team Topic" { "TOPIC" }
+    "Team App" { "APP" }
+    "Team Pitch" { "PITCH" }
     default { $null }
 }
 
