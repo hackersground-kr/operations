@@ -1,7 +1,6 @@
 ﻿using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Text.Unicode;
 
 using HackersGround.Csc.Trophies.ConsoleApp.Configs;
 using HackersGround.Csc.Trophies.ConsoleApp.Models;
@@ -82,6 +81,11 @@ public class TrophyCheckService(ChallengeSettings settings) : ITrophyCheckerServ
             var titles = await page.Locator("section[id='trophies-section']")
                                    .Locator("a[class='card-content-title']")
                                    .AllAsync().ConfigureAwait(false);
+            if (titles.Any() == false)
+            {
+                throw new ArgumentException("No trophies found.");
+            }
+
             List<string> trophies = [];
             foreach (var title in titles)
             {

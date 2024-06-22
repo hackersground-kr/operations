@@ -9,6 +9,18 @@
 ## 사용법
 
 1. 이 리포지토리를 클론합니다.
+1. `check-csc-trophies` 디렉토리로 이동합니다.
+
+    ```bash
+    # bash/zsh
+    REPOSITORY_ROOT=$(git rev-parse --show-toplevel)
+    cd $REPOSITORY_ROOT/check-csc-trophies
+    
+    # PowerShell
+    $REPOSITORY_ROOT = git rev-parse --show-toplevel
+    cd $REPOSITORY_ROOT/check-csc-trophies
+    ```
+
 1. 아래 명령어를 실행하여 앱을 빌드합니다.
 
     ```bash
@@ -18,7 +30,5 @@
 1. 아래 명령어를 실행하여 앱을 실행합니다.
 
     ```bash
-    pushd ./check-csc-trophies
     dotnet run --project ./src/HackersGround.Csc.Trophies.ConsoleApp -- -c AZ-900 -u https://learn.microsoft.com/ko-kr/users/<프로필ID>
-    popd
     ```
