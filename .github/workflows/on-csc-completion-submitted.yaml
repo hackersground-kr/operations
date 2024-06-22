@@ -350,7 +350,7 @@ jobs:
 
              🔹 해커그라운드 운영진 일동 🔹
 
-      - name: Close issue - Invalid Microsoft Learn profile
+      - name: Close issue - Invalid registration details
         if: |
           steps.issue.outputs.issueType == 'CSC' &&
           steps.issue.outputs.isOverdue == 'false' &&
