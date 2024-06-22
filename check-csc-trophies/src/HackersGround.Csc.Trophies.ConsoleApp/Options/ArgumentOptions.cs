@@ -18,9 +18,19 @@ public class ArgumentOptions
     public string? MicrosoftLearnProfileUrl { get; set; }
 
     /// <summary>
+    /// Gets or sets the value indicating whether to force error or not.
+    /// </summary>
+    public bool ForceError { get; set; }
+
+    /// <summary>
+    /// Gets or sets the error code. It should be 0 to 4. Default is 0.
+    /// </summary>
+    public int? ErrorCode { get; set; }
+
+    /// <summary>
     /// Gets or sets the value indicating whether to show help or not.
     /// </summary>
-    public bool Help { get; set; } // Help 값을 저장할 변수 추가
+    public bool Help { get; set; }
 
     /// <summary>
     /// Parses the arguments and returns the <see cref="ArgumentOptions"/> instance.
@@ -56,6 +66,17 @@ public class ArgumentOptions
                     if (i < args.Length - 1)
                     {
                         options.MicrosoftLearnProfileUrl = args[++i];
+                    }
+                    break;
+
+                case "--force-error":
+                    options.ForceError = true;
+                    break;
+
+                case "--error-code":
+                    if (i < args.Length - 1)
+                    {
+                        options.ErrorCode = Convert.ToInt32(args[++i]);
                     }
                     break;
 
