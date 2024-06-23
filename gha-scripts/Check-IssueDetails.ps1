@@ -75,7 +75,8 @@ if ($eventName -eq "workflow_dispatch") {
     $title = $GitHubPayload.title
     $githubID = $GitHubPayload.user.login
     $createdAt = $GitHubPayload.created_at.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
-} else {
+}
+else {
     $IssueNumber = $GitHubPayload.event.issue.number
     $body = $GitHubPayload.event.issue.body
     $title = $GitHubPayload.event.issue.title
@@ -91,13 +92,17 @@ $issue = @{}
 $issue.Add("title", $segments[1].Trim())
 $issue.title = if ($issue.title -eq "클라우드 스킬 챌린지") {
     "Cloud Skills Challenge"
-} elseif ($issue.title -eq "팀 주제 제출") {
+}
+elseif ($issue.title -eq "팀 주제 제출") {
     "Team Topic"
-} elseif ($issue.title -eq "팀 앱 제출") {
+}
+elseif ($issue.title -eq "팀 앱 제출") {
     "Team App"
-} elseif ($issue.title -eq "팀 발표자료 제출") {
+}
+elseif ($issue.title -eq "팀 발표자료 제출") {
     "Team Pitch"
-} else {
+}
+else {
     $issue.title
 }
 
@@ -115,7 +120,8 @@ $sections | ForEach-Object {
                 $issue.Add("microsoftLearnProfile", $segments[1].Trim())
             }
         }
-    } else {
+    }
+    else {
         switch ($segments[0].Trim()) {
             "팀 이름" {
                 $issue.Add("teamName", $segments[1].Trim())
@@ -153,21 +159,21 @@ $isValidGitHubProfile = $($($issue.githubProfile).StartsWith("https://github.com
 $isValidMicrosoftLearnProfile = $($issue.microsoftLearnProfile).StartsWith("https://learn.microsoft.com/ko-kr/users/") -eq $true
 
 $result = @{
-    issueNumber = $IssueNumber;
-    issueType = $issueType;
-    createdAt = $createdAt;
-    challengeCodeUserEntered = $($issue.challengeCode).ToLowerInvariant();
-    title = $issue.title;
-    challengeCode = $issue.challengeCode;
-    isValidChallengeCode = $isValidChallengeCode;
-    githubID = $githubID;
-    githubProfile = $issue.githubProfile;
-    isValidGitHubProfile = $isValidGitHubProfile;
-    microsoftLearnProfile = $issue.microsoftLearnProfile;
+    issueNumber                  = $IssueNumber;
+    issueType                    = $issueType;
+    createdAt                    = $createdAt;
+    challengeCodeUserEntered     = $($issue.challengeCode).ToLowerInvariant(); 
+    title                        = $issue.title;
+    challengeCode                = $issue.challengeCode;
+    isValidChallengeCode         = $isValidChallengeCode;
+    githubID                     = $githubID;
+    githubProfile                = $issue.githubProfile;
+    isValidGitHubProfile         = $isValidGitHubProfile;
+    microsoftLearnProfile        = $issue.microsoftLearnProfile;
     isValidMicrosoftLearnProfile = $isValidMicrosoftLearnProfile;
-    dateSubmitted = $dateSubmittedValue;
-    dateDue = $dateDueValue;
-    isOverdue = $isOverdue;
+    dateSubmitted                = $dateSubmittedValue;
+    dateDue                      = $dateDueValue;
+    isOverdue                    = $isOverdue;
 }
 
 Write-Output $($result | ConvertTo-Json -Depth 100)
