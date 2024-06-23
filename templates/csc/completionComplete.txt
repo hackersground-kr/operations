@@ -6,11 +6,11 @@
 
 {{ CSC_CHALLENGE_CODE }} 과정을 마치고 느낀 감정이나 어려웠던 점을 공유해주시면 더욱 좋겠어요.
 
-다음 단계
+⛳️ 다음 단계
 - 클스챌 다른 주제 도전: https://github.com/hackersground-kr/hackers-ground/tree/main/csc
 - 워크샵: https://github.com/hackersground-kr/hackers-ground/tree/main/workshop
 
-궁금하다면?
+❓궁금하다면?
 faq: https://github.com/hackersground-kr/hackers-ground/tree/main/faq
 
 다음 단계도 화이팅입니다! 
