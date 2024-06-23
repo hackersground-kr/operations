@@ -131,7 +131,7 @@ jobs:
             안타깝게도 제출하신 이슈는 **마감 기한인 ${{ steps.issue.outputs.dateDue }}**을 넘겼습니다. 😭
             따라서, 이번 "기초교육 - 클라우드 스킬 챌린지" 완주에 반영할 수 없습니다.
 
-            이번 2024 해커그라운드 해커톤 본선 행사에는 참여하실 수 없지만, 다음 해커그라운드 해커톤에서는 꼭 완주하셔서 본선에서 뵈어요! 🚀
+            이번 2024 해커그라운드 해커톤 본선 행사에는 참여하실 수 없지만, 다음 해커그라운드 해커톤에서는 꼭 완주하셔서 본선에서 만나요! 🚀
 
             그동안 클라우드 스킬 챌린지 이벤트에 참여해 주셔서 감사합니다.
 
@@ -175,7 +175,7 @@ jobs:
           body: |
             👋🏼 @${{ steps.issue.outputs.githubId }} 님!
 
-            제출하신 이슈의 제목과 본문 모두 정확한 챌린지 코드를 입력해주셔야 합니다. 그렇지 않으면 확인을 할 수가 없습니다. 😱 참가자분이 입력하신 제목을 확인해주세요!
+            제출하신 이슈의 제목과 본문 모두 정확한 챌린지 코드를 입력하셔야 합니다. 그렇지 않으면 확인을 할 수가 없습니다. 😱 입력하신 제목을 확인해 주세요!
 
             * 제출 챌린지 코드: `${{ steps.issue.outputs.challengeCodeUserEntered }}`
             * 예상 챌린지 코드: `AZ-900`, `AI-900`
@@ -227,7 +227,7 @@ jobs:
           body: |
             👋🏼 @${{ steps.issue.outputs.githubId }} 님!
 
-            안타깝게도 제출하신 이슈에 포함하신 **GitHub Profile 주소**를 확인할 수 없습니다. 😱
+            안타깝게도 제출하신 **GitHub Profile 주소**를 확인할 수 없습니다. 😱
 
             * 제출 GitHub Profile: `${{ steps.issue.outputs.githubProfile }}`
 
@@ -279,7 +279,7 @@ jobs:
           body: |
             👋🏼 @${{ steps.issue.outputs.githubId }} 님!
 
-            안타깝게도 제출하신 이슈에 포함하신 **Microsoft Learn Profile 주소**를 확인할 수 없습니다. 😱
+            안타깝게도 제출하신 **Microsoft Learn Profile 주소**를 확인할 수 없습니다. 😱
 
             * 제출 Microsoft Learn Profile: `${{ steps.issue.outputs.microsoftLearnProfile }}`
 
@@ -364,9 +364,9 @@ jobs:
             * 제출 GitHub Profile: `${{ steps.issue.outputs.githubProfile }}`
             * 제출 Microsoft Learn Profile: `${{ steps.issue.outputs.microsoftLearnProfile }}`
 
-            해커톤에 등록하셨다면, 등록 정보를 확인하신 후, **새롭게 이슈를 생성**해 주세요.
+            해커톤 등록 정보를 확인하신 후, **새롭게 이슈를 생성**해 주세요.
 
-            다시 이슈를 생성했는데도 같은 문제가 발생한다면, 참가 등록부터 시작해 주세요.
+            다시 이슈를 생성했는데도 같은 문제가 발생한다면, 참가 등록 절차부터 다시 시작해 주세요.
 
             참가 등록 👉 [https://hgrd.kr/hackathon-register](https://hgrd.kr/hackathon-register)
 
