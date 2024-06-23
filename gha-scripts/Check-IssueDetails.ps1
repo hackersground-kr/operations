@@ -156,7 +156,6 @@ $result = @{
     issueNumber = $IssueNumber;
     issueType = $issueType;
     createdAt = $createdAt;
-    challengeCodeUserEntered = $($issue.challengeCode).ToLowerInvariant();
     title = $issue.title;
     challengeCode = $issue.challengeCode;
     isValidChallengeCode = $isValidChallengeCode;

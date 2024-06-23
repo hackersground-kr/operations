@@ -69,7 +69,6 @@ jobs:
           echo "issueNumber=$($result.issueNumber)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
           echo "issueType=$($result.issueType)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
           echo "createdAt=$($result.createdAt)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-          echo "challengeCodeUserEntered=$($result.challengeCodeUserEntered)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
           echo "title=$($result.title)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
           echo "challengeCode=$($result.challengeCode)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
           echo "isValidChallengeCode=$($result.isValidChallengeCode)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
@@ -88,7 +87,6 @@ jobs:
       #     echo "issue number: ${{ steps.issue.outputs.issueNumber }}"
       #     echo "issue type: ${{ steps.issue.outputs.issueType }}"
       #     echo "issue created at: ${{ steps.issue.outputs.createdAt }}"
-      #     echo "challenge code user entered: ${{ steps.issue.outputs.challengeCodeUserEntered }}"
       #     echo "title: ${{ steps.issue.outputs.title }}"
       #     echo "challenge code: ${{ steps.issue.outputs.challengeCode }}"
       #     echo "is valid challenge code: ${{ steps.issue.outputs.isValidChallengeCode }}"
@@ -177,7 +175,7 @@ jobs:
 
             제출하신 이슈의 제목과 본문 모두 정확한 챌린지 코드를 입력하셔야 합니다. 그렇지 않으면 확인을 할 수가 없습니다. 😱 입력하신 제목을 확인해 주세요!
 
-            * 제출 챌린지 코드: `${{ steps.issue.outputs.challengeCodeUserEntered }}`
+            * 제출 챌린지 코드: `${{ steps.issue.outputs.challengeCode }}`
             * 예상 챌린지 코드: `AZ-900`, `AI-900`
 
             챌린지 코드는 위에 언급한 두 가지 중 하나여야 합니다.
@@ -629,9 +627,9 @@ jobs:
           body: |
             👋🏼 @${{ steps.issue.outputs.githubId }} 님!
 
-            확인 결과 ${{ steps.issue.outputs.challengeCodeUserEntered }}의 아직 끝내지 않은 모듈이 있습니다. 😭
+            확인 결과 ${{ steps.issue.outputs.challengeCode }}의 아직 끝내지 않은 모듈이 있습니다. 😭
 
-            ${{ steps.issue.outputs.challengeCodeUserEntered }}의 모든 모듈을 완료 하신 후 이슈를 생성해주세요❗
+            ${{ steps.issue.outputs.challengeCode }}의 모든 모듈을 완료 하신 후 이슈를 생성해주세요❗
 
             이 이슈는 자동으로 닫힐 예정이니, **새롭게 이슈를 생성**해 주세요.
 
@@ -698,7 +696,7 @@ jobs:
           body: |
             👋🏼 @${{ steps.issue.outputs.githubId }} 님!
 
-            ${{ steps.issue.outputs.challengeCodeUserEntered }}의 모든 모듈을 완주하셨습니다!
+            ${{ steps.issue.outputs.challengeCode }}의 모든 모듈을 완주하셨습니다!
 
             축하드려요. 🎉🎉🎉
 
@@ -731,9 +729,9 @@ jobs:
           gh issue close ${{ steps.issue.outputs.issueNumber }} \
             -c "축하드립니다, @${{ steps.issue.outputs.githubID }}님!
 
-            ${{ steps.issue.outputs.challengeCodeUserEntered }} 과정을 완주하셨습니다!!
+            ${{ steps.issue.outputs.challengeCode }} 과정을 완주하셨습니다!!
 
-            ${{ steps.issue.outputs.challengeCodeUserEntered }} 과정을 마치고 느꼈던 감정이나 어려웠던 점을 디스코드 채널에 공유해주시면 더욱 좋겠어요.
+            ${{ steps.issue.outputs.challengeCode }} 과정을 마치고 느꼈던 감정이나 어려웠던 점을 디스코드 채널에 공유해주시면 더욱 좋겠어요.
 
             앞으로도 화이팅하세요!🎉🎉🎉💪💪💪
 
@@ -751,7 +749,7 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
         with:
-          args: "GitHub ID @${{ steps.issue.outputs.githubID }}님께서 ${{ steps.issue.outputs.challengeCodeUserEntered }} 과정을 완주하셨습니다."
+          args: "GitHub ID @${{ steps.issue.outputs.githubID }}님께서 ${{ steps.issue.outputs.challengeCode }} 과정을 완주하셨습니다."
 
       - name: Set challenge status
         if: |
@@ -788,4 +786,4 @@ jobs:
         with:
           url: ${{ secrets.PAU_ON_CSC_SUBMITTED_URL }}
           method: "POST"
-          data: '{ "githubId": "${{ steps.issue.outputs.githubID }}", "challengeCode": "${{ steps.issue.outputs.challengeCodeUserEntered }}", "challengeStatus": "${{ steps.challenge-status.outputs.value }}", "dateDue": "${{ steps.issue.outputs.dateDue }}", "dateSubmitted": "${{ steps.issue.outputs.dateSubmitted }}" }'
+          data: '{ "githubId": "${{ steps.issue.outputs.githubID }}", "challengeCode": "${{ steps.issue.outputs.challengeCode }}", "challengeStatus": "${{ steps.challenge-status.outputs.value }}", "dateDue": "${{ steps.issue.outputs.dateDue }}", "dateSubmitted": "${{ steps.issue.outputs.dateSubmitted }}" }'
