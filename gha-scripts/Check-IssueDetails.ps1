@@ -135,7 +135,7 @@ $issueType = switch ($issue.title) {
     default { $null }
 }
 
-$isValidChallengeCode = $title.Contains($issue.challengeCode)
+$isValidChallengeCode = $title.Contains($issue.challengeCode, [StringComparison]::InvariantCultureIgnoreCase)
 
 $tz = [TimeZoneInfo]::FindSystemTimeZoneById("Asia/Seoul")
 
