@@ -364,13 +364,13 @@ jobs:
             * 제출 GitHub Profile: `${{ steps.issue.outputs.githubProfile }}`
             * 제출 Microsoft Learn Profile: `${{ steps.issue.outputs.microsoftLearnProfile }}`
 
-            해커톤에 등록하셨다면, 등록 정보를 확인해주세요!
-
-            이후, 이 이슈는 자동으로 닫힐 예정이니, **새롭게 이슈를 생성**해 주세요.
+            해커톤에 등록하셨다면, 등록 정보를 확인하신 후, **새롭게 이슈를 생성**해 주세요.
 
             다시 이슈를 생성했는데도 같은 문제가 발생한다면, 참가 등록부터 시작해 주세요.
 
             참가 등록 👉 [https://hgrd.kr/hackathon-register](https://hgrd.kr/hackathon-register)
+
+            이후, 이 이슈는 자동으로 닫힐 예정입니다.
 
              🔹 해커그라운드 운영진 일동 🔹
 
@@ -751,7 +751,7 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
         with:
-          args: "GitHub ID @${{ steps.issue.outputs.githubID }}님께서 ${{ steps.issue.outputs.challengeCodeUserEntered }} 과정을 달성하셨습니다."
+          args: "GitHub ID @${{ steps.issue.outputs.githubID }}님께서 ${{ steps.issue.outputs.challengeCodeUserEntered }} 과정을 완주하셨습니다."
 
       - name: Set challenge status
         if: |
