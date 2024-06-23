@@ -12,7 +12,7 @@ on:
       error-code:
         description: "Error code. It should be between 0 and 4"
         required: false
-        default: ''
+        default: ""
 
 permissions:
   contents: read
@@ -175,9 +175,7 @@ jobs:
           body: |
             👋🏼 @${{ steps.issue.outputs.githubId }} 님!
 
-            제출하신 이슈의 제목과 본문 모두 정확한 챌린지 코드를 입력해주셔야 합니다.
-            그렇지 않으면 확인을 할 수가 없습니다. 😱 
-            참가자분이 입력하신 제목을 확인해주세요!
+            제출하신 이슈의 제목과 본문 모두 정확한 챌린지 코드를 입력해주셔야 합니다. 그렇지 않으면 확인을 할 수가 없습니다. 😱 참가자분이 입력하신 제목을 확인해주세요!
 
             * 제출 챌린지 코드: `${{ steps.issue.outputs.challengeCodeUserEntered }}`
             * 예상 챌린지 코드: `AZ-900`, `AI-900`
@@ -230,9 +228,9 @@ jobs:
             👋🏼 @${{ steps.issue.outputs.githubId }} 님!
 
             안타깝게도 제출하신 이슈에 포함하신 **GitHub Profile 주소**를 확인할 수 없습니다. 😱
-            
+
             * 제출 GitHub Profile: `${{ steps.issue.outputs.githubProfile }}`
-            
+
             다시 한 번 GitHub Profile 주소를 확인해주세요.
 
             이 이슈는 자동으로 닫힐 예정이니, **새롭게 이슈를 생성**해 주세요.
@@ -282,9 +280,9 @@ jobs:
             👋🏼 @${{ steps.issue.outputs.githubId }} 님!
 
             안타깝게도 제출하신 이슈에 포함하신 **Microsoft Learn Profile 주소**를 확인할 수 없습니다. 😱
-            
+
             * 제출 Microsoft Learn Profile: `${{ steps.issue.outputs.microsoftLearnProfile }}`
-            
+
             다시 한 번 Microsoft Learn Profile 주소를 확인해주세요.
 
             이 이슈는 자동으로 닫힐 예정이니, **새롭게 이슈를 생성**해 주세요.
@@ -304,7 +302,7 @@ jobs:
           gh issue close ${{ steps.issue.outputs.issueNumber }} \
             -c "Microsoft Learn Profile 주소를 확인할 수 없습니다. 이슈를 닫습니다." \
             -R ${{ github.event.repository.full_name }}
-      
+
       - name: Call Power Automate workflow to verify GitHub ID and MS Learn Profile ID from the registration details
         if: |
           steps.issue.outputs.issueType == 'CSC' &&
@@ -316,7 +314,7 @@ jobs:
         uses: fjogeleit/http-request-action@v1
         with:
           url: ${{ secrets.PAU_ON_REGISTRATION_VERIFICATION_REQUESTED_URL }}
-          method: 'POST'
+          method: "POST"
           data: '{ "githubProfile": "${{ steps.issue.outputs.githubProfile }}", "microsoftLearnProfile": "${{ steps.issue.outputs.microsoftLearnProfile }}" }'
 
       - name: Check registration details
@@ -362,15 +360,17 @@ jobs:
             👋🏼 @${{ steps.issue.outputs.githubId }} 님!
 
             안타깝게도 제출하신 정보로 신청한 참가자를 찾을 수 없습니다. 😱
-            
+
             * 제출 GitHub Profile: `${{ steps.issue.outputs.githubProfile }}`
             * 제출 Microsoft Learn Profile: `${{ steps.issue.outputs.microsoftLearnProfile }}`
-            
-            아직 등록하지 않으셨다면, 해커그라운드 참가 등록부터 시작해 주세요.
-            
-            참가 등록 👉 [https://hgrd.kr/hackathon-register](https://hgrd.kr/hackathon-register)
 
-            이 이슈는 자동으로 닫힐 예정이니, **새롭게 이슈를 생성**해 주세요.
+            해커톤에 등록하셨다면, 등록 정보를 확인해주세요!
+
+            이후, 이 이슈는 자동으로 닫힐 예정이니, **새롭게 이슈를 생성**해 주세요.
+
+            다시 이슈를 생성했는데도 같은 문제가 발생한다면, 참가 등록부터 시작해 주세요.
+
+            참가 등록 👉 [https://hgrd.kr/hackathon-register](https://hgrd.kr/hackathon-register)
 
              🔹 해커그라운드 운영진 일동 🔹
 
@@ -499,7 +499,7 @@ jobs:
 
             저희 쪽에서 확인하는 중에 문제가 발생했습니다❗
 
-            1~2일 내로 확인한 후 다시 알려드리겠습니다.
+            최대한 빨리 확인한 후 다시 알려드리겠습니다.
 
              🔹 해커그라운드 운영진 일동 🔹
 
@@ -526,7 +526,7 @@ jobs:
           steps.check-trophies.outputs.challengeStatus == 'FAILED'
         uses: actions-cool/issues-helper@v3
         with:
-          actions: 'add-assignees'
+          actions: "add-assignees"
           token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ steps.issue.outputs.issueNumber }}
           assignees: ${{ steps.inspector.outputs.githubId }}
@@ -568,7 +568,7 @@ jobs:
             이 이슈는 자동으로 닫힐 예정이니, **새롭게 이슈를 생성**해 주세요.
 
              🔹 해커그라운드 운영진 일동 🔹
-          
+
       - name: Remove label - INVALID
         if: |
           steps.issue.outputs.issueType == 'CSC' &&
@@ -629,14 +629,14 @@ jobs:
           body: |
             👋🏼 @${{ steps.issue.outputs.githubId }} 님!
 
-            ${{ steps.issue.outputs.challengeCodeUserEntered }}의 모든 모듈을 완주하지 않았습니다. 😭
+            확인 결과 ${{ steps.issue.outputs.challengeCodeUserEntered }}의 아직 끝내지 않은 모듈이 있습니다. 😭
 
             ${{ steps.issue.outputs.challengeCodeUserEntered }}의 모든 모듈을 완료 하신 후 이슈를 생성해주세요❗
 
             이 이슈는 자동으로 닫힐 예정이니, **새롭게 이슈를 생성**해 주세요.
 
              🔹 해커그라운드 운영진 일동 🔹
-          
+
       - name: Remove label - NOT_COMPLETED
         if: |
           steps.issue.outputs.issueType == 'CSC' &&
@@ -731,9 +731,9 @@ jobs:
           gh issue close ${{ steps.issue.outputs.issueNumber }} \
             -c "축하드립니다, @${{ steps.issue.outputs.githubID }}님!
 
-            ${{ steps.issue.outputs.challengeCodeUserEntered }} 과정을 끝내셨습니다!!
+            ${{ steps.issue.outputs.challengeCodeUserEntered }} 과정을 완주하셨습니다!!
 
-            ${{ steps.issue.outputs.challengeCodeUserEntered }} 과정을 마치고 느끼신 감정이나 어려웠던 점을 디스코드에 공유해주시면 더욱 좋겠어요.
+            ${{ steps.issue.outputs.challengeCodeUserEntered }} 과정을 마치고 느꼈던 감정이나 어려웠던 점을 디스코드 채널에 공유해주시면 더욱 좋겠어요.
 
             앞으로도 화이팅하세요!🎉🎉🎉💪💪💪
 
@@ -751,7 +751,7 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
         with:
-          args: 'GitHub ID @${{ steps.issue.outputs.githubID }}님께서 ${{ steps.issue.outputs.challengeCodeUserEntered }} 과정을 달성하셨습니다.'
+          args: "GitHub ID @${{ steps.issue.outputs.githubID }}님께서 ${{ steps.issue.outputs.challengeCodeUserEntered }} 과정을 달성하셨습니다."
 
       - name: Set challenge status
         if: |
@@ -787,5 +787,5 @@ jobs:
         uses: fjogeleit/http-request-action@v1
         with:
           url: ${{ secrets.PAU_ON_CSC_SUBMITTED_URL }}
-          method: 'POST'
-          data: '{ "githubId": "${{ steps.issue.outputs.githubID }}", "challengeCode": "${{ steps.issue.outputs.challengeCodeUserEntered }}", "challengeStatus": "${{ steps.challenge-status.outputs.value }}" ,"datedue":"${{steps.issue.outputs.dateSubmitted}}","datesubmitted":"${{steps.issue.outputs.dateDue}}" }'
+          method: "POST"
+          data: '{ "githubId": "${{ steps.issue.outputs.githubID }}", "challengeCode": "${{ steps.issue.outputs.challengeCodeUserEntered }}", "challengeStatus": "${{ steps.challenge-status.outputs.value }}", "dateDue": "${{ steps.issue.outputs.dateDue }}", "dateSubmitted": "${{ steps.issue.outputs.dateSubmitted }}" }'
