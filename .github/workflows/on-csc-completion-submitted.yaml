@@ -149,7 +149,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh issue close ${{ steps.issue.outputs.issueNumber }} \
-            -c "챌린지 제출 기한이 종료되었습니다. 이슈를 닫습니다." \
+            -c "챌린지 제출 기한이 지났습니다. 이슈를 닫습니다." \
             -R ${{ github.event.repository.full_name }}
 
       - name: Add a label - Invalid challenge code
