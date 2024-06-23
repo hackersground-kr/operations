@@ -77,8 +77,8 @@ jobs:
           echo "isValidGitHubProfile=$($result.isValidGitHubProfile)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
           echo "microsoftLearnProfile=$($result.microsoftLearnProfile)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
           echo "isValidMicrosoftLearnProfile=$($result.isValidMicrosoftLearnProfile)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-          echo "dateSubmitted=$($result.dateSubmitted)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-          echo "dateDue=$($result.dateDue)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+          echo "dateSubmitted=$($result.dateSubmitted.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"))" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+          echo "dateDue=$($result.dateDue.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"))" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
           echo "isOverdue=$($result.isOverdue)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
 
       # - name: Debug issue details
