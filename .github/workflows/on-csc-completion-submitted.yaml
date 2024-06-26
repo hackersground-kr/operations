@@ -791,4 +791,4 @@ jobs:
         with:
           url: ${{ secrets.PAU_ON_CSC_SUBMITTED_URL }}
           method: "POST"
-          data: '{ "githubId": "${{ steps.issue.outputs.githubID }}", "challengeCode": "${{ steps.issue.outputs.challengeCode }}", "challengeStatus": "${{ steps.challenge-status.outputs.value }}", "dateDue": "${{ steps.issue.outputs.dateDue }}", "dateSubmitted": "${{ steps.issue.outputs.dateSubmitted }}" }'
+          data: '{ "githubId": "${{ steps.issue.outputs.githubID }}", "challengeCode": "${{ steps.issue.outputs.challengeCode }}", "challengeStatus": "${{ steps.challenge-status.outputs.value }}", "dateDue": "${{ steps.issue.outputs.dateDue }}", "dateSubmitted": "${{ steps.issue.outputs.dateSubmitted }}", "githubProfileUrl": "${{ steps.issue.outputs.githubProfile }}", "microsoftLearnProfileUrl": "${{ steps.issue.outputs.microsoftLearnProfile }}" }'
