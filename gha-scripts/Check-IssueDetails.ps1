@@ -91,6 +91,8 @@ $issue = @{}
 $issue.Add("title", $segments[1].Trim())
 $issue.title = if ($issue.title -eq "클라우드 스킬 챌린지") {
     "Cloud Skills Challenge"
+} elseif ($issue.title -eq "사전 워크샵") {
+    "Workshop"
 } elseif ($issue.title -eq "팀 주제 제출") {
     "Team Topic"
 } elseif ($issue.title -eq "팀 앱 제출") {
@@ -108,11 +110,29 @@ $sections | ForEach-Object {
             "챌린지 코드" {
                 $issue.Add("challengeCode", $segments[1].Trim())
             }
-            "깃헙 프로필 URL" {
+            "GitHub 프로필 URL" {
                 $issue.Add("githubProfile", $segments[1].Trim())
             }
             "Microsoft Learn 프로필 URL" {
                 $issue.Add("microsoftLearnProfile", $segments[1].Trim())
+            }
+        }
+    } elseif ($issue.title -eq "사전 워크샵") {
+        switch ($segments[0].Trim()) {
+            "GitHub 프로필 URL" {
+                $issue.Add("githubProfile", $segments[1].Trim())
+            }
+            "GitHub 리포지토리 URL" {
+                $issue.Add("githubRepository", $segments[1].Trim())
+            }
+            "프론트엔드 앱 URL" {
+                $issue.Add("frontendUrl", $segments[1].Trim())
+            }
+            "백엔드 앱 URL" {
+                $issue.Add("backendUrl", $segments[1].Trim())
+            }
+            "대시보드 앱 URL" {
+                $issue.Add("dashboardUrl", $segments[1].Trim())
             }
         }
     } else {
@@ -129,6 +149,7 @@ $sections | ForEach-Object {
 
 $issueType = switch ($issue.title) {
     "Cloud Skills Challenge" { "CSC" }
+    "Workshop" { "WORKSHOP" }
     "Team Topic" { "TOPIC" }
     "Team App" { "APP" }
     "Team Pitch" { "PITCH" }
@@ -167,6 +188,9 @@ $result = @{
     dateSubmitted = $dateSubmittedValue;
     dateDue = $dateDueValue;
     isOverdue = $isOverdue;
+    frontendUrl = $issue.frontendUrl;
+    backendUrl = $issue.backendUrl;
+    dashboardUrl = $issue.dashboardUrl;
 }
 
 Write-Output $($result | ConvertTo-Json -Depth 100)

@@ -34,9 +34,9 @@ body:
 - type: input
   id: github_id
   attributes:
-    label: '깃헙 프로필 URL'
-    description: '깃헙 프로필 주소를 입력해 주세요. (예: https://github.com/hackersground-kr)'
-    placeholder: '깃헙 프로필 주소를 입력해 주세요. (예: https://github.com/hackersground-kr)'
+    label: 'GitHub 프로필 URL'
+    description: 'GitHub 프로필 주소를 입력해 주세요. (예: https://github.com/hackersground-kr)'
+    placeholder: 'GitHub 프로필 주소를 입력해 주세요. (예: https://github.com/hackersground-kr)'
   validations:
     required: true
 
