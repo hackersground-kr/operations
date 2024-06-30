@@ -28,6 +28,7 @@ function Show-Usage {
             [-IssueNumber       <GitHub issue number>] ``
             [-GitHubPayload     <GitHub event payload>] ``
             [-GitHubAccessToken <GitHub access token>] ``
+            [-DueDate           <Due date>] ``
 
             [-Help]
 
@@ -35,6 +36,7 @@ function Show-Usage {
         -IssueNumber:       GitHub issue number. If the event is 'workflow_dispatch', it must be provided.
         -GitHubPayload:     GitHub event payload.
         -GitHubAccessToken: GitHub access token. If not provided, it will look for the 'GH_TOKEN' environment variable.
+        -DueDate:           Due date.
         
         -Help:          Show this message.
 "
@@ -172,6 +174,10 @@ $dateDueValue = $dateDue.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
 
 $isValidGitHubProfile = $($($issue.githubProfile).StartsWith("https://github.com/") -eq $true) -and $($($issue.githubProfile).TrimEnd("/").EndsWith($githubID) -eq $true)
 $isValidMicrosoftLearnProfile = $($issue.microsoftLearnProfile).StartsWith("https://learn.microsoft.com/ko-kr/users/") -eq $true
+$isValidGitHubRepository = $($($issue.githubRepository).StartsWith("https://github.com/") -eq $true) -and $($($issue.githubRepository).Contains("/$gitHubID/") -eq $true)
+$isValidFrontendUrl = $($issue.frontendUrl).TrimEnd("/").EndsWith(".azurecontainerapps.io")
+$isValidBackendUrl = $($issue.backendUrl).TrimEnd("/").EndsWith(".azurecontainerapps.io")
+$isValidDashboardUrl = $($issue.dashboardUrl).TrimEnd("/").EndsWith(".azurecontainerapps.io")
 
 $result = @{
     issueNumber = $IssueNumber;
@@ -188,14 +194,23 @@ $result = @{
     dateSubmitted = $dateSubmittedValue;
     dateDue = $dateDueValue;
     isOverdue = $isOverdue;
+    githubRepository = $issue.githubRepository;
+    isValidGitHubRepository = $isValidGitHubRepository;
     frontendUrl = $issue.frontendUrl;
+    isValidFrontendUrl = $isValidFrontendUrl;
     backendUrl = $issue.backendUrl;
+    isValidBackendUrl = $isValidBackendUrl;
     dashboardUrl = $issue.dashboardUrl;
+    isValidDashboardUrl = $isValidDashboardUrl;
 }
 
 Write-Output $($result | ConvertTo-Json -Depth 100)
 
 Remove-Variable result
+Remove-Variable isValidDashboardUrl
+Remove-Variable isValidBackendUrl
+Remove-Variable isValidFrontendUrl
+Remove-Variable isValidGitHubRepository
 Remove-Variable isValidMicrosoftLearnProfile
 Remove-Variable isValidGitHubProfile
 Remove-Variable dateDueValue

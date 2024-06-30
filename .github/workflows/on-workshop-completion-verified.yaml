@@ -1,0 +1,136 @@
+name: On Workshop Completion Verified
+
+on:
+  issue_comment:
+    types:
+      - created
+
+permissions:
+  contents: read
+  id-token: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  completion:
+    name: "Completing Workshop verification"
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check event payload
+        shell: pwsh
+        run: |
+          $eventPayload = '${{ toJson(github) }}'
+
+      - name: Get workchop challenge code
+        id: workshop-challenge
+        shell: pwsh
+        run: |
+          $tz = [TimeZoneInfo]::FindSystemTimeZoneById("Asia/Seoul")
+          $today = [DateTimeOffset]::New([TimeZoneInfo]::ConvertTimeBySystemTimeZoneId((Get-Date).ToUniversalTime(), "Asia/Seoul"))
+          $workshop1 = [DateTimeOffset]::Parse("${{ vars.WORKSHOP_1_DUE_DATE }}").ToOffset($tz.GetUtcOffset($today))
+          $workshop2 = [DateTimeOffset]::Parse("${{ vars.WORKSHOP_2_DUE_DATE }}").ToOffset($tz.GetUtcOffset($today))
+          $workshop3 = [DateTimeOffset]::Parse("${{ vars.WORKSHOP_3_DUE_DATE }}").ToOffset($tz.GetUtcOffset($today))
+          $workshop4 = [DateTimeOffset]::Parse("${{ vars.WORKSHOP_4_DUE_DATE }}").ToOffset($tz.GetUtcOffset($today))
+
+          $challengeCode = if ($today -lt $workshop1) {
+            "WORKSHOP-1"
+          } elseif ($today -lt $workshop2) {
+            "WORKSHOP-2"
+          } elseif ($today -lt $workshop3) {
+            "WORKSHOP-3"
+          } elseif ($today -lt $workshop4) {
+            "WORKSHOP-4"
+          } else {
+            "UNKNOWN"
+          }
+          
+          echo "challengeCode=$challengeCode" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+
+      - name: Add label - COMPLETED
+        if: |
+          github.event.comment.user.login == github.event.issue.assignee.login &&
+          steps.workshop-challenge.outputs.challengeCode != 'UNKNOWN' &&
+          contains(github.event.comment.body, '/ok')
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue edit ${{ github.event.issue.number }} \
+          --add-label "verified" \
+          -R ${{ github.event.repository.full_name }}
+
+      - name: Comment to issue - COMPLETED
+        if: |
+          github.event.comment.user.login == github.event.issue.assignee.login &&
+          steps.workshop-challenge.outputs.challengeCode != 'UNKNOWN' &&
+          contains(github.event.comment.body, '/ok')
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: "create-comment"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.issue.number }}
+          emoji: "+1,rocket"
+          body: |
+            👋🏼 @${{ github.event.issue.user.login }}님!
+
+            사전 워크샵 과제를 완료하셨습니다!
+
+            축하드려요. 🎉🎉🎉
+
+      - name: Remove label - COMPLETED
+        if: |
+          github.event.comment.user.login == github.event.issue.assignee.login &&
+          steps.workshop-challenge.outputs.challengeCode != 'UNKNOWN' &&
+          contains(github.event.comment.body, '/ok')
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue edit ${{ github.event.issue.number }} \
+          --remove-label "verifying" \
+          -R ${{ github.event.repository.full_name }}
+
+      - name: Comment and close issue - COMPLETED
+        if: |
+          github.event.comment.user.login == github.event.issue.assignee.login &&
+          steps.workshop-challenge.outputs.challengeCode != 'UNKNOWN' &&
+          contains(github.event.comment.body, '/ok')
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue close ${{ github.event.issue.number }} \
+            -c "축하드립니다, @${{ github.event.issue.user.login }}님!
+
+            사전 워크샵 과제를 완료하셨습니다!!
+
+            사전 워크샵 과정을 마치고 느꼈던 감정이나 어려웠던 점을 디스코드 채널에 공유해주시면 더욱 좋겠어요.
+
+            앞으로도 화이팅하세요!🎉🎉🎉💪💪💪
+
+             🔹 해커그라운드 운영진 일동 🔹 " \
+            -R ${{ github.event.repository.full_name }}
+
+      - name: Post message to Discord
+        if: |
+          github.event.comment.user.login == github.event.issue.assignee.login &&
+          steps.workshop-challenge.outputs.challengeCode != 'UNKNOWN' &&
+          contains(github.event.comment.body, '/ok')
+        uses: Ilshidur/action-discord@master
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        with:
+          args: "GitHub ID @${{ github.event.issue.user.login }}님께서 사전 워크샵 과제를 완료하셨습니다."
+
+      - name: Call Power Automate workflow
+        if: |
+          github.event.comment.user.login == github.event.issue.assignee.login &&
+          steps.workshop-challenge.outputs.challengeCode != 'UNKNOWN' &&
+          contains(github.event.comment.body, '/ok')
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: ${{ secrets.PAU_ON_WORKSHOP_COMPLETED_URL }}
+          method: "POST"
+          data: '{ "githubId": "${{ github.event.issue.user.login }}", "challengeCode": "${{ steps.workshop-challenge.outputs.challengeCode }}", "challengeStatus": "COMPLETED" }'
