@@ -67,14 +67,11 @@ jobs:
             -GitHubPayload $($payload | ConvertFrom-Json)) | ConvertFrom-Json
 
           $tz = [TimeZoneInfo]::FindSystemTimeZoneById("Asia/Seoul")
-          $createdAt = [DateTimeOffset]::Parse($result.createdAt).ToOffset($tz.GetUtcOffset($result.createdAt)).ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
           $dateSubmitted = [DateTimeOffset]::Parse($result.dateSubmitted).ToOffset($tz.GetUtcOffset($result.createdAt)).ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
           $dateDue = [DateTimeOffset]::Parse($result.dateDue).ToOffset($tz.GetUtcOffset($result.createdAt)).ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
 
           echo "issueNumber=$($result.issueNumber)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
           echo "issueType=$($result.issueType)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-          echo "createdAt=$createdAt" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-          echo "title=$($result.title)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
           echo "challengeCode=$($result.challengeCode)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
           echo "isValidChallengeCode=$($result.isValidChallengeCode)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
           echo "githubID=$($result.githubID)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
@@ -89,20 +86,18 @@ jobs:
       # - name: Debug issue details
       #   shell: bash
       #   run: |
-      #     echo "issue number: ${{ steps.issue.outputs.issueNumber }}"
-      #     echo "issue type: ${{ steps.issue.outputs.issueType }}"
-      #     echo "issue created at: ${{ steps.issue.outputs.createdAt }}"
-      #     echo "title: ${{ steps.issue.outputs.title }}"
-      #     echo "challenge code: ${{ steps.issue.outputs.challengeCode }}"
-      #     echo "is valid challenge code: ${{ steps.issue.outputs.isValidChallengeCode }}"
-      #     echo "github ID: ${{ steps.issue.outputs.githubID }}"
-      #     echo "github profile: ${{ steps.issue.outputs.githubProfile }}"
-      #     echo "is valid GitHub profile: ${{ steps.issue.outputs.isValidGitHubProfile }}"
+      #     echo "Issue number: ${{ steps.issue.outputs.issueNumber }}"
+      #     echo "Issue type: ${{ steps.issue.outputs.issueType }}"
+      #     echo "Challenge code: ${{ steps.issue.outputs.challengeCode }}"
+      #     echo "Is valid challenge code: ${{ steps.issue.outputs.isValidChallengeCode }}"
+      #     echo "GitHub ID: ${{ steps.issue.outputs.githubID }}"
+      #     echo "GitHub profile: ${{ steps.issue.outputs.githubProfile }}"
+      #     echo "Is valid GitHub profile: ${{ steps.issue.outputs.isValidGitHubProfile }}"
       #     echo "Microsoft Learn profile: ${{ steps.issue.outputs.microsoftLearnProfile }}"
-      #     echo "is valid Microsoft Learn profile: ${{ steps.issue.outputs.isValidMicrosoftLearnProfile }}"
-      #     echo "date submitted: ${{ steps.issue.outputs.dateSubmitted }}"
-      #     echo "date due: ${{ steps.issue.outputs.dateDue }}"
-      #     echo "is overdue: ${{ steps.issue.outputs.isOverdue }}"
+      #     echo "Is valid Microsoft Learn profile: ${{ steps.issue.outputs.isValidMicrosoftLearnProfile }}"
+      #     echo "Date submitted: ${{ steps.issue.outputs.dateSubmitted }}"
+      #     echo "Date due: ${{ steps.issue.outputs.dateDue }}"
+      #     echo "Is overdue: ${{ steps.issue.outputs.isOverdue }}"
 
       - name: Add a label - Overdue
         if: |
@@ -318,7 +313,7 @@ jobs:
         with:
           url: ${{ secrets.PAU_ON_REGISTRATION_VERIFICATION_REQUESTED_URL }}
           method: "POST"
-          data: '{ "githubProfile": "${{ steps.issue.outputs.githubProfile }}", "microsoftLearnProfile": "${{ steps.issue.outputs.microsoftLearnProfile }}" }'
+          data: '{ "issueType": "${{ steps.issue.outputs.issueType }}", "githubProfile": "${{ steps.issue.outputs.githubProfile }}", "microsoftLearnProfile": "${{ steps.issue.outputs.microsoftLearnProfile }}" }'
 
       - name: Check registration details
         if: |
