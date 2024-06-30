@@ -10,7 +10,7 @@ on:
         description: "Issue number"
         required: true
       error-code:
-        description: "Error code. It should be between 0 and 4"
+        description: "Error code. It should be between 0 and 8"
         required: false
         default: ""
 
@@ -61,17 +61,46 @@ jobs:
           $payload = '${{ toJson(github) }}'
           $Issuenumber = "${{ github.event.inputs.issue-number }}"
 
+          $tz = [TimeZoneInfo]::FindSystemTimeZoneById("Asia/Seoul")
+
+          $today = [DateTimeOffset]::New([TimeZoneInfo]::ConvertTimeBySystemTimeZoneId((Get-Date).ToUniversalTime(), "Asia/Seoul"))
+          $workshop1 = [DateTimeOffset]::Parse("${{ vars.WORKSHOP_1_DUE_DATE }}").ToOffset($tz.GetUtcOffset($today))
+          $workshop2 = [DateTimeOffset]::Parse("${{ vars.WORKSHOP_2_DUE_DATE }}").ToOffset($tz.GetUtcOffset($today))
+          $workshop3 = [DateTimeOffset]::Parse("${{ vars.WORKSHOP_3_DUE_DATE }}").ToOffset($tz.GetUtcOffset($today))
+          $workshop4 = [DateTimeOffset]::Parse("${{ vars.WORKSHOP_4_DUE_DATE }}").ToOffset($tz.GetUtcOffset($today))
+          $dueDate = if ($today -lt $workshop1) {
+            "${{ vars.WORKSHOP_1_DUE_DATE }}"
+          } elseif ($today -lt $workshop2) {
+            "${{ vars.WORKSHOP_2_DUE_DATE }}"
+          } elseif ($today -lt $workshop3) {
+            "${{ vars.WORKSHOP_3_DUE_DATE }}"
+          } else {
+            "${{ vars.WORKSHOP_1_DUE_DATE }}"
+          }
+
           $result = $(./gha-scripts/Check-IssueDetails.ps1 `
             -IssueNumber "${{ github.event.inputs.issue-number }}" `
-            -DueDate "${{ vars.CSC_DUE_DATE }}" `
+            -DueDate "$dueDate" `
             -GitHubPayload $($payload | ConvertFrom-Json)) | ConvertFrom-Json
 
-          $tz = [TimeZoneInfo]::FindSystemTimeZoneById("Asia/Seoul")
           $dateSubmitted = [DateTimeOffset]::Parse($result.dateSubmitted).ToOffset($tz.GetUtcOffset($result.createdAt)).ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
           $dateDue = [DateTimeOffset]::Parse($result.dateDue).ToOffset($tz.GetUtcOffset($result.createdAt)).ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
 
+          $challengeCode = if ($today -lt $workshop1) {
+            "WORKSHOP-1"
+          } elseif ($today -lt $workshop2) {
+            "WORKSHOP-2"
+          } elseif ($today -lt $workshop3) {
+            "WORKSHOP-3"
+          } elseif ($today -lt $workshop4) {
+            "WORKSHOP-4"
+          } else {
+            "UNKNOWN"
+          }
+
           echo "issueNumber=$($result.issueNumber)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
           echo "issueType=$($result.issueType)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+          echo "challengeCode=$challengeCode" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
           echo "githubID=$($result.githubID)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
           echo "githubProfile=$($result.githubProfile)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
           echo "isValidGitHubProfile=$($result.isValidGitHubProfile)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
@@ -92,6 +121,7 @@ jobs:
       #   run: |
       #     echo "Issue number: ${{ steps.issue.outputs.issueNumber }}"
       #     echo "Issue type: ${{ steps.issue.outputs.issueType }}"
+      #     echo "Challenge code: ${{ steps.issue.outputs.challengeCode }}"
       #     echo "GitHub ID: ${{ steps.issue.outputs.githubID }}"
       #     echo "GitHub profile: ${{ steps.issue.outputs.githubProfile }}"
       #     echo "Is valid GitHub profile: ${{ steps.issue.outputs.isValidGitHubProfile }}"
@@ -800,88 +830,6 @@ jobs:
           issue-number: ${{ steps.issue.outputs.issueNumber }}
           assignees: ${{ steps.inspector.outputs.githubId }}
 
-      # 이 아래부터는 검증단 확인 이후 별도의 GHA workflow에서 처리
-      - name: Add label - COMPLETED
-        if: |
-          steps.issue.outputs.issueType == 'WORKSHOP' &&
-          steps.issue.outputs.isOverdue == 'false' &&
-          steps.registration-verification-result.outputs.isValidRegistration == 'true' &&
-          steps.check-workshop-challenge.outputs.challengeStatus == 'COMPLETED'
-        shell: bash
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh issue edit ${{ steps.issue.outputs.issueNumber }} \
-          --add-label "verified" \
-          -R ${{ github.event.repository.full_name }}
-
-      - name: Comment to issue - COMPLETED
-        if: |
-          steps.issue.outputs.issueType == 'WORKSHOP' &&
-          steps.issue.outputs.isOverdue == 'false' &&
-          steps.registration-verification-result.outputs.isValidRegistration == 'true' &&
-          steps.check-workshop-challenge.outputs.challengeStatus == 'COMPLETED'
-        uses: actions-cool/issues-helper@v3
-        with:
-          actions: "create-comment"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          issue-number: ${{ steps.issue.outputs.issueNumber }}
-          emoji: "+1,rocket"
-          body: |
-            👋🏼 @${{ steps.issue.outputs.githubId }} 님!
-
-            사전 워크샵 과제를 완료하셨습니다!
-
-            축하드려요. 🎉🎉🎉
-
-      - name: Remove label - COMPLETED
-        if: |
-          steps.issue.outputs.issueType == 'WORKSHOP' &&
-          steps.issue.outputs.isOverdue == 'false' &&
-          steps.registration-verification-result.outputs.isValidRegistration == 'true' &&
-          steps.check-workshop-challenge.outputs.challengeStatus == 'COMPLETED'
-        shell: bash
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh issue edit ${{ steps.issue.outputs.issueNumber }} \
-          --remove-label "verifying" \
-          -R ${{ github.event.repository.full_name }}
-
-      - name: Comment and close issue - COMPLETED
-        if: |
-          steps.issue.outputs.issueType == 'WORKSHOP' &&
-          steps.issue.outputs.isOverdue == 'false' &&
-          steps.registration-verification-result.outputs.isValidRegistration == 'true' &&
-          steps.check-workshop-challenge.outputs.challengeStatus == 'COMPLETED'
-        shell: bash
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh issue close ${{ steps.issue.outputs.issueNumber }} \
-            -c "축하드립니다, @${{ steps.issue.outputs.githubID }}님!
-
-            사전 워크샵 과제를 완료하셨습니다!!
-
-            사전 워크샵 과정을 마치고 느꼈던 감정이나 어려웠던 점을 디스코드 채널에 공유해주시면 더욱 좋겠어요.
-
-            앞으로도 화이팅하세요!🎉🎉🎉💪💪💪
-
-             🔹 해커그라운드 운영진 일동 🔹 " \
-            -R ${{ github.event.repository.full_name }}
-
-      - name: Post message to Discord
-        if: |
-          steps.issue.outputs.issueType == 'WORKSHOP' &&
-          steps.issue.outputs.isOverdue == 'false' &&
-          steps.registration-verification-result.outputs.isValidRegistration == 'true' &&
-          steps.check-workshop-challenge.outputs.challengeStatus == 'COMPLETED'
-        uses: Ilshidur/action-discord@master
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
-        with:
-          args: "GitHub ID @${{ steps.issue.outputs.githubID }}님께서 ${{ steps.issue.outputs.challengeCode }} 과정을 완주하셨습니다."
-
       - name: Set challenge status
         if: |
           steps.issue.outputs.issueType == 'WORKSHOP'
@@ -919,6 +867,6 @@ jobs:
           steps.issue.outputs.issueType == 'WORKSHOP'
         uses: fjogeleit/http-request-action@v1
         with:
-          url: ${{ secrets.PAU_ON_CSC_SUBMITTED_URL }}
+          url: ${{ secrets.PAU_ON_WORKSHOP_SUBMITTED_URL }}
           method: "POST"
           data: '{ "githubId": "${{ steps.issue.outputs.githubID }}", "challengeCode": "${{ steps.issue.outputs.challengeCode }}", "challengeStatus": "${{ steps.challenge-status.outputs.value }}", "dateDue": "${{ steps.issue.outputs.dateDue }}", "dateSubmitted": "${{ steps.issue.outputs.dateSubmitted }}", "githubProfileUrl": "${{ steps.issue.outputs.githubProfile }}", "microsoftLearnProfileUrl": "${{ steps.issue.outputs.microsoftLearnProfile }}" }'

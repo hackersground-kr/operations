@@ -28,6 +28,7 @@ function Show-Usage {
             [-IssueNumber       <GitHub issue number>] ``
             [-GitHubPayload     <GitHub event payload>] ``
             [-GitHubAccessToken <GitHub access token>] ``
+            [-DueDate           <Due date>] ``
 
             [-Help]
 
@@ -35,6 +36,7 @@ function Show-Usage {
         -IssueNumber:       GitHub issue number. If the event is 'workflow_dispatch', it must be provided.
         -GitHubPayload:     GitHub event payload.
         -GitHubAccessToken: GitHub access token. If not provided, it will look for the 'GH_TOKEN' environment variable.
+        -DueDate:           Due date.
         
         -Help:          Show this message.
 "
