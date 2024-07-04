@@ -173,11 +173,31 @@ $dateSubmittedValue = $dateSubmitted.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
 $dateDueValue = $dateDue.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
 
 $isValidGitHubProfile = $($($issue.githubProfile).StartsWith("https://github.com/") -eq $true) -and $($($issue.githubProfile).TrimEnd("/").EndsWith($githubID) -eq $true)
-$isValidMicrosoftLearnProfile = $($issue.microsoftLearnProfile).StartsWith("https://learn.microsoft.com/ko-kr/users/") -eq $true
-$isValidGitHubRepository = $($($issue.githubRepository).StartsWith("https://github.com/") -eq $true) -and $($($issue.githubRepository).Contains("/$gitHubID/") -eq $true)
-$isValidFrontendUrl = $($issue.frontendUrl).TrimEnd("/").EndsWith(".azurecontainerapps.io")
-$isValidBackendUrl = $($issue.backendUrl).TrimEnd("/").EndsWith(".azurecontainerapps.io")
-$isValidDashboardUrl = $($issue.dashboardUrl).TrimEnd("/").EndsWith(".azurecontainerapps.io")
+$isValidMicrosoftLearnProfile = if ($issueType -eq "CSC") {
+    $($issue.microsoftLearnProfile).StartsWith("https://learn.microsoft.com/ko-kr/users/") -eq $true
+} else {
+    $false
+}
+$isValidGitHubRepository = if ($issueType -eq "WORKSHOP") {
+    $($($issue.githubRepository).StartsWith("https://github.com/") -eq $true) -and $($($issue.githubRepository).Contains("/$gitHubID/") -eq $true)
+} else {
+    $false
+}
+$isValidFrontendUrl = if ($issueType -eq "WORKSHOP") {
+    $($($issue.frontendUrl).StartsWith("https://")) -and $($($issue.frontendUrl).TrimEnd("/").EndsWith(".azurecontainerapps.io"))
+ } else {
+    $false
+}
+$isValidBackendUrl = if ($issueType -eq "WORKSHOP") {
+    $($($issue.backendUrl).StartsWith("https://")) -and $($($issue.backendUrl).TrimEnd("/").EndsWith(".azurecontainerapps.io"))
+} else {
+    $false
+}
+$isValidDashboardUrl = if ($issueType -eq "WORKSHOP") {
+    $($($issue.dashboardUrl).StartsWith("https://")) -and $($($issue.dashboardUrl).TrimEnd("/").EndsWith(".azurecontainerapps.io"))
+} else {
+    $false
+}
 
 $result = @{
     issueNumber = $IssueNumber;
