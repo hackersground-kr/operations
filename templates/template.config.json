@@ -1,16 +1,20 @@
 {
   "registration": {
     "confirmed": "registration/registrationConfirmed",
+    "validOnlyMobile" : "registration/validOnlyMobile",
     "error": "registration/registrationError"
   },
   "csc": {
     "dailyCheckIn": "csc/dailyCheckIn",
-    "submitted": "csc/completionSubmitted",
     "overdue": "csc/completionOverdue",
-    "invalidChallengeCode": "csc/completionInvalidChallengeCode",
+    "invalidChallengeCode": "csc/invalidChallengeCode",
     "complete": "csc/completionComplete",
     "incomplete": "csc/completionIncomplete",
     "error": "csc/completionError",
+    "invalidGitHubProfile" : "csc/invalidGithubProfile",
+    "invalidMSLearnProfile" : "csc/invalidMicrosoftLearnProfile",
+    "registrationNotFound" : "csc/registrationNotFound",
+    "invalidInput" : "csc/invalidInput",
     "wrapUp": "csc/wrapUp"
   },
   "workshop": {
