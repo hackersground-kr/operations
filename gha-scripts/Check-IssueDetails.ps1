@@ -119,8 +119,7 @@ $sections | ForEach-Object {
                 $issue.Add("microsoftLearnProfile", $segments[1].Trim())
             }
         }
-    }
-    elseif ($issue.title -eq "사전 워크샵") {
+    } elseif ($issue.title -eq "사전 워크샵") {
         switch ($segments[0].Trim()) {
             "GitHub 프로필 URL" {
                 $issue.Add("githubProfile", $segments[1].Trim())
