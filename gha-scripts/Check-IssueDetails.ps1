@@ -73,7 +73,6 @@ if (($eventName -eq "workflow_dispatch") -and ([string]::IsNullOrWhiteSpace($acc
 
 if ($eventName -eq "workflow_dispatch") {
     $GitHubPayload = $(gh api /repos/$($GitHubPayload.repository)/issues/$IssueNumber | ConvertFrom-Json)
-    Write-Host "$GitHubPayload"
     $body = $GitHubPayload.body
     $title = $GitHubPayload.title
     $githubID = $GitHubPayload.user.login
@@ -216,28 +215,28 @@ else {
 }
 
 $result = @{
-    issueNumber                  = $IssueNumber;
-    issueType                    = $issueType;
-    createdAt                    = $createdAt;
-    title                        = $issue.title;
-    challengeCode                = $issue.challengeCode;
-    isValidChallengeCode         = $isValidChallengeCode;
-    githubID                     = $githubID;
-    githubProfile                = $issue.githubProfile;
-    isValidGitHubProfile         = $isValidGitHubProfile;
-    microsoftLearnProfile        = $issue.microsoftLearnProfile;
+    issueNumber = $IssueNumber;
+    issueType = $issueType;
+    createdAt = $createdAt;
+    title = $issue.title;
+    challengeCode = $issue.challengeCode;
+    isValidChallengeCode = $isValidChallengeCode;
+    githubID = $githubID;
+    githubProfile = $issue.githubProfile;
+    isValidGitHubProfile = $isValidGitHubProfile;
+    microsoftLearnProfile = $issue.microsoftLearnProfile;
     isValidMicrosoftLearnProfile = $isValidMicrosoftLearnProfile;
-    dateSubmitted                = $dateSubmittedValue;
-    dateDue                      = $dateDueValue;
-    isOverdue                    = $isOverdue;
-    githubRepository             = $issue.githubRepository;
-    isValidGitHubRepository      = $isValidGitHubRepository;
-    frontendUrl                  = $issue.frontendUrl;
-    isValidFrontendUrl           = $isValidFrontendUrl;
-    backendUrl                   = $issue.backendUrl;
-    isValidBackendUrl            = $isValidBackendUrl;
-    dashboardUrl                 = $issue.dashboardUrl;
-    isValidDashboardUrl          = $isValidDashboardUrl;
+    dateSubmitted = $dateSubmittedValue;
+    dateDue = $dateDueValue;
+    isOverdue = $isOverdue;
+    githubRepository = $issue.githubRepository;
+    isValidGitHubRepository = $isValidGitHubRepository;
+    frontendUrl = $issue.frontendUrl;
+    isValidFrontendUrl = $isValidFrontendUrl;
+    backendUrl = $issue.backendUrl;
+    isValidBackendUrl = $isValidBackendUrl;
+    dashboardUrl = $issue.dashboardUrl;
+    isValidDashboardUrl = $isValidDashboardUrl;
 }
 
 Write-Output $($result | ConvertTo-Json -Depth 100)

@@ -48,7 +48,7 @@ jobs:
             -AccessTokenIDs "${{ vars.ACCESS_TOKEN_IDS }}" `
             -ApimBaseUrl "${{ vars.APIM_BASE_URL }}" `
             -ApimApiKey "${{ secrets.APIM_SUBSCRIPTION_KEY }}"
-          
+
           echo "::add-mask::$token"
           echo "token=$token" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8
 
@@ -525,7 +525,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh issue edit ${{ steps.issue.outputs.issueNumber }} \
-            --add-label "csc,${{ steps.issue.outputs.challengeCode }},verifying" \
+            --add-label "workshop,verifying" \
             -R ${{ github.event.repository.full_name }}
 
       - name: Comment to issue - Acknowledge
@@ -822,4 +822,4 @@ jobs:
         with:
           url: ${{ secrets.PAU_ON_WORKSHOP_SUBMITTED_URL }}
           method: "POST"
-          data: '{ "githubId": "${{ steps.issue.outputs.githubID }}", "challengeCode": "${{ steps.issue.outputs.challengeCode }}", "challengeStatus": "${{ steps.challenge-status.outputs.value }}", "dateDue": "${{ steps.issue.outputs.dateDue }}", "dateSubmitted": "${{ steps.issue.outputs.dateSubmitted }}", "githubProfileUrl": "${{ steps.issue.outputs.githubProfile }}", "microsoftLearnProfileUrl": "${{ steps.issue.outputs.microsoftLearnProfile }}" }'
+          data: '{ "githubId": "${{ steps.issue.outputs.githubID }}", "challengeStatus": "${{ steps.challenge-status.outputs.value }}", "dateDue": "${{ steps.issue.outputs.dateDue }}", "dateSubmitted": "${{ steps.issue.outputs.dateSubmitted }}", "githubProfileUrl": "${{ steps.issue.outputs.githubProfile }}", "frontendUrl": "${{ steps.issue.outputs.frontendUrl }}", "backendUrl": "${{ steps.issue.outputs.backendUrl }}", "dashboardUrl": "${{ steps.issue.outputs.dashboardUrl }}" }'
