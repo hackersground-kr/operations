@@ -822,4 +822,4 @@ jobs:
         with:
           url: ${{ secrets.PAU_ON_WORKSHOP_SUBMITTED_URL }}
           method: "POST"
-          data: '{ "githubId": "${{ steps.issue.outputs.githubID }}", "challengeStatus": "${{ steps.challenge-status.outputs.value }}", "dateDue": "${{ steps.issue.outputs.dateDue }}", "dateSubmitted": "${{ steps.issue.outputs.dateSubmitted }}", "githubProfileUrl": "${{ steps.issue.outputs.githubProfile }}", "frontendUrl": "${{ steps.issue.outputs.frontendUrl }}", "backendUrl": "${{ steps.issue.outputs.backendUrl }}", "dashboardUrl": "${{ steps.issue.outputs.dashboardUrl }}" }'
+          data: '{ "githubId": "${{ steps.issue.outputs.githubID }}", "challengeStatus": "${{ steps.challenge-status.outputs.value }}", "dateDue": "${{ steps.issue.outputs.dateDue }}", "dateSubmitted": "${{ steps.issue.outputs.dateSubmitted }}", "githubProfileUrl": "${{ steps.issue.outputs.githubProfile }}", "frontendUrl": "${{ steps.issue.outputs.frontendUrl }}", "backendUrl": "${{ steps.issue.outputs.backendUrl }}", "dashboardUrl": "${{ steps.issue.outputs.dashboardUrl }}", "githubRepository": "${{ steps.issue.outputs.githubRepository }}" }'

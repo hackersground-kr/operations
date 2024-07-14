@@ -23,36 +23,61 @@ jobs:
         run: |
           $eventPayload = '${{ toJson(github) }}'
 
-      - name: Get workchop challenge code
-        id: workshop-challenge
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get GitHub access token
+        id: github-connect
         shell: pwsh
         run: |
-          $tz = [TimeZoneInfo]::FindSystemTimeZoneById("Asia/Seoul")
-          $today = [DateTimeOffset]::New([TimeZoneInfo]::ConvertTimeBySystemTimeZoneId((Get-Date).ToUniversalTime(), "Asia/Seoul"))
-          $workshop1 = [DateTimeOffset]::Parse("${{ vars.WORKSHOP_1_DUE_DATE }}").ToOffset($tz.GetUtcOffset($today))
-          $workshop2 = [DateTimeOffset]::Parse("${{ vars.WORKSHOP_2_DUE_DATE }}").ToOffset($tz.GetUtcOffset($today))
-          $workshop3 = [DateTimeOffset]::Parse("${{ vars.WORKSHOP_3_DUE_DATE }}").ToOffset($tz.GetUtcOffset($today))
-          $workshop4 = [DateTimeOffset]::Parse("${{ vars.WORKSHOP_4_DUE_DATE }}").ToOffset($tz.GetUtcOffset($today))
+          $token = ./gha-scripts/Get-GitHubAccessToken.ps1 `
+            -AccessTokenIDs "${{ vars.ACCESS_TOKEN_IDS }}" `
+            -ApimBaseUrl "${{ vars.APIM_BASE_URL }}" `
+            -ApimApiKey "${{ secrets.APIM_SUBSCRIPTION_KEY }}"
 
-          $challengeCode = if ($today -lt $workshop1) {
-            "WORKSHOP-1"
-          } elseif ($today -lt $workshop2) {
-            "WORKSHOP-2"
-          } elseif ($today -lt $workshop3) {
-            "WORKSHOP-3"
-          } elseif ($today -lt $workshop4) {
-            "WORKSHOP-4"
-          } else {
-            "UNKNOWN"
-          }
-          
+          echo "::add-mask::$token"
+          echo "token=$token" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8
+
+      - name: Check issue details
+        id: issue
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ steps.github-connect.outputs.token }}
+        run: |
+          $payload = '${{ toJson(github) }}'
+          $Issuenumber = "${{ github.event.inputs.issue-number }}"
+
+          $result = $(./gha-scripts/Check-IssueDetails.ps1 `
+            -IssueNumber "${{ github.event.inputs.issue-number }}" `
+            -DueDate "${{ vars.WORKSHOP_DUE_DATE }}" `
+            -GitHubPayload $($payload | ConvertFrom-Json)) | ConvertFrom-Json
+
+          $tz = [TimeZoneInfo]::FindSystemTimeZoneById("Asia/Seoul")
+          $dateSubmitted = [DateTimeOffset]::Parse($result.dateSubmitted).ToOffset($tz.GetUtcOffset($result.createdAt)).ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
+          $dateDue = [DateTimeOffset]::Parse($result.dateDue).ToOffset($tz.GetUtcOffset($result.createdAt)).ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
+
+          echo "issueNumber=$($result.issueNumber)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+          echo "issueType=$($result.issueType)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
           echo "challengeCode=$challengeCode" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+          echo "githubID=$($result.githubID)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+          echo "githubProfile=$($result.githubProfile)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+          echo "isValidGitHubProfile=$($result.isValidGitHubProfile)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+          echo "githubRepository=$($result.githubRepository)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+          echo "isValidGitHubRepository=$($result.isValidGitHubRepository)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+          echo "frontendUrl=$($result.frontendUrl)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+          echo "isValidFrontendUrl=$($result.isValidFrontendUrl)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+          echo "backendUrl=$($result.backendUrl)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+          echo "isValidBackendUrl=$($result.isValidBackendUrl)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+          echo "dashboardUrl=$($result.dashboardUrl)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+          echo "isValidDashboardUrl=$($result.isValidDashboardUrl)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+          echo "dateSubmitted=$dateSubmitted" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+          echo "dateDue=$dateDue" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+          echo "isOverdue=$($result.isOverdue)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
 
       - name: Add label - COMPLETED
         if: |
           github.event.comment.user.login == github.event.issue.assignee.login &&
-          steps.workshop-challenge.outputs.challengeCode != 'UNKNOWN' &&
-          contains(github.event.comment.body, '/ok')
+          contains(github.event.comment.body, '/approve')
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -64,8 +89,7 @@ jobs:
       - name: Comment to issue - COMPLETED
         if: |
           github.event.comment.user.login == github.event.issue.assignee.login &&
-          steps.workshop-challenge.outputs.challengeCode != 'UNKNOWN' &&
-          contains(github.event.comment.body, '/ok')
+          contains(github.event.comment.body, '/approve')
         uses: actions-cool/issues-helper@v3
         with:
           actions: "create-comment"
@@ -82,8 +106,7 @@ jobs:
       - name: Remove label - COMPLETED
         if: |
           github.event.comment.user.login == github.event.issue.assignee.login &&
-          steps.workshop-challenge.outputs.challengeCode != 'UNKNOWN' &&
-          contains(github.event.comment.body, '/ok')
+          contains(github.event.comment.body, '/approve')
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -95,8 +118,7 @@ jobs:
       - name: Comment and close issue - COMPLETED
         if: |
           github.event.comment.user.login == github.event.issue.assignee.login &&
-          steps.workshop-challenge.outputs.challengeCode != 'UNKNOWN' &&
-          contains(github.event.comment.body, '/ok')
+          contains(github.event.comment.body, '/approve')
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -116,8 +138,7 @@ jobs:
       - name: Post message to Discord
         if: |
           github.event.comment.user.login == github.event.issue.assignee.login &&
-          steps.workshop-challenge.outputs.challengeCode != 'UNKNOWN' &&
-          contains(github.event.comment.body, '/ok')
+          contains(github.event.comment.body, '/approve')
         uses: Ilshidur/action-discord@master
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
@@ -127,10 +148,9 @@ jobs:
       - name: Call Power Automate workflow
         if: |
           github.event.comment.user.login == github.event.issue.assignee.login &&
-          steps.workshop-challenge.outputs.challengeCode != 'UNKNOWN' &&
-          contains(github.event.comment.body, '/ok')
+          contains(github.event.comment.body, '/approve')
         uses: fjogeleit/http-request-action@v1
         with:
           url: ${{ secrets.PAU_ON_WORKSHOP_COMPLETED_URL }}
           method: "POST"
-          data: '{ "githubId": "${{ github.event.issue.user.login }}", "challengeCode": "${{ steps.workshop-challenge.outputs.challengeCode }}", "challengeStatus": "COMPLETED" }'
+          data: '{ "githubId": "${{ github.event.issue.user.login }}", "challengeStatus": "COMPLETED", "githubprofile": "${{ steps.issue.outputs.githubProfile }}", "githubrepository": "${{ steps.issue.outputs.githubRepository }}", "frontendurl": "${{ steps.issue.outputs.frontendUrl }}", "backendurl": "${{ steps.issue.outputs.backendUrl }}", "dashboardurl": "${{ steps.issue.outputs.dashboardUrl }}" }'
