@@ -72,8 +72,8 @@ if (($eventName -eq "workflow_dispatch") -and ([string]::IsNullOrWhiteSpace($acc
 }
 
 if ($eventName -eq "workflow_dispatch") {
-    Write-Host "$GitHubPayload"
     $GitHubPayload = $(gh api /repos/$($GitHubPayload.repository)/issues/$IssueNumber | ConvertFrom-Json)
+    Write-Host "$GitHubPayload"
     $body = $GitHubPayload.body
     $title = $GitHubPayload.title
     $githubID = $GitHubPayload.user.login
