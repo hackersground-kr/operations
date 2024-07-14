@@ -48,7 +48,7 @@ jobs:
             -AccessTokenIDs "${{ vars.ACCESS_TOKEN_IDS }}" `
             -ApimBaseUrl "${{ vars.APIM_BASE_URL }}" `
             -ApimApiKey "${{ secrets.APIM_SUBSCRIPTION_KEY }}"
-
+          Write_Host "GitHub access token: $token"
           echo "::add-mask::$token"
           echo "token=$token" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8
 
