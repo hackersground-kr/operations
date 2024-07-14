@@ -180,6 +180,7 @@ $isValidMicrosoftLearnProfile = if ($issueType -eq "CSC") {
     $false
 }
 $isValidGitHubRepository = if ($issueType -eq "WORKSHOP") {
+    $issue.githubRepository = $issue.githubRepository.Split('?')[0]
     $($($issue.githubRepository).StartsWith("https://github.com/") -eq $true) -and $($($issue.githubRepository).Contains("/$gitHubID/") -eq $true)
 } else {
     $false

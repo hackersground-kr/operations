@@ -61,42 +61,14 @@ jobs:
           $payload = '${{ toJson(github) }}'
           $Issuenumber = "${{ github.event.inputs.issue-number }}"
 
-          $tz = [TimeZoneInfo]::FindSystemTimeZoneById("Asia/Seoul")
-
-          $today = [DateTimeOffset]::New([TimeZoneInfo]::ConvertTimeBySystemTimeZoneId((Get-Date).ToUniversalTime(), "Asia/Seoul"))
-          $workshop1 = [DateTimeOffset]::Parse("${{ vars.WORKSHOP_1_DUE_DATE }}").ToOffset($tz.GetUtcOffset($today))
-          $workshop2 = [DateTimeOffset]::Parse("${{ vars.WORKSHOP_2_DUE_DATE }}").ToOffset($tz.GetUtcOffset($today))
-          $workshop3 = [DateTimeOffset]::Parse("${{ vars.WORKSHOP_3_DUE_DATE }}").ToOffset($tz.GetUtcOffset($today))
-          $workshop4 = [DateTimeOffset]::Parse("${{ vars.WORKSHOP_4_DUE_DATE }}").ToOffset($tz.GetUtcOffset($today))
-          $dueDate = if ($today -lt $workshop1) {
-            "${{ vars.WORKSHOP_1_DUE_DATE }}"
-          } elseif ($today -lt $workshop2) {
-            "${{ vars.WORKSHOP_2_DUE_DATE }}"
-          } elseif ($today -lt $workshop3) {
-            "${{ vars.WORKSHOP_3_DUE_DATE }}"
-          } else {
-            "${{ vars.WORKSHOP_1_DUE_DATE }}"
-          }
-
           $result = $(./gha-scripts/Check-IssueDetails.ps1 `
             -IssueNumber "${{ github.event.inputs.issue-number }}" `
-            -DueDate "$dueDate" `
+            -DueDate "${{ vars.WORKSHOP_DUE_DATE }}" `
             -GitHubPayload $($payload | ConvertFrom-Json)) | ConvertFrom-Json
 
+          $tz = [TimeZoneInfo]::FindSystemTimeZoneById("Asia/Seoul")
           $dateSubmitted = [DateTimeOffset]::Parse($result.dateSubmitted).ToOffset($tz.GetUtcOffset($result.createdAt)).ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
           $dateDue = [DateTimeOffset]::Parse($result.dateDue).ToOffset($tz.GetUtcOffset($result.createdAt)).ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
-
-          $challengeCode = if ($today -lt $workshop1) {
-            "WORKSHOP-1"
-          } elseif ($today -lt $workshop2) {
-            "WORKSHOP-2"
-          } elseif ($today -lt $workshop3) {
-            "WORKSHOP-3"
-          } elseif ($today -lt $workshop4) {
-            "WORKSHOP-4"
-          } else {
-            "UNKNOWN"
-          }
 
           echo "issueNumber=$($result.issueNumber)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
           echo "issueType=$($result.issueType)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
@@ -472,7 +444,7 @@ jobs:
         id: registration-verification
         uses: fjogeleit/http-request-action@v1
         with:
-          url: ${{ secrets.PAU_ON_REGISTRATION_VERIFICATION_REQUESTED_URL }}
+          url: ${{ secrets.PAU_ON_REGISTRATION_VERIFICATION_REQUESTED_URL_HOL }}
           method: "POST"
           data: '{ "issueType": "${{ steps.issue.outputs.issueType }}", "githubProfile": "${{ steps.issue.outputs.githubProfile }}" }'
 
@@ -588,25 +560,6 @@ jobs:
         run: |
           $errorCode = "${{ github.event.inputs.error-code }}"
           $forceError = if ($errorCode -eq '') { $false } else { $true }
-
-          $tz = [TimeZoneInfo]::FindSystemTimeZoneById("Asia/Seoul")
-          $today = [DateTimeOffset]::New([TimeZoneInfo]::ConvertTimeBySystemTimeZoneId((Get-Date).ToUniversalTime(), "Asia/Seoul"))
-          $workshop1 = [DateTimeOffset]::Parse("${{ vars.WORKSHOP_1_DUE_DATE }}").ToOffset($tz.GetUtcOffset($today))
-          $workshop2 = [DateTimeOffset]::Parse("${{ vars.WORKSHOP_2_DUE_DATE }}").ToOffset($tz.GetUtcOffset($today))
-          $workshop3 = [DateTimeOffset]::Parse("${{ vars.WORKSHOP_3_DUE_DATE }}").ToOffset($tz.GetUtcOffset($today))
-          $workshop4 = [DateTimeOffset]::Parse("${{ vars.WORKSHOP_4_DUE_DATE }}").ToOffset($tz.GetUtcOffset($today))
-
-          $challengeCode = if ($today -lt $workshop1) {
-            "WORKSHOP-1"
-          } elseif ($today -lt $workshop2) {
-            "WORKSHOP-2"
-          } elseif ($today -lt $workshop3) {
-            "WORKSHOP-3"
-          } elseif ($today -lt $workshop4) {
-            "WORKSHOP-4"
-          } else {
-            "UNKNOWN"
-          }
 
           pushd ./check-workshop-challenge
 

@@ -1,6 +1,6 @@
 name: On CSC Completion Submitted
 
-on:
+on: 
   issues:
     types:
       - opened
