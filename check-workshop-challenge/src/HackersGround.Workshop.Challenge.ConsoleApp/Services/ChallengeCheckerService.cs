@@ -183,7 +183,7 @@ public class ChallengeCheckerService(HttpClient http, ILogger<ChallengeCheckerSe
         await page.Locator("input[id='question']").FillAsync(QUESTION).ConfigureAwait(false);
         await page.Locator("button[id='ask']").ClickAsync().ConfigureAwait(false);
 
-        await page.WaitForTimeoutAsync(90000).ConfigureAwait(false);
+        await page.WaitForTimeoutAsync(180000).ConfigureAwait(false);
 
         var answer = await page.Locator("textarea[id='result']").TextContentAsync().ConfigureAwait(false);
         if (string.IsNullOrWhiteSpace(answer) == true)
