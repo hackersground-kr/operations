@@ -61,14 +61,20 @@ jobs:
           $payload = '${{ toJson(github) }}'
           $Issuenumber = "${{ github.event.inputs.issue-number }}"
 
+          $tz = [TimeZoneInfo]::FindSystemTimeZoneById("Asia/Seoul")
+
+          $today = [DateTimeOffset]::New([TimeZoneInfo]::ConvertTimeBySystemTimeZoneId((Get-Date).ToUniversalTime(), "Asia/Seoul"))
+          $workshop = [DateTimeOffset]::Parse("${{ vars.WORKSHOP_DUE_DATE }}").ToOffset($tz.GetUtcOffset($today))
+
           $result = $(./gha-scripts/Check-IssueDetails.ps1 `
             -IssueNumber "${{ github.event.inputs.issue-number }}" `
             -DueDate "${{ vars.WORKSHOP_DUE_DATE }}" `
             -GitHubPayload $($payload | ConvertFrom-Json)) | ConvertFrom-Json
 
-          $tz = [TimeZoneInfo]::FindSystemTimeZoneById("Asia/Seoul")
           $dateSubmitted = [DateTimeOffset]::Parse($result.dateSubmitted).ToOffset($tz.GetUtcOffset($result.createdAt)).ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
           $dateDue = [DateTimeOffset]::Parse($result.dateDue).ToOffset($tz.GetUtcOffset($result.createdAt)).ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
+
+          $challengeCode = "WORKSHOP"
 
           echo "issueNumber=$($result.issueNumber)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
           echo "issueType=$($result.issueType)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
