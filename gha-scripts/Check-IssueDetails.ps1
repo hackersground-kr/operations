@@ -187,7 +187,7 @@ $isValidGitHubRepository = if ($issueType -eq "WORKSHOP") {
 }
 $isValidFrontendUrl = if ($issueType -eq "WORKSHOP") {
     $($($issue.frontendUrl).StartsWith("https://")) -and $($($issue.frontendUrl).TrimEnd("/").EndsWith(".azurecontainerapps.io"))
-} else {
+ } else {
     $false
 }
 $isValidBackendUrl = if ($issueType -eq "WORKSHOP") {
