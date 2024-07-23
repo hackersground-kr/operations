@@ -44,35 +44,10 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.github-connect.outputs.token }}
         run: |
-          $payload = '${{ toJson(github) }}'
-          $Issuenumber = "${{ github.event.inputs.issue-number }}"
 
-          $result = $(./gha-scripts/Check-IssueDetails.ps1 `
-            -IssueNumber "${{ github.event.inputs.issue-number }}" `
-            -DueDate "${{ vars.WORKSHOP_DUE_DATE }}" `
-            -GitHubPayload $($payload | ConvertFrom-Json)) | ConvertFrom-Json
+          $challengeCode = "WORKSHOP"
 
-          $tz = [TimeZoneInfo]::FindSystemTimeZoneById("Asia/Seoul")
-          $dateSubmitted = [DateTimeOffset]::Parse($result.dateSubmitted).ToOffset($tz.GetUtcOffset($result.createdAt)).ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
-          $dateDue = [DateTimeOffset]::Parse($result.dateDue).ToOffset($tz.GetUtcOffset($result.createdAt)).ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
-
-          echo "issueNumber=$($result.issueNumber)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-          echo "issueType=$($result.issueType)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
           echo "challengeCode=$challengeCode" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-          echo "githubID=$($result.githubID)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-          echo "githubProfile=$($result.githubProfile)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-          echo "isValidGitHubProfile=$($result.isValidGitHubProfile)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-          echo "githubRepository=$($result.githubRepository)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-          echo "isValidGitHubRepository=$($result.isValidGitHubRepository)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-          echo "frontendUrl=$($result.frontendUrl)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-          echo "isValidFrontendUrl=$($result.isValidFrontendUrl)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-          echo "backendUrl=$($result.backendUrl)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-          echo "isValidBackendUrl=$($result.isValidBackendUrl)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-          echo "dashboardUrl=$($result.dashboardUrl)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-          echo "isValidDashboardUrl=$($result.isValidDashboardUrl)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-          echo "dateSubmitted=$dateSubmitted" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-          echo "dateDue=$dateDue" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-          echo "isOverdue=$($result.isOverdue)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
 
       - name: Add label - COMPLETED
         if: |

@@ -86,7 +86,7 @@ public class ChallengeCheckerService(HttpClient http, ILogger<ChallengeCheckerSe
 
             if (options.ChallengeCode == ChallengeCodeType.Undefined)
             {
-                throw new ArgumentException("No challenge code identified. It MUST be WORKSHOP-1, WORKSHOP-2, WORKSHOP-3 or WORKSHOP-4.");
+                throw new ArgumentException("No challenge code identified. It MUST be WORKSHOP.");
             }
 
             if (string.IsNullOrWhiteSpace(options.FrontendAppUrl) == true)
@@ -183,7 +183,7 @@ public class ChallengeCheckerService(HttpClient http, ILogger<ChallengeCheckerSe
         await page.Locator("input[id='question']").FillAsync(QUESTION).ConfigureAwait(false);
         await page.Locator("button[id='ask']").ClickAsync().ConfigureAwait(false);
 
-        await page.WaitForTimeoutAsync(90000).ConfigureAwait(false);
+        await page.WaitForTimeoutAsync(180000).ConfigureAwait(false);
 
         var answer = await page.Locator("textarea[id='result']").TextContentAsync().ConfigureAwait(false);
         if (string.IsNullOrWhiteSpace(answer) == true)

@@ -7,7 +7,10 @@ var host = Host.CreateDefaultBuilder(args)
                .UseConsoleLifetime()
                .ConfigureServices(services =>
                {
-                   services.AddHttpClient<IChallengeCheckerService, ChallengeCheckerService>();
+                   services.AddHttpClient<IChallengeCheckerService, ChallengeCheckerService>(p =>
+                   {
+                       p.Timeout = TimeSpan.FromSeconds(240);
+                   });
                })
                .Build();
 
