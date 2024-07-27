@@ -31,7 +31,7 @@ public interface IChallengeCheckerService
 /// <param name="logger"><see cref="ILogger{TCategoryName}"/> instance.</param>
 public class ChallengeCheckerService(HttpClient http, ILogger<ChallengeCheckerService> logger) : IChallengeCheckerService
 {
-    private const string QUESTION = "give me all the songs by aespa";
+    private const string YOUTUBELINK = "https://youtu.be/NN4Zzp-vOrU";
 
     private readonly HttpClient _http = http ?? throw new ArgumentNullException(nameof(http));
     private readonly ILogger<ChallengeCheckerService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -40,7 +40,7 @@ public class ChallengeCheckerService(HttpClient http, ILogger<ChallengeCheckerSe
 
     private static readonly List<Exception> exceptions = new()
     {
-        new ArgumentException("TEST: No challenge code identified. It MUST be WORKSHOP-1, WORKSHOP-2, WORKSHOP-3 or WORKSHOP-4."),
+        new ArgumentException("TEST: No challenge code identified. It MUST be 'WORKSHOP'."),
         new ArgumentException("TEST: No frontend app URL."),
         new ArgumentException("TEST: No backend app URL."),
         new ArgumentException("TEST: No dashboard app URL."),
@@ -86,7 +86,7 @@ public class ChallengeCheckerService(HttpClient http, ILogger<ChallengeCheckerSe
 
             if (options.ChallengeCode == ChallengeCodeType.Undefined)
             {
-                throw new ArgumentException("No challenge code identified. It MUST be WORKSHOP-1, WORKSHOP-2, WORKSHOP-3 or WORKSHOP-4.");
+                throw new ArgumentException("No challenge code identified. It MUST be WORKSHOP.");
             }
 
             if (string.IsNullOrWhiteSpace(options.FrontendAppUrl) == true)
@@ -180,10 +180,12 @@ public class ChallengeCheckerService(HttpClient http, ILogger<ChallengeCheckerSe
 
         await page.WaitForTimeoutAsync(5000).ConfigureAwait(false);
 
-        await page.Locator("input[id='question']").FillAsync(QUESTION).ConfigureAwait(false);
-        await page.Locator("button[id='ask']").ClickAsync().ConfigureAwait(false);
+        await page.Locator("input[id='youtube-link']").FillAsync(YOUTUBELINK).ConfigureAwait(false);
+        await page.Locator("select[id='video-language-code']").SelectOptionAsync("English").ConfigureAwait(false);
+        await page.Locator("select[id='summary-language-code']").SelectOptionAsync("Korean").ConfigureAwait(false);
+        await page.Locator("button[id='summary']").ClickAsync().ConfigureAwait(false);
 
-        await page.WaitForTimeoutAsync(180000).ConfigureAwait(false);
+        await page.WaitForTimeoutAsync(50000).ConfigureAwait(false);
 
         var answer = await page.Locator("textarea[id='result']").TextContentAsync().ConfigureAwait(false);
         if (string.IsNullOrWhiteSpace(answer) == true)
@@ -191,39 +193,31 @@ public class ChallengeCheckerService(HttpClient http, ILogger<ChallengeCheckerSe
             return ChallengeStatusType.Invalid;
         }
 
-        answer = answer.Split(new[] { "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries).First();
-        var segments = answer.Split(new[] { "|" }, StringSplitOptions.RemoveEmptyEntries);
-
-        var result = segments.Length == 4
+        var result = string.IsNullOrWhiteSpace(answer) == false
                         ? ChallengeStatusType.Completed
                         : ChallengeStatusType.NotCompleted;
 
         //this._logger.LogInformation($"Frontend app checked: {result}");
-
         return result;
     }
 
     private async Task<ChallengeStatusType> CheckBackendAppAsync(ArgumentOptions options)
     {
-        var content = new StringContent(
-            JsonSerializer.Serialize(new { question = QUESTION }, jso),
-            Encoding.UTF8,
-            "application/json");
-        var response = await _http.PostAsync($"{options.BackendAppUrl!.TrimEnd('/')}/melonchart", content).ConfigureAwait(false);
+
+        var response = await _http.GetAsync($"{options.BackendAppUrl!.TrimEnd('/')}/weatherforecast").ConfigureAwait(false);
         var answer = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-        answer = answer.Split(new[] { "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries).First();
-        var segments = answer.Split(new[] { "|" }, StringSplitOptions.RemoveEmptyEntries);
+
+        var weatherData = JsonSerializer.Deserialize<List<WeatherForecast>>(answer);
 
         var result = response.IsSuccessStatusCode
-                        ? segments.Length == 4
-                            ? ChallengeStatusType.Completed
-                            : ChallengeStatusType.NotCompleted
-                        : response.StatusCode < HttpStatusCode.InternalServerError
-                            ? ChallengeStatusType.Invalid
-                            : ChallengeStatusType.Failed;
+            ? (weatherData?.Count == 5
+                ? ChallengeStatusType.Completed
+                : ChallengeStatusType.NotCompleted)
+            : (response.StatusCode == HttpStatusCode.InternalServerError
+                ? ChallengeStatusType.Invalid
+                : ChallengeStatusType.Failed);
 
         //this._logger.LogInformation($"Backend app checked: {result}");
-
         return result;
     }
 
@@ -242,10 +236,18 @@ public class ChallengeCheckerService(HttpClient http, ILogger<ChallengeCheckerSe
         return result;
     }
 
+    public class WeatherForecast
+    {
+        public DateTime Date { get; set; }
+        public int TemperatureC { get; set; }
+        public string Summary { get; set; }
+        public int TemperatureF { get; set; }
+    }
+
     private void DisplayHelp()
     {
         Console.WriteLine("Usage:");
-        Console.WriteLine("  -c, -code, --challenge-code <challenge-code>   Challenge Code to check the workshop challenge. Possible values are 'WORKSHOP-1', 'WORKSHOP-2', 'WORKSHOP-3' or 'WORKSHOP-4'");
+        Console.WriteLine("  -c, -code, --challenge-code <challenge-code>   Challenge Code to check the workshop challenge. Possible values are 'WORKSHOP'");
         Console.WriteLine("  -f, --frontend-url <frontend-url>              Frontend app URL. It MUST end with '.azurecontainerapps.io'");
         Console.WriteLine("  -b, --backend-url <backend-url>                Backend app URL. It MUST end with '.azurecontainerapps.io'");
         Console.WriteLine("  -d, --dashboard-url <dashboard-url>            Frontend app URL. It MUST end with '.azurecontainerapps.io'");
