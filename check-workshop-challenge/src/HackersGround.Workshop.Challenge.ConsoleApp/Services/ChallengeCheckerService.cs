@@ -185,7 +185,7 @@ public class ChallengeCheckerService(HttpClient http, ILogger<ChallengeCheckerSe
         await page.Locator("select[id='summary-language-code']").SelectOptionAsync("Korean").ConfigureAwait(false);
         await page.Locator("button[id='summary']").ClickAsync().ConfigureAwait(false);
 
-        await page.WaitForTimeoutAsync(50000).ConfigureAwait(false);
+        await page.WaitForTimeoutAsync(180000).ConfigureAwait(false);
 
         var answer = await page.Locator("textarea[id='result']").TextContentAsync().ConfigureAwait(false);
         if (string.IsNullOrWhiteSpace(answer) == true)
