@@ -59,7 +59,7 @@ jobs:
           GH_TOKEN: ${{ steps.github-connect.outputs.token }}
         run: |
           $payload = '${{ toJson(github) }}'
-          Write_Host "Payload: $payload"
+
           $Issuenumber = "${{ github.event.inputs.issue-number }}"
 
           $result = $(./gha-scripts/Check-IssueDetails.ps1 `
