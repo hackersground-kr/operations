@@ -597,7 +597,7 @@ jobs:
               -b ${{ steps.issue.outputs.backendUrl }} `
               -d ${{ steps.issue.outputs.dashboardUrl }}
 
-              $result= $result[$result.IndexOf("{")..$($result.Length-1)] | ConvertFrom-Json
+            $result= $result[$result.IndexOf("{")..$($result.Length-1)] | ConvertFrom-Json
           }
 
           echo "challengeCode=$($result.challengeCode)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
