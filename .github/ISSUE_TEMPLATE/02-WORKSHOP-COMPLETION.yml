@@ -1,6 +1,6 @@
 name: '사전 워크샵 과제 완료 인증'
 description: '사전 워크샵 과제 완료 인증용 템플릿'
-title: '사전 워크샵 과제 완료 인증'
+title: "사전 워크샵 과제 완료 인증"
 
 body:
 - type: markdown
