@@ -556,16 +556,29 @@ jobs:
 
             🔹 해커그라운드 운영진 일동 🔹
 
+      - name: Debug issue details
+        shell: bash
+        run: |
+          echo "Challenge code: ${{ steps.issue.outputs.challengeCode }}"
+          echo "Frontend app URL: ${{ steps.issue.outputs.frontendUrl }}"
+          echo "Backend app URL: ${{ steps.issue.outputs.backendUrl }}"
+          echo "Dashboard app URL: ${{ steps.issue.outputs.dashboardUrl }}"
+
       - name: Check workshop challenge
         if: |
           steps.issue.outputs.issueType == 'WORKSHOP' &&
           steps.issue.outputs.isOverdue == 'false' &&
           steps.registration-verification-result.outputs.isValidRegistration == 'true'
         id: check-workshop-challenge
+        step: verification
         shell: pwsh
         run: |
+
           $errorCode = "${{ github.event.inputs.error-code }}"
           $forceError = if ($errorCode -eq '') { $false } else { $true }
+
+          echo "errorCode = ${{ github.event.inputs.error-code }}"
+          echo "forceerror = "$forceError"
 
           pushd ./check-workshop-challenge
 
@@ -587,7 +600,6 @@ jobs:
               --error-code $errorCode 
             
             $result= $result[$result.IndexOf("{")..$($result.Length-1)] | ConvertFrom-Json
-
           } else {
             $result = dotnet run `
               --project ./src/HackersGround.Workshop.Challenge.ConsoleApp `
@@ -600,11 +612,17 @@ jobs:
             $result= $result[$result.IndexOf("{")..$($result.Length-1)] | ConvertFrom-Json
           }
 
+          echo "result=$result" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
           echo "challengeCode=$($result.challengeCode)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
           echo "challengeStatus=$($result.challengeStatus)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
           echo "challengeMessage=$($result.message)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
 
           popd
+
+      - name: Debug issue details
+        shell: bash
+        run: |
+          echo "Challenge code: ${{ steps.verification.outputs.result }}"
 
       - name: Add label - FAILED
         if: |
