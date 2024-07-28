@@ -570,7 +570,7 @@ jobs:
           steps.issue.outputs.isOverdue == 'false' &&
           steps.registration-verification-result.outputs.isValidRegistration == 'true'
         id: check-workshop-challenge
-        step: verification
+        steps: verification
         shell: pwsh
         run: |
 
