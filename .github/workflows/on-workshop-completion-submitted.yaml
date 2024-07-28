@@ -94,26 +94,26 @@ jobs:
           echo "dateDue=$dateDue" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
           echo "isOverdue=$($result.isOverdue)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
 
-       - name: Debug issue details
-         shell: bash
-         run: |
-           echo "Issue number: ${{ steps.issue.outputs.issueNumber }}"
-           echo "Issue type: ${{ steps.issue.outputs.issueType }}"
-           echo "Challenge code: ${{ steps.issue.outputs.challengeCode }}"
-           echo "GitHub ID: ${{ steps.issue.outputs.githubID }}"
-           echo "GitHub profile: ${{ steps.issue.outputs.githubProfile }}"
-           echo "Is valid GitHub profile: ${{ steps.issue.outputs.isValidGitHubProfile }}"
-           echo "GitHub repository: ${{ steps.issue.outputs.githubRepository }}"
-           echo "Is valid GitHub repository: ${{ steps.issue.outputs.isValidGitHubRepository }}"
-           echo "Frontend app URL: ${{ steps.issue.outputs.frontendUrl }}"
-           echo "Is valid frontend app URL: ${{ steps.issue.outputs.isValidFrontendUrl }}"
-           echo "Backend app URL: ${{ steps.issue.outputs.backendUrl }}"
-           echo "is valid backend app URL: ${{ steps.issue.outputs.isValidBackendUrl }}"
-           echo "Dashboard app URL: ${{ steps.issue.outputs.dashboardUrl }}"
-           echo "Is valid dashboard app URL: ${{ steps.issue.outputs.isValidDashboardUrl }}"
-           echo "Date submitted: ${{ steps.issue.outputs.dateSubmitted }}"
-           echo "Date due: ${{ steps.issue.outputs.dateDue }}"
-           echo "Is overdue: ${{ steps.issue.outputs.isOverdue }}"
+      - name: Debug issue details
+        shell: bash
+        run: |
+          echo "Issue number: ${{ steps.issue.outputs.issueNumber }}"
+          echo "Issue type: ${{ steps.issue.outputs.issueType }}"
+          echo "Challenge code: ${{ steps.issue.outputs.challengeCode }}"
+          echo "GitHub ID: ${{ steps.issue.outputs.githubID }}"
+          echo "GitHub profile: ${{ steps.issue.outputs.githubProfile }}"
+          echo "Is valid GitHub profile: ${{ steps.issue.outputs.isValidGitHubProfile }}"
+          echo "GitHub repository: ${{ steps.issue.outputs.githubRepository }}"
+          echo "Is valid GitHub repository: ${{ steps.issue.outputs.isValidGitHubRepository }}"
+          echo "Frontend app URL: ${{ steps.issue.outputs.frontendUrl }}"
+          echo "Is valid frontend app URL: ${{ steps.issue.outputs.isValidFrontendUrl }}"
+          echo "Backend app URL: ${{ steps.issue.outputs.backendUrl }}"
+          echo "is valid backend app URL: ${{ steps.issue.outputs.isValidBackendUrl }}"
+          echo "Dashboard app URL: ${{ steps.issue.outputs.dashboardUrl }}"
+          echo "Is valid dashboard app URL: ${{ steps.issue.outputs.isValidDashboardUrl }}"
+          echo "Date submitted: ${{ steps.issue.outputs.dateSubmitted }}"
+          echo "Date due: ${{ steps.issue.outputs.dateDue }}"
+          echo "Is overdue: ${{ steps.issue.outputs.isOverdue }}"
 
       - name: Add a label - Overdue
         if: |
