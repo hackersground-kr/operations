@@ -46,7 +46,9 @@ jobs:
         run: |
 
           $challengeCode = "WORKSHOP"
+          $commentbody = ${{ github.event.comment.body }}
 
+          echo "comment body = $commentbody"
           echo "challengeCode=$challengeCode" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
 
       - name: Add label - COMPLETED
