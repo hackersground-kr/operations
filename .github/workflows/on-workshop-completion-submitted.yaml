@@ -607,7 +607,7 @@ jobs:
               -f ${{ steps.issue.outputs.frontendUrl }} `
               -b ${{ steps.issue.outputs.backendUrl }} `
               -d ${{ steps.issue.outputs.dashboardUrl }}
-
+            echo "result=$result"
             $result= $result[$result.IndexOf("{")..$($result.Length-1)] | ConvertFrom-Json
           }
 
@@ -621,7 +621,7 @@ jobs:
       - name: Debug issue details
         shell: bash
         run: |
-          echo "Challenge code: ${{ steps.check-workshop-challenge.outputs.result }}"
+          echo "result: ${{ steps.check-workshop-challenge.outputs.result }}"
 
       - name: Add label - FAILED
         if: |
