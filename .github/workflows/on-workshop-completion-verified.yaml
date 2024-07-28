@@ -46,15 +46,13 @@ jobs:
         run: |
 
           $challengeCode = "WORKSHOP"
-          $commentbody = ${{ github.event.comment.body }}
 
-          echo "comment body = $commentbody"
           echo "challengeCode=$challengeCode" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
 
       - name: Add label - COMPLETED
         if: |
           github.event.comment.user.login == github.event.issue.assignee.login &&
-          contains(github.event.comment.body, '/approve')
+          contains(${{ github.event.comment.body }}, "/approve")
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
