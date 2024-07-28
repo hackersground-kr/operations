@@ -608,7 +608,7 @@ jobs:
               -b ${{ steps.issue.outputs.backendUrl }} `
               -d ${{ steps.issue.outputs.dashboardUrl }}
 
-            echo "result= $result"
+            echo "$result"
 
             #$result= $result[$result.IndexOf("{")..$($result.Length-1)] | ConvertFrom-Json
           }
