@@ -570,7 +570,6 @@ jobs:
           steps.issue.outputs.isOverdue == 'false' &&
           steps.registration-verification-result.outputs.isValidRegistration == 'true'
         id: check-workshop-challenge
-        steps: verification
         shell: pwsh
         run: |
 
@@ -622,7 +621,7 @@ jobs:
       - name: Debug issue details
         shell: bash
         run: |
-          echo "Challenge code: ${{ steps.verification.outputs.result }}"
+          echo "Challenge code: ${{ steps.check-workshop-challenge.outputs.result }}"
 
       - name: Add label - FAILED
         if: |
