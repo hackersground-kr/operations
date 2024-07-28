@@ -577,7 +577,7 @@ jobs:
           $forceError = if ($errorCode -eq '') { $false } else { $true }
 
           echo "errorCode = ${{ github.event.inputs.error-code }}"
-          echo "forceerror = "$forceError"
+          echo "forceerror = $forceError"
 
           pushd ./check-workshop-challenge
 
@@ -608,7 +608,7 @@ jobs:
               -b ${{ steps.issue.outputs.backendUrl }} `
               -d ${{ steps.issue.outputs.dashboardUrl }}
 
-            echo "$result"
+            echo "result = $result"
 
             #$result= $result[$result.IndexOf("{")..$($result.Length-1)] | ConvertFrom-Json
           }
