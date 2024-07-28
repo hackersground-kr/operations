@@ -575,9 +575,7 @@ jobs:
 
           $errorCode = "${{ github.event.inputs.error-code }}"
           $forceError = if ($errorCode -eq '') { $false } else { $true }
-
-          echo "errorCode = ${{ github.event.inputs.error-code }}"
-          echo "forceerror = $forceError"
+          $challengeCode = "${{ steps.issue.outputs.challengeCode }}"
 
           pushd ./check-workshop-challenge
 
@@ -608,9 +606,8 @@ jobs:
               -b ${{ steps.issue.outputs.backendUrl }} `
               -d ${{ steps.issue.outputs.dashboardUrl }}
 
+            $result= $result[$result.IndexOf("{")..$($result.Length-1)] | ConvertFrom-Json
             echo "result = $result"
-
-            #$result= $result[$result.IndexOf("{")..$($result.Length-1)] | ConvertFrom-Json
           }
 
           echo "result=$result" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
