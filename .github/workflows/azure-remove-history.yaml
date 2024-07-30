@@ -1,9 +1,8 @@
 name: Remove history from Azure Subscription
 
 on:
-  # schedule:
-  #   - cron: "0 */3 * * *"
-
+  schedule:
+    - cron: "0 */3 * * *"
 
 permissions:
   contents: read
@@ -42,7 +41,7 @@ jobs:
         with:
           client-id: ${{ steps.variables.outputs.client_id }}
           tenant-id: ${{ steps.variables.outputs.tenant_id }}
-          subscription-id : ${{ steps.variables.outputs.subscription_id }}}
+          subscription-id: ${{ steps.variables.outputs.subscription_id }}}
 
       - name: Remove history
         shell: pwsh
