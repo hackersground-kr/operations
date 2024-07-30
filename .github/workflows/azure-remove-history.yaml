@@ -27,20 +27,21 @@ jobs:
         id: variables
         shell: pwsh
         run: |
-          $client_secret=${{ secrets.AZM_CLIENT_SECRET }}
-          echo "::add-mask::$client_secret"
-
           echo "client_id=${{ vars.AZM_CLIENT_ID }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8
-          echo "client_secret=$client_secret" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8
           echo "tenant_id=${{ vars.AZM_TENANT_ID }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8
           echo "subscription_id=${{ vars.AZM_SUBSCRIPTION_ID }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8
 
       - name: Azure CLI script
-        uses: azure/cli@v2
+        uses: azure/login@v2
+        env:
+          AZURE_CLIENT_ID: ${{ steps.variables.outputs.client_id }}
+          AZURE_TENANT_ID: ${{ steps.variables.outputs.tenant_id }}
+          AZURE_SUBSCRIPTION_ID: ${{ steps.variables.outputs.subscription_id }}
         with:
-          azcliversion: latest
-          inlineScript: |
-            az login --service-principal -u ${{ steps.variables.outputs.client-id }} -p ${{ steps.variables.outputs.client-secret }} --tenant ${{ steps.variables.outputs.tenant-id }}
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+          enable-AzPSSession: true
 
       - name: Remove history
         shell: pwsh
