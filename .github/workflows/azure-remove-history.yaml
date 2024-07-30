@@ -1,6 +1,9 @@
 name: Remove history from Azure Subscription
 
 on:
+  push:
+    branches:
+      - azure-history-remove
   schedule:
     - cron: "0 */3 * * *"
 
@@ -11,26 +14,41 @@ permissions:
   pull-requests: write
 
 jobs:
-  remove deployment history:
+  remove_deployment_history:
     name: Removing deployment history from Azure Subscription
 
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Check date
+        id: check_date
+        run: |
+          current_date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          start_date="2023-08-09T00:00:00Z"
+          end_date="2023-08-09T00:00:00Z"
+          if [[ "$current_date" < "$start_date" || "$current_date" > "$end_date" ]]; then
+            echo "Current date is outside the allowed range. Exiting."
+            exit 0
+          fi
+
       - name: Set environment variables
         id: variables
-        shell: pwsh
         run: |
-          echo "client_id= ${{ vars.AZM_CLIENT_ID }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-          echo "tenant_id= ${{ vars.AZM_TENANT_ID }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-          echo "subscription_id= ${{ vars.AZURE_SUBSCRIPTION_ID }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+          echo "client_id=${{ secrets.AZURE_CLIENT_ID }}" >> $GITHUB_ENV
+          echo "client_secret=${{ secrets.AZURE_CLIENT_SECRET }}" >> $GITHUB_ENV
+          echo "tenant_id=${{ secrets.AZURE_TENANT_ID }}" >> $GITHUB_ENV
+          echo "subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" >> $GITHUB_ENV
 
       - name: Azure Login
-        uses: azure/cli@v1
+        uses: azure/azure-cli@v1
         with:
-          client-id: ${{ steps.variables.outputs.client_id }}
-          tenant-id: ${{ steps.variables.outputs.tenant_id }}
-          subscription-id: ${{ steps.variables.outputs.subscription_id }}}
+          azcliversion: 2.0.72
+        run: |
+          az login --service-principal -u ${{ env.client_id }} -p ${{ env.client_secret }} --tenant ${{ env.tenant_id }}
+          az account set --subscription ${{ env.subscription_id }}
 
       - name: Remove history
         shell: pwsh
