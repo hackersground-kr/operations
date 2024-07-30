@@ -37,6 +37,7 @@ jobs:
           az login --service-principal -u ${{ steps.variables.outputs.client_id }} --tenant ${{ steps.variables.outputs.tenant_id }}
           az account set --subscription ${{ steps.variables.outputs.subscription_id }}
 
+
       - name: Remove history
         shell: pwsh
         run: |
