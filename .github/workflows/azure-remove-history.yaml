@@ -33,10 +33,9 @@ jobs:
 
       - name: Azure Login
         uses: azure/azure-cli@v1
-        shell: pwsh
-        run: |
-          az login --service-principal -u ${{ steps.varibles.outputs.client_id }} --tenant ${{ steps.varibles.outputs.tenant_id }}
-          az account set --subscription ${{ steps.varibles.outputs.subscription_id }}
+        with:
+          az login --service-principal -u ${{ steps.variables.outputs.client_id }} --tenant ${{ steps.variables.outputs.tenant_id }}
+          az account set --subscription ${{ steps.variables.outputs.subscription_id }}
 
       - name: Remove history
         shell: pwsh
