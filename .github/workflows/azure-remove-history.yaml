@@ -11,8 +11,8 @@ permissions:
   pull-requests: write
 
 jobs:
-  removeing:
-    name: Removing history from Azure Subscription
+  remove deployment history:
+    name: Removing deployment history from Azure Subscription
 
     runs-on: ubuntu-latest
 
