@@ -1,8 +1,8 @@
 name: Remove history from Azure Subscription
 
 on:
-  schedule:
-    - cron: "0 */3 * * *"
+  # schedule:
+  #   - cron: "0 */3 * * *"
   workflow_dispatch:
     inputs:
       issue-number:
@@ -16,7 +16,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  remove:
+  removeing:
     name: Removing history from Azure Subscription
 
     runs-on: ubuntu-latest
