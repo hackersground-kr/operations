@@ -142,10 +142,10 @@ public class ChallengeCheckerService(HttpClient http, ILogger<ChallengeCheckerSe
             }
 
             payload.ChallengeStatus = (frontend == ChallengeStatusType.Completed &&
-                       backend == ChallengeStatusType.Completed &&
-                       dashboard == ChallengeStatusType.Completed)
-                                        ? ChallengeStatusType.Completed
-                                        : ChallengeStatusType.NotCompleted;
+                                       backend == ChallengeStatusType.Completed &&
+                                       dashboard == ChallengeStatusType.Completed)
+                ? ChallengeStatusType.Completed
+                : ChallengeStatusType.NotCompleted;
 
             payload.Message = payload.ChallengeStatus == ChallengeStatusType.Completed
                 ? "Workshop challenge completed"
