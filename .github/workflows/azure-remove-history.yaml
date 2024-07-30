@@ -38,9 +38,15 @@ jobs:
       - name: Azure Login
         uses: azure/azure-cli@v1
         with:
-          az login --service-principal -u ${{ steps.variables.outputs.client_id }} --tenant ${{ steps.variables.outputs.tenant_id }}
-          az account set --subscription ${{ steps.variables.outputs.subscription_id }}
-
+          azcliversion: 2.0.72
+        env:
+          AZURE_CLIENT_ID: ${{ steps.variables.outputs.client_id }}
+          AZURE_CLIENT_SECRET: ${{ steps.variables.outputs.client_secret }}
+          AZURE_TENANT_ID: ${{ steps.variables.outputs.tenant_id }}
+          AZURE_SUBSCRIPTION_ID: ${{ steps.variables.outputs.subscription_id }}
+        run: |
+          az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
+          az account set --subscription $AZURE_SUBSCRIPTION_ID
 
       - name: Remove history
         shell: pwsh
