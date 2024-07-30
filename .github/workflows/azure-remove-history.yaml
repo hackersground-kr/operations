@@ -9,6 +9,12 @@ on:
         description: "Issue number"
         required: false
 
+permissions:
+  contents: read
+  id-token: write
+  issues: write
+  pull-requests: write
+
 jobs:
   remove:
     name: Removing history from Azure Subscription
