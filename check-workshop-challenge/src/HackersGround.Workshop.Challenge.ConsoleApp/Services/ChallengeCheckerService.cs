@@ -111,10 +111,12 @@ public class ChallengeCheckerService(HttpClient http, ILogger<ChallengeCheckerSe
                 throw new ArgumentException("Invalid app URL. It MUST end with '.azurecontainerapps.io'.");
             }
 
+            ChallengeStatusType result = default;
             // Check frontend app
             //this._logger.LogInformation($"Verifying frontend app...");
 
             var frontend = await this.CheckFrontendAppAsync(options);
+            this._logger.LogInformation($"Frontend app: {frontend}");
             if (frontend == ChallengeStatusType.Invalid)
             {
                 throw new ArgumentException("No frontend app found.");
@@ -124,6 +126,7 @@ public class ChallengeCheckerService(HttpClient http, ILogger<ChallengeCheckerSe
             //this._logger.LogInformation($"Verifying backend app...");
 
             var backend = await this.CheckBackendAppAsync(options);
+            this._logger.LogInformation($"Backend app: {frontend}");
             if (backend == ChallengeStatusType.Invalid)
             {
                 throw new ArgumentException("No backend app found.");
@@ -133,16 +136,17 @@ public class ChallengeCheckerService(HttpClient http, ILogger<ChallengeCheckerSe
             //this._logger.LogInformation($"Verifying dashboard app...");
 
             var dashboard = await this.CheckDashboardAppAsync(options);
+            this._logger.LogInformation($"Dashboard app: {frontend}");
             if (dashboard == ChallengeStatusType.Invalid)
             {
                 throw new ArgumentException("No dashboard app found.");
             }
 
             payload.ChallengeStatus = (frontend == ChallengeStatusType.Completed &&
-                                       backend == ChallengeStatusType.Completed &&
-                                       dashboard == ChallengeStatusType.Completed)
-                ? ChallengeStatusType.Completed
-                : ChallengeStatusType.NotCompleted;
+                       backend == ChallengeStatusType.Completed &&
+                       dashboard == ChallengeStatusType.Completed)
+                                        ? ChallengeStatusType.Completed
+                                        : ChallengeStatusType.NotCompleted;
 
             payload.Message = payload.ChallengeStatus == ChallengeStatusType.Completed
                 ? "Workshop challenge completed"
@@ -154,6 +158,14 @@ public class ChallengeCheckerService(HttpClient http, ILogger<ChallengeCheckerSe
         {
             payload.ChallengeCode = options.ChallengeCode.GetValueOrDefault();
             payload.ChallengeStatus = ChallengeStatusType.Invalid;
+            payload.Message = ex.Message;
+
+            Console.WriteLine(JsonSerializer.Serialize(payload, jso));
+        }
+        catch (TimeoutException ex)
+        {
+            payload.ChallengeCode = options.ChallengeCode.GetValueOrDefault();
+            payload.ChallengeStatus = ChallengeStatusType.NotCompleted;
             payload.Message = ex.Message;
 
             Console.WriteLine(JsonSerializer.Serialize(payload, jso));
@@ -188,11 +200,6 @@ public class ChallengeCheckerService(HttpClient http, ILogger<ChallengeCheckerSe
         await page.WaitForTimeoutAsync(90000).ConfigureAwait(false);
 
         var answer = await page.Locator("textarea[id='result']").TextContentAsync().ConfigureAwait(false);
-        if (string.IsNullOrWhiteSpace(answer) == true)
-        {
-            return ChallengeStatusType.Invalid;
-        }
-
         var result = string.IsNullOrWhiteSpace(answer) == false
                         ? ChallengeStatusType.Completed
                         : ChallengeStatusType.NotCompleted;
@@ -224,8 +231,8 @@ public class ChallengeCheckerService(HttpClient http, ILogger<ChallengeCheckerSe
     private async Task<ChallengeStatusType> CheckDashboardAppAsync(ArgumentOptions options)
     {
         var response = await _http.GetAsync(options.DashboardAppUrl!).ConfigureAwait(false);
-        
-        
+
+
         var result = response.IsSuccessStatusCode
             ? ChallengeStatusType.Completed
             : response.StatusCode < HttpStatusCode.InternalServerError
