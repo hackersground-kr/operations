@@ -22,21 +22,12 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
-
-      - name: Set environment variables
-        id: variables
-        shell: pwsh
-        run: |
-          echo "client_id=${{ vars.AZM_CLIENT_ID }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8
-          echo "tenant_id=${{ vars.AZM_TENANT_ID }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8
-          echo "subscription_id=${{ vars.AZM_SUBSCRIPTION_ID }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8
-
       - name: Azure CLI script
         uses: azure/login@v2
         env:
-          AZURE_CLIENT_ID: ${{ steps.variables.outputs.client_id }}
-          AZURE_TENANT_ID: ${{ steps.variables.outputs.tenant_id }}
-          AZURE_SUBSCRIPTION_ID: ${{ steps.variables.outputs.subscription_id }}
+          AZURE_CLIENT_ID: ${{ vars.AZM_CLIENT_ID }}
+          AZURE_TENANT_ID: ${{ vars.AZM_TENANT_ID }}
+          AZURE_SUBSCRIPTION_ID: ${{ vars.AZM_SUBSCRIPTION_ID }}
         with:
           client-id: ${{ env.AZURE_CLIENT_ID }}
           tenant-id: ${{ env.AZURE_TENANT_ID }}
