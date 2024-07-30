@@ -111,7 +111,6 @@ public class ChallengeCheckerService(HttpClient http, ILogger<ChallengeCheckerSe
                 throw new ArgumentException("Invalid app URL. It MUST end with '.azurecontainerapps.io'.");
             }
 
-            ChallengeStatusType result = default;
             // Check frontend app
             //this._logger.LogInformation($"Verifying frontend app...");
 
