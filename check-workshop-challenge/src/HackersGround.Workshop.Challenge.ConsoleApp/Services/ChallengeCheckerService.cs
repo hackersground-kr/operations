@@ -168,8 +168,7 @@ public class ChallengeCheckerService(HttpClient http, ILogger<ChallengeCheckerSe
             payload.ChallengeStatus = ChallengeStatusType.NotCompleted;
             payload.Message = ex.Message;
 
-            string jsonOutput = JsonSerializer.Serialize(payload, jso).Replace("\n", "").Replace("\r", "");
-            Console.WriteLine(jsonOutput);
+            Console.WriteLine(JsonSerializer.Serialize(payload, jso));
         }
         catch (Exception ex)
         {
