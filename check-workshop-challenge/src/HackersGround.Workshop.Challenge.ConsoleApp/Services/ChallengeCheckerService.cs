@@ -166,7 +166,7 @@ public class ChallengeCheckerService(HttpClient http, ILogger<ChallengeCheckerSe
         {
             payload.ChallengeCode = options.ChallengeCode.GetValueOrDefault();
             payload.ChallengeStatus = ChallengeStatusType.NotCompleted;
-            payload.Message = ex.Message.Replace("\n", "").Replace("\r", "").Replace("\\", "");
+            payload.Message = ex.Message.Replace("\n", "").Replace("\r", "").Replace("\\", "").Replace(" ", "");
 
             Console.WriteLine(JsonSerializer.Serialize(payload, jso));
         }
