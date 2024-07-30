@@ -36,17 +36,17 @@ jobs:
           echo "subscription_id=${{ vars.AZURE_SUBSCRIPTION_ID }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
 
       - name: Azure Login
-        uses: azure/azure-cli@v1
-        with:
-          azcliversion: 2.0.72
+        uses: azure/cli@v2
         env:
           AZURE_CLIENT_ID: ${{ steps.variables.outputs.client_id }}
           AZURE_CLIENT_SECRET: ${{ steps.variables.outputs.client_secret }}
           AZURE_TENANT_ID: ${{ steps.variables.outputs.tenant_id }}
           AZURE_SUBSCRIPTION_ID: ${{ steps.variables.outputs.subscription_id }}
-        run: |
-          az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
-          az account set --subscription $AZURE_SUBSCRIPTION_ID
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
+            az account set --subscription $AZURE_SUBSCRIPTION_ID
 
       - name: Remove history
         shell: pwsh
