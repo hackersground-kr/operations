@@ -597,9 +597,9 @@ jobs:
               -f ${{ steps.issue.outputs.frontendUrl }} `
               -b ${{ steps.issue.outputs.backendUrl }} `
               -d ${{ steps.issue.outputs.dashboardUrl }}
-              
+
             $result = $result -replace "`n", "" -replace "`r", ""
-            $result= $result[$result.IndexOf("{")..$($result.Length-1)] | ConvertFrom-Json
+            $result= $result[$result.IndexOf("{")..$result.IndexOf("}")] | ConvertFrom-Json
           }
 
           echo "result=$result" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
