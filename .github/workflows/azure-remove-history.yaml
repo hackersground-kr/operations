@@ -17,16 +17,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check date
-        id: check_date
-        run: |
-          current_date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          start_date="2023-08-09T00:00:00Z"
-          end_date="2023-08-09T00:00:00Z"
-          if [[ "$current_date" < "$start_date" || "$current_date" > "$end_date" ]]; then
-            echo "Current date is outside the allowed range. Exiting."
-            exit 0
-          fi
 
       - name: Set environment variables
         id: variables
