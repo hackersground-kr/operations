@@ -37,8 +37,9 @@ jobs:
       - name: Set environment variables
         id: variables
         run: |
-          $client_secret= ${{ secrets.AZM_CLIENT_SECRET }}
+          $client_secret=${{ secrets.AZM_CLIENT_SECRET }}
           echo "::add-mask::$client_secret"
+
           echo "client_id=${{ vars.AZM_CLIENT_ID }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8
           echo "client_secret=$client_secret" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8
           echo "tenant_id=${{ vars.AZM_TENANT_ID }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8
