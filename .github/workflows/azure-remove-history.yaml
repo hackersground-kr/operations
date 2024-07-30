@@ -3,11 +3,7 @@ name: Remove history from Azure Subscription
 on:
   # schedule:
   #   - cron: "0 */3 * * *"
-  workflow_dispatch:
-    inputs:
-      issue-number:
-        description: "Issue number"
-        required: false
+
 
 permissions:
   contents: read
@@ -43,15 +39,10 @@ jobs:
 
       - name: Azure Login
         uses: azure/cli@v1
-        env:
-          AZURE_CLIENT_ID: ${{ steps.variables.outputs.client_id }}
-          AZURE_TENANT_ID: ${{ steps.variables.outputs.tenant_id }}
-          AZURE_SUBSCRIPTION_ID: ${{ steps.variables.outputs.subscription_id }}
         with:
-          azcliversion: latest
-          inlineScript: |
-            az login --service-principal -u $AZURE_CLIENT_ID --tenant $AZURE_TENANT_ID
-            az account set --subscription $AZURE_SUBSCRIPTION_ID
+          client-id: ${{ steps.variables.outputs.client_id }}
+          tenant-id: ${{ steps.variables.outputs.tenant_id }}
+          subscription-id : ${{ steps.variables.outputs.subscription_id }}}
 
       - name: Remove history
         shell: pwsh
