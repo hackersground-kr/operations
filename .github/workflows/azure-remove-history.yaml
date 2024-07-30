@@ -1,9 +1,9 @@
-name: Remove history from Azure Subscription
+name: Remove deployment history from Azure Subscription
 
 on:
   push:
     branches:
-      - azure-history-remove
+      - main
   schedule:
     - cron: "0 */3 * * *"
 
@@ -22,6 +22,7 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
+
       - name: Azure CLI script
         uses: azure/login@v2
         env:
