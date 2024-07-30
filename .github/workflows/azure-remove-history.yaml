@@ -1,0 +1,47 @@
+name: Remove history from Azure Subscription
+
+on:
+  schedule:
+    - cron: "0 */3 * * *"
+  workflow_dispatch:
+
+jobs:
+  remove:
+    name: Removing history from Azure Subscription
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check date
+        id: check_date
+        run: |
+          current_date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          start_date="2023-08-09T00:00:00Z"
+          end_date="2023-08-09T00:00:00Z"
+          if [[ "$current_date" < "$start_date" || "$current_date" > "$end_date" ]]; then
+            echo "Current date is outside the allowed range. Exiting."
+            exit 0
+          fi
+
+      - name: Set environment variables
+        id: variables
+        shell: pwsh
+        run: |
+          echo "client_id=${{ vars.AZM_CLIENT_ID }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+          echo "tenant_id=${{ vars.AZM_TENANT_ID }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+          echo "subscription_id=${{ vars.AZURE_SUBSCRIPTION_ID }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+
+      - name: Azure Login
+        uses: azure/azure-cli@v1
+        run: |
+          az login --service-principal -u ${{ steps.varibles.outputs.client_id }} --tenant ${{ steps.varibles.outputs.tenant_id }}
+          az account set --subscription ${{ steps.varibles.outputs.subscription_id }}
+
+      - name: Remove history
+        shell: pwsh
+        run: |
+          $deploymentlist = az deployment sub list --query "[].name" | ConvertFrom-Json
+          $deploymentlist | ForEach-Object {
+            $deletedeployment = $_
+            az deployment sub delete -n $deletedeployment
+          }
