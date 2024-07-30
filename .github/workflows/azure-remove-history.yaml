@@ -25,6 +25,7 @@ jobs:
 
       - name: Check date
         id: check_date
+        shell: pwsh
         run: |
           current_date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           start_date="2023-08-09T00:00:00Z"
@@ -36,6 +37,7 @@ jobs:
 
       - name: Set environment variables
         id: variables
+        shell: pwsh
         run: |
           $client_secret=${{ secrets.AZM_CLIENT_SECRET }}
           echo "::add-mask::$client_secret"
