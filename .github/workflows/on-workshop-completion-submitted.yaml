@@ -597,7 +597,7 @@ jobs:
               -f ${{ steps.issue.outputs.frontendUrl }} `
               -b ${{ steps.issue.outputs.backendUrl }} `
               -d ${{ steps.issue.outputs.dashboardUrl }}
-
+            echo result=$result
             $result = $result -replace "`n", "" -replace "`r", ""
             $result= $result[$result.IndexOf("{")..$result.IndexOf("}")] | ConvertFrom-Json
           }
