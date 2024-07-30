@@ -4,6 +4,10 @@ on:
   schedule:
     - cron: "0 */3 * * *"
   workflow_dispatch:
+    inputs:
+      issue-number:
+        description: "Issue number"
+        required: false
 
 jobs:
   remove:
