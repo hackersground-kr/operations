@@ -1,9 +1,9 @@
 name: On Team App Verified
 
 on:
-  issue_comment:
-    types:
-    - created
+  # issue_comment:
+  #   types:
+  #   - created
   workflow_dispatch:
     inputs:
       issue-number:

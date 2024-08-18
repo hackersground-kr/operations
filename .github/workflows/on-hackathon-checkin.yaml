@@ -1,0 +1,68 @@
+name: 'On Hackathon Checked-in'
+
+on:
+  workflow_dispatch:
+    inputs:
+      team-name:
+        description: 'Team name'
+        required: true
+        default: ''
+      repository:
+        description: 'Repository name'
+        required: true
+        default: ''
+      leader:
+        description: 'GitHub ID for leader'
+        required: true
+        default: ''
+      members:
+        description: 'Comma-delimited GitHub IDs for members'
+        required: true
+        default: ''
+
+permissions:
+  contents: read
+  id-token: write
+  issues: write
+  pull-requests: write
+
+env:
+  AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+  AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+  AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+jobs:
+  team-repository:
+    name: Set team repository
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check event payload
+      shell: pwsh
+      run: |
+        $eventPayload = '${{ toJson(github) }}'
+
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Get GitHub access token
+      id: github-connect
+      shell: pwsh
+      run: |
+        $token = ./gha-scripts/Get-GitHubAccessToken.ps1 `
+          -AccessTokenIDs "${{ vars.ACCESS_TOKEN_IDS }}" `
+          -ApimBaseUrl "${{ vars.APIM_BASE_URL }}" `
+          -ApimApiKey "${{ secrets.APIM_SUBSCRIPTION_KEY }}"
+
+        echo "::add-mask::$token"
+        echo "token=$token" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8
+
+    - name: Set team repository
+      shell: pwsh
+      env:
+        GH_TOKEN: ${{ steps.github-connect.outputs.token }}
+      run: |
+        $scriptUrl = "https://raw.githubusercontent.com/hackersground-kr/operations/main/set-teamrepository/Set-TeamRepository.ps1"
+        Invoke-RestMethod $scriptUrl | Out-File ~/Set-TeamRepository.ps1
+        ~/Set-TeamRepository.ps1 -RepositoryName "${{ github.event.inputs.repository }}" -TeamLeader "${{ github.event.inputs.leader }}" -TeamMembers "${{ github.event.inputs.members }}"

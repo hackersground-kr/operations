@@ -1,9 +1,9 @@
 name: On Team Topic Submitted
 
 on:
-  issues:
-    types:
-    - opened
+  # issues:
+  #   types:
+  #   - opened
   workflow_dispatch:
     inputs:
       issue-number:
