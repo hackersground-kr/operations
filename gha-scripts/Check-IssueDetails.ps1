@@ -97,8 +97,10 @@ $issue.title = if ($issue.title -eq "클라우드 스킬 챌린지") {
     "Workshop"
 } elseif ($issue.title -eq "팀 주제 제출") {
     "Team Topic"
-} elseif ($issue.title -eq "팀 앱 제출") {
-    "Team App"
+} elseif ($issue.title -eq "팀 앱 제출 1차") {
+    "Team App 1"
+} elseif ($issue.title -eq "팀 앱 제출 2차") {
+    "Team App 2"
 } elseif ($issue.title -eq "팀 발표자료 제출") {
     "Team Pitch"
 } else {
@@ -153,7 +155,8 @@ $issueType = switch ($issue.title) {
     "Cloud Skills Challenge" { "CSC" }
     "Workshop" { "WORKSHOP" }
     "Team Topic" { "TOPIC" }
-    "Team App" { "APP" }
+    "Team App 1" { "APP1" }
+    "Team App 2" { "APP2" }
     "Team Pitch" { "PITCH" }
     default { $null }
 }
@@ -200,6 +203,18 @@ $isValidDashboardUrl = if ($issueType -eq "WORKSHOP") {
 } else {
     $false
 }
+$isValidDashboardUrl = if ($issueType -eq "WORKSHOP") {
+    $($($issue.dashboardUrl).StartsWith("https://")) -and $($($issue.dashboardUrl).TrimEnd("/").EndsWith(".azurecontainerapps.io"))
+} else {
+    $false
+}
+$isValidTeamRepository = if (($issueType -eq "TOPIC") -or ($issueType -eq "APP1") -or ($issueType -eq "APP2") -or ($issueType -eq "PITCH")) {
+    $($issue.teamRepository).StartsWith("https://github.com/") -eq $true
+    $segments = $issue.teamRepository.Split('/', [System.StringSplitOptions]::RemoveEmptyEntries)
+    $issue.teamRepository = $segments[$segments.Length - 1]
+} else {
+    $false
+}
 
 $result = @{
     issueNumber = $IssueNumber;
@@ -224,11 +239,17 @@ $result = @{
     isValidBackendUrl = $isValidBackendUrl;
     dashboardUrl = $issue.dashboardUrl;
     isValidDashboardUrl = $isValidDashboardUrl;
+    teamName = $issue.teamName;
+    teamRepository = $issue.teamRepository;
+    isValidTeamRepository = $isValidTeamRepository;
 }
 
 Write-Output $($result | ConvertTo-Json -Depth 100)
 
 Remove-Variable result
+Remove-Variable isValidTeamRepository
+Remove-Variable teamRepository
+Remove-Variable teamName
 Remove-Variable isValidDashboardUrl
 Remove-Variable isValidBackendUrl
 Remove-Variable isValidFrontendUrl
