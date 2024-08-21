@@ -1,4 +1,4 @@
-name: On Team Topic Verified
+name: On Hackathon Team Topic Verified
 
 on:
   issue_comment:
