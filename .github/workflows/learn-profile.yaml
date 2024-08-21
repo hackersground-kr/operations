@@ -1,9 +1,10 @@
 name: Get Microsoft Learn profile
 
 on:
-  push:
-    branches:
-    - 'feature/*'
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #   - 'feature/*'
 
 jobs:
   assign:
