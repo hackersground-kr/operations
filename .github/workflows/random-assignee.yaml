@@ -1,9 +1,10 @@
 name: Get Random Assignee
 
 on:
-  push:
-    branches:
-    - 'feature/*'
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #   - 'feature/*'
 
 jobs:
   assign:
