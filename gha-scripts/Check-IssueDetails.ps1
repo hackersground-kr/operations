@@ -175,45 +175,45 @@ $isOverdue = "$($dateSubmitted -gt $dateDue)".ToLowerInvariant()
 $dateSubmittedValue = $dateSubmitted.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
 $dateDueValue = $dateDue.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
 
-$issue.githubProfile = $issue.githubProfile.Split('?')[0] 
-$isValidGitHubProfile = $($($issue.githubProfile).StartsWith("https://github.com/") -eq $true) -and $($($issue.githubProfile).TrimEnd("/").EndsWith($githubID) -eq $true)
-$isValidMicrosoftLearnProfile = if ($issueType -eq "CSC") {
-    $($issue.microsoftLearnProfile).StartsWith("https://learn.microsoft.com/ko-kr/users/") -eq $true
-} else {
-    $false
-}
-$isValidGitHubRepository = if ($issueType -eq "WORKSHOP") {
-    $issue.githubRepository = $issue.githubRepository.Split('?')[0]
-    $($($issue.githubRepository).StartsWith("https://github.com/") -eq $true) -and $($($issue.githubRepository).Contains("/$gitHubID/") -eq $true)
-} else {
-    $false
-}
-$isValidFrontendUrl = if ($issueType -eq "WORKSHOP") {
-    $($($issue.frontendUrl).StartsWith("https://")) -and $($($issue.frontendUrl).TrimEnd("/").EndsWith(".azurecontainerapps.io"))
- } else {
-    $false
-}
-$isValidBackendUrl = if ($issueType -eq "WORKSHOP") {
-    $($($issue.backendUrl).StartsWith("https://")) -and $($($issue.backendUrl).TrimEnd("/").EndsWith(".azurecontainerapps.io"))
-} else {
-    $false
-}
-$isValidDashboardUrl = if ($issueType -eq "WORKSHOP") {
-    $($($issue.dashboardUrl).StartsWith("https://")) -and $($($issue.dashboardUrl).TrimEnd("/").EndsWith(".azurecontainerapps.io"))
-} else {
-    $false
-}
-$isValidDashboardUrl = if ($issueType -eq "WORKSHOP") {
-    $($($issue.dashboardUrl).StartsWith("https://")) -and $($($issue.dashboardUrl).TrimEnd("/").EndsWith(".azurecontainerapps.io"))
-} else {
-    $false
-}
-$isValidTeamRepository = if (($issueType -eq "TOPIC") -or ($issueType -eq "APP1") -or ($issueType -eq "APP2") -or ($issueType -eq "PITCH")) {
-    $($issue.teamRepository).StartsWith("https://github.com/") -eq $true
+if (($issueType -eq "TOPIC") -or ($issueType -eq "APP1") -or ($issueType -eq "APP2") -or ($issueType -eq "PITCH")) {
+    $isValidTeamRepository = $($issue.teamRepository).StartsWith("https://github.com/hackersground-kr/") -eq $true
+
     $segments = $issue.teamRepository.Split('/', [System.StringSplitOptions]::RemoveEmptyEntries)
     $issue.teamRepository = $segments[$segments.Length - 1]
 } else {
-    $false
+    $issue.githubProfile = $issue.githubProfile.Split('?')[0] 
+    $isValidGitHubProfile = $($($issue.githubProfile).StartsWith("https://github.com/") -eq $true) -and $($($issue.githubProfile).TrimEnd("/").EndsWith($githubID) -eq $true)
+    $isValidMicrosoftLearnProfile = if ($issueType -eq "CSC") {
+        $($issue.microsoftLearnProfile).StartsWith("https://learn.microsoft.com/ko-kr/users/") -eq $true
+    } else {
+        $false
+    }
+    $isValidGitHubRepository = if ($issueType -eq "WORKSHOP") {
+        $issue.githubRepository = $issue.githubRepository.Split('?')[0]
+        $($($issue.githubRepository).StartsWith("https://github.com/") -eq $true) -and $($($issue.githubRepository).Contains("/$gitHubID/") -eq $true)
+    } else {
+        $false
+    }
+    $isValidFrontendUrl = if ($issueType -eq "WORKSHOP") {
+        $($($issue.frontendUrl).StartsWith("https://")) -and $($($issue.frontendUrl).TrimEnd("/").EndsWith(".azurecontainerapps.io"))
+     } else {
+        $false
+    }
+    $isValidBackendUrl = if ($issueType -eq "WORKSHOP") {
+        $($($issue.backendUrl).StartsWith("https://")) -and $($($issue.backendUrl).TrimEnd("/").EndsWith(".azurecontainerapps.io"))
+    } else {
+        $false
+    }
+    $isValidDashboardUrl = if ($issueType -eq "WORKSHOP") {
+        $($($issue.dashboardUrl).StartsWith("https://")) -and $($($issue.dashboardUrl).TrimEnd("/").EndsWith(".azurecontainerapps.io"))
+    } else {
+        $false
+    }
+    $isValidDashboardUrl = if ($issueType -eq "WORKSHOP") {
+        $($($issue.dashboardUrl).StartsWith("https://")) -and $($($issue.dashboardUrl).TrimEnd("/").EndsWith(".azurecontainerapps.io"))
+    } else {
+        $false
+    }
 }
 
 $result = @{
@@ -246,32 +246,32 @@ $result = @{
 
 Write-Output $($result | ConvertTo-Json -Depth 100)
 
-Remove-Variable result
-Remove-Variable isValidTeamRepository
-Remove-Variable teamRepository
-Remove-Variable teamName
-Remove-Variable isValidDashboardUrl
-Remove-Variable isValidBackendUrl
-Remove-Variable isValidFrontendUrl
-Remove-Variable isValidGitHubRepository
-Remove-Variable isValidMicrosoftLearnProfile
-Remove-Variable isValidGitHubProfile
-Remove-Variable dateDueValue
-Remove-Variable dateSubmittedValue
-Remove-Variable isOverdue
-Remove-Variable dateDue
-Remove-Variable dateSubmitted
-Remove-Variable offset
-Remove-Variable tz
-Remove-Variable isValidChallengeCode
-Remove-Variable issueType
-Remove-Variable issue
-Remove-Variable segments
-Remove-Variable sections
-Remove-Variable createdAt
-Remove-Variable githubID
-Remove-Variable title
-Remove-Variable body
-Remove-Variable accessToken
-Remove-Variable eventName
-Remove-Variable needHelp
+# Remove-Variable result
+# Remove-Variable isValidTeamRepository
+# Remove-Variable teamRepository
+# Remove-Variable teamName
+# Remove-Variable isValidDashboardUrl
+# Remove-Variable isValidBackendUrl
+# Remove-Variable isValidFrontendUrl
+# Remove-Variable isValidGitHubRepository
+# Remove-Variable isValidMicrosoftLearnProfile
+# Remove-Variable isValidGitHubProfile
+# Remove-Variable dateDueValue
+# Remove-Variable dateSubmittedValue
+# Remove-Variable isOverdue
+# Remove-Variable dateDue
+# Remove-Variable dateSubmitted
+# Remove-Variable offset
+# Remove-Variable tz
+# Remove-Variable isValidChallengeCode
+# Remove-Variable issueType
+# Remove-Variable issue
+# Remove-Variable segments
+# Remove-Variable sections
+# Remove-Variable createdAt
+# Remove-Variable githubID
+# Remove-Variable title
+# Remove-Variable body
+# Remove-Variable accessToken
+# Remove-Variable eventName
+# Remove-Variable needHelp
