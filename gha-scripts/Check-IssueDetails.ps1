@@ -76,12 +76,14 @@ if ($eventName -eq "workflow_dispatch") {
     $body = $GitHubPayload.body
     $title = $GitHubPayload.title
     $githubID = $GitHubPayload.user.login
+    $assignee = $GitHubPayload.assignee
     $createdAt = $GitHubPayload.created_at.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
 } else {
     $IssueNumber = $GitHubPayload.event.issue.number
     $body = $GitHubPayload.event.issue.body
     $title = $GitHubPayload.event.issue.title
     $githubID = $GitHubPayload.event.issue.user.login
+    $assignee = $GitHubPayload.event.issue.assignee
     $createdAt = $GitHubPayload.event.issue.created_at.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz")
 }
 
@@ -242,6 +244,7 @@ $result = @{
     teamName = $issue.teamName;
     teamRepository = $issue.teamRepository;
     isValidTeamRepository = $isValidTeamRepository;
+    assignee = $assignee;
 }
 
 Write-Output $($result | ConvertTo-Json -Depth 100)

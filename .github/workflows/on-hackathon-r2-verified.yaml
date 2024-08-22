@@ -87,7 +87,7 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        gh issue edit ${{ steps.issue.outputs.number }} \
+        gh issue edit ${{ steps.issue.outputs.issueNumber }} \
           --add-label "invalid" \
           -R ${{ github.event.repository.full_name }}
 
@@ -99,7 +99,7 @@ jobs:
       with:
         actions: 'create-comment'
         token: ${{ secrets.GITHUB_TOKEN }}
-        issue-number: ${{ steps.issue.outputs.number }}
+        issue-number: ${{ steps.issue.outputs.issueNumber }}
         emoji: 'confused,eyes'
         body: |
           👋🏼 @${{ steps.issue.outputs.githubID }} 님!
@@ -107,6 +107,18 @@ jobs:
           주제 제출을 확인하는 과정에서 문제가 발생했습니다. 😢
 
           곧바로 사무국을 찾아가서 문제를 해결해주세요. 🙏
+
+    - name: Close issue - NOT Verified
+      if: |
+        steps.issue.outputs.issueType == 'TOPIC' &&
+        (steps.issue.outputs.verified == 'false' || steps.issue.outputs.invalid == 'true')
+      shell: bash
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        gh issue close ${{ steps.issue.outputs.issueNumber }} \
+          -c "이슈를 확인할 수 없습니다. 이슈를 닫습니다." \
+          -R ${{ github.event.repository.full_name }}
 
     - name: Add a label - Verified
       if: |
@@ -117,7 +129,7 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        gh issue edit ${{ steps.issue.outputs.number }} \
+        gh issue edit ${{ steps.issue.outputs.issueNumber }} \
           --add-label "verified" \
           --remove-label "verifying,invalid" \
           -R ${{ github.event.repository.full_name }}
@@ -131,7 +143,7 @@ jobs:
       with:
         actions: 'create-comment'
         token: ${{ secrets.GITHUB_TOKEN }}
-        issue-number: ${{ steps.issue.outputs.number }}
+        issue-number: ${{ steps.issue.outputs.issueNumber }}
         emoji: 'hooray'
         body: |
           👋🏼 @${{ steps.issue.outputs.githubID }} 님!
@@ -151,6 +163,6 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        gh issue close ${{ steps.issue.outputs.number }} \
+        gh issue close ${{ steps.issue.outputs.issueNumber }} \
           -c "주제 제출을 확인했습니다. 이슈를 닫습니다." \
           -R ${{ github.event.repository.full_name }}
