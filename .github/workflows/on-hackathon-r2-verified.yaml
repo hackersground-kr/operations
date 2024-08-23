@@ -10,6 +10,10 @@ on:
         description: 'Issue number'
         required: true
         default: ''
+      inspected:
+        description: 'Value indicating whether the verification process done by human or not'
+        required: true
+        default: 'false'
       verified:
         description: 'Value indicating whether the verification process is successful or not'
         required: true
@@ -62,9 +66,11 @@ jobs:
           -GitHubPayload $($payload | ConvertFrom-Json)) | ConvertFrom-Json
 
         if ("${{ github.event_name}}" -eq "workflow_dispatch") {
+          $inspected = "${{ github.event.inputs.inspected }}"
           $verified = ("${{ github.event.inputs.verified }}".ToLowerInvariant() -eq "true") ? "true" : "false"
           $invalid = ""
         } else {
+          $inspected = "true"
           $verified = ("${{ github.event.comment.body }}".StartsWith("/ok")) ? "true" : "false"
           $invalid = ("${{ github.event.comment.body }}".StartsWith("/invalid")) ? "true" : ""
         }
@@ -76,6 +82,7 @@ jobs:
         echo "title=$($result.title)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         echo "teamName=$($result.teamName)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         echo "teamRepository=$($result.teamRepository)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        echo "inspected=$inspected" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         echo "verified=$verified" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         echo "invalid=$invalid" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
 
@@ -124,7 +131,7 @@ jobs:
       if: |
         steps.issue.outputs.issueType == 'TOPIC' &&
         steps.issue.outputs.verified == 'true' &&
-        github.event_name != 'workflow_dispatch'
+        steps.issue.outputs.inspected == 'true'
       shell: bash
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -138,7 +145,7 @@ jobs:
       if: |
         steps.issue.outputs.issueType == 'TOPIC' &&
         steps.issue.outputs.verified == 'true' &&
-        github.event_name != 'workflow_dispatch'
+        steps.issue.outputs.inspected == 'true'
       uses: actions-cool/issues-helper@v3
       with:
         actions: 'create-comment'
@@ -158,7 +165,7 @@ jobs:
       if: |
         steps.issue.outputs.issueType == 'TOPIC' &&
         steps.issue.outputs.verified == 'true' &&
-        github.event_name != 'workflow_dispatch'
+        steps.issue.outputs.inspected == 'true'
       shell: bash
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -166,3 +173,14 @@ jobs:
         gh issue close ${{ steps.issue.outputs.issueNumber }} \
           -c "주제 제출을 확인했습니다. 이슈를 닫습니다." \
           -R ${{ github.event.repository.full_name }}
+
+    - name: Call Power Automate workflow
+      if: |
+        steps.issue.outputs.issueType == 'TOPIC' &&
+        steps.issue.outputs.inspected == 'true'
+      id: request
+      uses: fjogeleit/http-request-action@v1
+      with:
+        url: ${{ secrets.PAU_ON_ROUND_2_VERIFIED_URL }}
+        method: 'POST'
+        data: '{ "issueNumber": ${{ steps.issue.outputs.issueNumber }}, "githubId": "${{ steps.issue.outputs.githubID }}", "teamName": "${{ steps.issue.outputs.teamName }}", "repositoryName": "${{ steps.issue.outputs.teamRepository }}", "verified": "${{ steps.issue.outputs.verified }}", "invalid": "${{ steps.issue.outputs.invalid }}" }'
