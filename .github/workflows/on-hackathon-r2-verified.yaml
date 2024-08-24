@@ -4,6 +4,11 @@ on:
   issue_comment:
     types:
     - created
+    inputs:
+      onlyissueclose:
+        description: 'Value indicating whether the issue should be closed or not'
+        required: true
+        default: 'true'
   workflow_dispatch:
     inputs:
       issue-number:
@@ -138,7 +143,8 @@ jobs:
         steps.issue.outputs.issueType == 'TOPIC' &&
         steps.issue.outputs.verified == 'true' &&
         steps.issue.outputs.inspected == 'true' &&
-        github.event.comment.user.login == github.event.issue.assignee.login
+        github.event.comment.user.login == github.event.issue.assignee.login &&
+        github.event.inputs.onlyissueclose != 'false'
       shell: bash
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -153,7 +159,8 @@ jobs:
         steps.issue.outputs.issueType == 'TOPIC' &&
         steps.issue.outputs.verified == 'true' &&
         steps.issue.outputs.inspected == 'true' &&
-        github.event.comment.user.login == github.event.issue.assignee.login
+        github.event.comment.user.login == github.event.issue.assignee.login &&
+        github.event.inputs.onlyissueclose != 'false'
       uses: actions-cool/issues-helper@v3
       with:
         actions: 'create-comment'
@@ -174,7 +181,8 @@ jobs:
         steps.issue.outputs.issueType == 'TOPIC' &&
         steps.issue.outputs.verified == 'true' &&
         steps.issue.outputs.inspected == 'true' &&
-        github.event.comment.user.login == github.event.issue.assignee.login
+        github.event.comment.user.login == github.event.issue.assignee.login &&
+        github.event.inputs.onlyissueclose != 'false'
       shell: bash
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

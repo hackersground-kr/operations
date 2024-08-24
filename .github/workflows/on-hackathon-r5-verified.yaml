@@ -10,10 +10,18 @@ on:
         description: 'Issue number'
         required: true
         default: ''
+      inspected:
+        description: 'Value indicating whether the verification process done by human or not'
+        required: true
+        default: 'false'
       verified:
         description: 'Value indicating whether the verification process is successful or not'
         required: true
         default: 'false'
+      onlyissueclose:
+        description: 'Value indicating whether the issue should be closed or not'
+        required: true
+        default: 'true'
 
 permissions:
   contents: read
@@ -67,6 +75,7 @@ jobs:
         } else {
           $verified = ("${{ github.event.comment.body }}".StartsWith("/ok")) ? "true" : "false"
           $invalid = ("${{ github.event.comment.body }}".StartsWith("/invalid")) ? "true" : ""
+          $invalid = ("${{ github.event.comment.user.login }}" -eq "${{ github.event.issue.assignee.login }}") ? "" : "true"
         }
 
         echo "issueNumber=$($result.issueNumber)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
@@ -82,7 +91,7 @@ jobs:
     - name: Add a label - NOT Verified
       if: |
         steps.issue.outputs.issueType == 'PITCH' &&
-        (steps.issue.outputs.verified == 'false' || steps.issue.outputs.invalid == 'true')
+        (steps.issue.outputs.verified == 'false' || steps.issue.outputs.invalid == 'true' || github.event.comment.user.login != github.event.issue.assignee.login)
       shell: bash
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -94,7 +103,8 @@ jobs:
     - name: Comment to issue - NOT Verified
       if: |
         steps.issue.outputs.issueType == 'PITCH' &&
-        (steps.issue.outputs.verified == 'false' || steps.issue.outputs.invalid == 'true')
+        (steps.issue.outputs.verified == 'false' || steps.issue.outputs.invalid == 'true' || github.event.comment.user.login != github.event.issue.assignee.login ) &&
+        github.event.inputs.onlyissueclose != 'false'
       uses: actions-cool/issues-helper@v3
       with:
         actions: 'create-comment'
@@ -111,7 +121,7 @@ jobs:
     - name: Close issue - NOT Verified
       if: |
         steps.issue.outputs.issueType == 'PITCH' &&
-        (steps.issue.outputs.verified == 'false' || steps.issue.outputs.invalid == 'true')
+        (steps.issue.outputs.verified == 'false' || steps.issue.outputs.invalid == 'true' || github.event.comment.user.login != github.event.issue.assignee.login )
       shell: bash
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -124,7 +134,9 @@ jobs:
       if: |
         steps.issue.outputs.issueType == 'PITCH' &&
         steps.issue.outputs.verified == 'true' &&
-        github.event_name != 'workflow_dispatch'
+        github.event_name != 'workflow_dispatch' &&
+        steps.issue.outputs.inspected == 'true' &&
+        github.event.comment.user.login == github.event.issue.assignee.login
       shell: bash
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -138,7 +150,9 @@ jobs:
       if: |
         steps.issue.outputs.issueType == 'PITCH' &&
         steps.issue.outputs.verified == 'true' &&
-        github.event_name != 'workflow_dispatch'
+        github.event_name != 'workflow_dispatch' &&
+        steps.issue.outputs.inspected == 'true' &&
+        github.event.comment.user.login == github.event.issue.assignee.login
       uses: actions-cool/issues-helper@v3
       with:
         actions: 'create-comment'
@@ -158,7 +172,9 @@ jobs:
       if: |
         steps.issue.outputs.issueType == 'PITCH' &&
         steps.issue.outputs.verified == 'true' &&
-        github.event_name != 'workflow_dispatch'
+        github.event_name != 'workflow_dispatch' &&
+        steps.issue.outputs.inspected == 'true' &&
+        github.event.comment.user.login == github.event.issue.assignee.login
       shell: bash
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -166,3 +182,13 @@ jobs:
         gh issue close ${{ steps.issue.outputs.issueNumber }} \
           -c "팀 발표자료 제출을 확인했습니다. 이슈를 닫습니다." \
           -R ${{ github.event.repository.full_name }}
+
+    - name: Call Power Automate workflow
+      if: |
+        steps.issue.outputs.issueType == 'PITCH'
+      id: request
+      uses: fjogeleit/http-request-action@v1
+      with:
+        url: ${{ secrets.PAU_ON_ROUND_5_VERIFIED_URL }}
+        method: 'POST'
+        data: '{ "issueNumber": ${{ steps.issue.outputs.issueNumber }}, "githubId": "${{ steps.issue.outputs.githubID }}", "teamName": "${{ steps.issue.outputs.teamName }}", "repositoryName": "${{ steps.issue.outputs.teamRepository }}", "verified": "${{ steps.issue.outputs.verified }}", "invalid": "${{ steps.issue.outputs.invalid }}", "onlyissueclose": "${{ github.event.inputs.onlyissueclose }}" }'
