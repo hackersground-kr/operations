@@ -87,11 +87,11 @@ jobs:
         echo "teamRepository=$($result.teamRepository)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         echo "verified=$verified" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         echo "invalid=$invalid" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
-
+        
     - name: Add a label - NOT Verified
       if: |
          steps.issue.outputs.issueType == 'APP1' &&
-        (steps.issue.outputs.verified == 'false' || steps.issue.outputs.invalid == 'true' || github.event.comment.user.login != github.event.issue.assignee.login)
+         (steps.issue.outputs.verified == 'false' || steps.issue.outputs.invalid == 'true' || github.event.comment.user.login != github.event.issue.assignee.login)
       shell: bash
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
