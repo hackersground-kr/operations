@@ -131,7 +131,7 @@ jobs:
     - name: Add a label - Acknowledge
       if: |
         steps.issue.outputs.issueType == 'PITCH' &&
-        steps.issue.outputs.isOverdue == 'true'
+        steps.issue.outputs.isOverdue == 'false'
       shell: bash
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
