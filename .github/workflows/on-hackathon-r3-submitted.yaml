@@ -191,8 +191,7 @@ jobs:
 
     - name: Call Power Automate workflow
       if: |
-        steps.issue.outputs.issueType == 'APP1' &&
-        steps.issue.outputs.isOverdue == 'false'
+        steps.issue.outputs.issueType == 'APP1'
       id: request
       uses: fjogeleit/http-request-action@v1
       with:
