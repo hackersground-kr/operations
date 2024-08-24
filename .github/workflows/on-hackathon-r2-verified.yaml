@@ -74,14 +74,7 @@ jobs:
           $verified = ("${{ github.event.comment.body }}".StartsWith("/ok")) ? "true" : "false"
           $invalid = ("${{ github.event.comment.body }}".StartsWith("/invalid")) ? "true" : ""
         }
-
-        if( github.event.comment.user.login == github.event.issue.assignee.login){
-          $rightassignee = "true"
-        } else{
-          $rightassignee = "false"
-        }
-
-        echo "rightassignee=$rightassignee" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
+        
         echo "issueNumber=$($result.issueNumber)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         echo "issueType=$($result.issueType)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         echo "githubID=$($result.githubID)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
