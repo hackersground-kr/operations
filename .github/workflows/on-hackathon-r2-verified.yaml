@@ -96,7 +96,7 @@ jobs:
     - name: Add a label - NOT Verified
       if: |
         steps.issue.outputs.issueType == 'TOPIC' &&
-        (steps.issue.outputs.verified == 'false' || steps.issue.outputs.invalid == 'true' || steps.issue.outputs.rightassignee == 'false')
+        (steps.issue.outputs.verified == 'false' || steps.issue.outputs.invalid == 'true' || github.event.comment.user.login != github.event.issue.assignee.login)
       shell: bash
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -108,7 +108,7 @@ jobs:
     - name: Comment to issue - NOT Verified
       if: |
         steps.issue.outputs.issueType == 'TOPIC' &&
-        (steps.issue.outputs.verified == 'false' || steps.issue.outputs.invalid == 'true' || steps.issue.outputs.rightassignee == 'false')
+        (steps.issue.outputs.verified == 'false' || steps.issue.outputs.invalid == 'true' || github.event.comment.user.login != github.event.issue.assignee.login )
       uses: actions-cool/issues-helper@v3
       with:
         actions: 'create-comment'
@@ -125,7 +125,7 @@ jobs:
     - name: Close issue - NOT Verified
       if: |
         steps.issue.outputs.issueType == 'TOPIC' &&
-        (steps.issue.outputs.verified == 'false' || steps.issue.outputs.invalid == 'true' || steps.issue.outputs.rightassignee == 'false')
+        (steps.issue.outputs.verified == 'false' || steps.issue.outputs.invalid == 'true' || github.event.comment.user.login != github.event.issue.assignee.login )
       shell: bash
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -139,7 +139,7 @@ jobs:
         steps.issue.outputs.issueType == 'TOPIC' &&
         steps.issue.outputs.verified == 'true' &&
         steps.issue.outputs.inspected == 'true' &&
-        steps.issue.outputs.rightassignee == 'true'
+        github.event.comment.user.login == github.event.issue.assignee.login
       shell: bash
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -154,7 +154,7 @@ jobs:
         steps.issue.outputs.issueType == 'TOPIC' &&
         steps.issue.outputs.verified == 'true' &&
         steps.issue.outputs.inspected == 'true' &&
-        steps.issue.outputs.rightassignee == 'true'
+        github.event.comment.user.login == github.event.issue.assignee.login
       uses: actions-cool/issues-helper@v3
       with:
         actions: 'create-comment'
@@ -175,7 +175,7 @@ jobs:
         steps.issue.outputs.issueType == 'TOPIC' &&
         steps.issue.outputs.verified == 'true' &&
         steps.issue.outputs.inspected == 'true' &&
-        steps.issue.outputs.rightassignee == 'true'
+        github.event.comment.user.login == github.event.issue.assignee.login
       shell: bash
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -186,8 +186,7 @@ jobs:
 
     - name: Call Power Automate workflow
       if: |
-        steps.issue.outputs.issueType == 'TOPIC' &&
-        steps.issue.outputs.inspected == 'true'
+        steps.issue.outputs.issueType == 'TOPIC'
       id: request
       uses: fjogeleit/http-request-action@v1
       with:
