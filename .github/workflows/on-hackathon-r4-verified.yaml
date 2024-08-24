@@ -3,7 +3,7 @@ name: On Hackathon Team App 2 Verified
 on:
   issue_comment:
     types:
-      - created
+    - created
   workflow_dispatch:
     inputs:
       issue-number:
@@ -11,15 +11,15 @@ on:
         required: true
         default: ''
       inspected:
-        description: "Value indicating whether the verification process done by human or not"
+        description: 'Value indicating whether the verification process done by human or not'
         required: true
         default: 'false'
       verified:
-        description: "Value indicating whether the verification process is successful or not"
+        description: 'Value indicating whether the verification process is successful or not'
         required: true
         default: 'false'
       onlyissueclose:
-        description: "Value indicating whether the issue should be closed or not"
+        description: 'Value indicating whether the issue should be closed or not'
         required: true
         default: 'true'
 
@@ -31,7 +31,7 @@ permissions:
 
 jobs:
   verification-start:
-    name: "Completing verification"
+    name: 'Completing verification'
 
     runs-on: ubuntu-latest
 
@@ -75,7 +75,7 @@ jobs:
           } else {
             $verified = ("${{ github.event.comment.body }}".StartsWith("/ok")) ? "true" : "false"
             $invalid = ("${{ github.event.comment.body }}".StartsWith("/invalid")) ? "true" : ""
-             $invalid = ("${{ github.event.comment.user.login }}" -eq "${{ github.event.issue.assignee.login }}") ? "" : "true"
+            $invalid = ("${{ github.event.comment.user.login }}" -eq "${{ github.event.issue.assignee.login }}") ? "" : "true"
           }
 
           echo "issueNumber=$($result.issueNumber)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
