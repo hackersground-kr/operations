@@ -75,12 +75,6 @@ jobs:
           $invalid = ("${{ github.event.comment.body }}".StartsWith("/invalid")) ? "true" : ""
         }
 
-        if( github.event.comment.user.login == github.event.issue.assignee.login){
-          $rightassignee = "true"
-        } else{
-          $rightassignee = "false"
-        }
-
         echo "rightassignee=$rightassignee" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         echo "issueNumber=$($result.issueNumber)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
         echo "issueType=$($result.issueType)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
@@ -96,7 +90,7 @@ jobs:
     - name: Add a label - NOT Verified
       if: |
         steps.issue.outputs.issueType == 'TOPIC' &&
-        (steps.issue.outputs.verified == 'false' || steps.issue.outputs.invalid == 'true' || steps.issue.outputs.rightassignee == 'false')
+        (steps.issue.outputs.verified == 'false' || steps.issue.outputs.invalid == 'true' || github.event.comment.user.login != github.event.issue.assignee.login)
       shell: bash
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -108,7 +102,7 @@ jobs:
     - name: Comment to issue - NOT Verified
       if: |
         steps.issue.outputs.issueType == 'TOPIC' &&
-        (steps.issue.outputs.verified == 'false' || steps.issue.outputs.invalid == 'true' || steps.issue.outputs.rightassignee == 'false')
+        (steps.issue.outputs.verified == 'false' || steps.issue.outputs.invalid == 'true' || github.event.comment.user.login != github.event.issue.assignee.login )
       uses: actions-cool/issues-helper@v3
       with:
         actions: 'create-comment'
@@ -125,7 +119,7 @@ jobs:
     - name: Close issue - NOT Verified
       if: |
         steps.issue.outputs.issueType == 'TOPIC' &&
-        (steps.issue.outputs.verified == 'false' || steps.issue.outputs.invalid == 'true' || steps.issue.outputs.rightassignee == 'false')
+        (steps.issue.outputs.verified == 'false' || steps.issue.outputs.invalid == 'true' || github.event.comment.user.login != github.event.issue.assignee.login )
       shell: bash
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -139,7 +133,7 @@ jobs:
         steps.issue.outputs.issueType == 'TOPIC' &&
         steps.issue.outputs.verified == 'true' &&
         steps.issue.outputs.inspected == 'true' &&
-        steps.issue.outputs.rightassignee == 'true'
+        github.event.comment.user.login == github.event.issue.assignee.login
       shell: bash
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -154,7 +148,7 @@ jobs:
         steps.issue.outputs.issueType == 'TOPIC' &&
         steps.issue.outputs.verified == 'true' &&
         steps.issue.outputs.inspected == 'true' &&
-        steps.issue.outputs.rightassignee == 'true'
+        github.event.comment.user.login == github.event.issue.assignee.login
       uses: actions-cool/issues-helper@v3
       with:
         actions: 'create-comment'
@@ -175,7 +169,7 @@ jobs:
         steps.issue.outputs.issueType == 'TOPIC' &&
         steps.issue.outputs.verified == 'true' &&
         steps.issue.outputs.inspected == 'true' &&
-        steps.issue.outputs.rightassignee == 'true'
+        github.event.comment.user.login == github.event.issue.assignee.login
       shell: bash
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
