@@ -4,6 +4,11 @@ on:
   issue_comment:
     types:
     - created
+    inputs:
+      onlyissueclose:
+        description: 'Value indicating whether the issue should be closed or not'
+        required: true
+        default: 'true'
   workflow_dispatch:
     inputs:
       issue-number:
@@ -77,6 +82,7 @@ jobs:
           $inspected = "true"
           $verified = ("${{ github.event.comment.body }}".StartsWith("/ok")) ? "true" : "false"
           $invalid = ("${{ github.event.comment.body }}".StartsWith("/invalid")) ? "true" : ""
+          $invalid = ("${{ github.event.comment.user.login }}" -eq "${{ github.event.issue.assignee.login }}") ? "" : "true"
         }
         
         echo "issueNumber=$($result.issueNumber)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf-8 -Append
