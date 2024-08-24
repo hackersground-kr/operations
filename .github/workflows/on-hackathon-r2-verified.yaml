@@ -18,6 +18,10 @@ on:
         description: 'Value indicating whether the verification process is successful or not'
         required: true
         default: 'false'
+      onlyissueclose:
+        description: 'Value indicating whether the issue should be closed or not'
+        required: true
+        default: 'true'
 
 permissions:
   contents: read
@@ -101,7 +105,8 @@ jobs:
     - name: Comment to issue - NOT Verified
       if: |
         steps.issue.outputs.issueType == 'TOPIC' &&
-        (steps.issue.outputs.verified == 'false' || steps.issue.outputs.invalid == 'true' || github.event.comment.user.login != github.event.issue.assignee.login )
+        (steps.issue.outputs.verified == 'false' || steps.issue.outputs.invalid == 'true' || github.event.comment.user.login != github.event.issue.assignee.login ) &&
+        github.event.inputs.onlyissueclose == 'true'
       uses: actions-cool/issues-helper@v3
       with:
         actions: 'create-comment'
@@ -185,4 +190,4 @@ jobs:
       with:
         url: ${{ secrets.PAU_ON_ROUND_2_VERIFIED_URL }}
         method: 'POST'
-        data: '{ "issueNumber": ${{ steps.issue.outputs.issueNumber }}, "githubId": "${{ steps.issue.outputs.githubID }}", "teamName": "${{ steps.issue.outputs.teamName }}", "repositoryName": "${{ steps.issue.outputs.teamRepository }}", "verified": "${{ steps.issue.outputs.verified }}", "invalid": "${{ steps.issue.outputs.invalid }}" }'
+        data: '{ "issueNumber": ${{ steps.issue.outputs.issueNumber }}, "githubId": "${{ steps.issue.outputs.githubID }}", "teamName": "${{ steps.issue.outputs.teamName }}", "repositoryName": "${{ steps.issue.outputs.teamRepository }}", "verified": "${{ steps.issue.outputs.verified }}", "invalid": "${{ steps.issue.outputs.invalid }}", "onlyissueclose": "${{ github.event.inputs.onlyissueclose }}" }'
