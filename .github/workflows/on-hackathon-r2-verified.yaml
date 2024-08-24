@@ -158,7 +158,8 @@ jobs:
         steps.issue.outputs.issueType == 'TOPIC' &&
         steps.issue.outputs.verified == 'true' &&
         steps.issue.outputs.inspected == 'true' &&
-        github.event.comment.user.login == github.event.issue.assignee.login
+        github.event.comment.user.login == github.event.issue.assignee.login &&
+        github.event.inputs.onlyissueclose == 'true'
       uses: actions-cool/issues-helper@v3
       with:
         actions: 'create-comment'
