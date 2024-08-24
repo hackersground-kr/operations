@@ -127,17 +127,14 @@ $result = @{
 
 Write-Output $($result | ConvertTo-Json -Depth 100)
 
-# Remove-Variable result
-# Remove-Variable teamRepository
-# Remove-Variable teamName
-# Remove-Variable issueType
-# Remove-Variable issue
-# Remove-Variable segments
-# Remove-Variable sections
-# Remove-Variable assignee
-# Remove-Variable githubID
-# Remove-Variable title
-# Remove-Variable body
-# Remove-Variable accessToken
-# Remove-Variable eventName
-# Remove-Variable needHelp
+Remove-Variable result
+Remove-Variable issueType
+Remove-Variable issue
+Remove-Variable segments
+Remove-Variable sections
+Remove-Variable assignee
+Remove-Variable githubID
+Remove-Variable body
+Remove-Variable accessToken
+Remove-Variable eventName
+Remove-Variable needHelp
