@@ -134,7 +134,6 @@ jobs:
       if: |
         steps.issue.outputs.issueType == 'PITCH' &&
         steps.issue.outputs.verified == 'true' &&
-        github.event_name != 'workflow_dispatch' &&
         steps.issue.outputs.inspected == 'true' &&
         github.event.comment.user.login == github.event.issue.assignee.login
       shell: bash
@@ -150,7 +149,6 @@ jobs:
       if: |
         steps.issue.outputs.issueType == 'PITCH' &&
         steps.issue.outputs.verified == 'true' &&
-        github.event_name != 'workflow_dispatch' &&
         steps.issue.outputs.inspected == 'true' &&
         github.event.comment.user.login == github.event.issue.assignee.login
       uses: actions-cool/issues-helper@v3
@@ -172,7 +170,6 @@ jobs:
       if: |
         steps.issue.outputs.issueType == 'PITCH' &&
         steps.issue.outputs.verified == 'true' &&
-        github.event_name != 'workflow_dispatch' &&
         steps.issue.outputs.inspected == 'true' &&
         github.event.comment.user.login == github.event.issue.assignee.login
       shell: bash
