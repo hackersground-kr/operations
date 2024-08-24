@@ -134,7 +134,7 @@ jobs:
         if: |
           steps.issue.outputs.issueType == 'APP2' &&
           steps.issue.outputs.verified == 'true' &&
-          steps.issue.outputs.inspected == 'true' &&
+          github.event_name != 'workflow_dispatch'  &&
           github.event.comment.user.login == github.event.issue.assignee.login
         shell: bash
         env:
@@ -149,7 +149,7 @@ jobs:
         if: |
           steps.issue.outputs.issueType == 'APP2' &&
           steps.issue.outputs.verified == 'true' &&
-          steps.issue.outputs.inspected == 'true' &&
+          github.event_name != 'workflow_dispatch'  &&
           github.event.comment.user.login == github.event.issue.assignee.login
         uses: actions-cool/issues-helper@v3
         with:
@@ -170,7 +170,7 @@ jobs:
         if: |
           steps.issue.outputs.issueType == 'APP2' &&
           steps.issue.outputs.verified == 'true' &&
-          steps.issue.outputs.inspected == 'true' &&
+          github.event_name != 'workflow_dispatch'  &&
           github.event.comment.user.login == github.event.issue.assignee.login
         shell: bash
         env:
