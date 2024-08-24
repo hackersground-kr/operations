@@ -1,6 +1,6 @@
 name: 'ROUND 5: 팀 발표자료 제출'
 description: '팀별 앱 제출 템플릿'
-title: "팀별 발표자료 제출 템플릿"
+title: "[**팀 이름**] 해커톤 팀 발표자료 제출"
 
 body:
 - type: markdown

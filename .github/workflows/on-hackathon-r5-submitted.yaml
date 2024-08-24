@@ -94,7 +94,7 @@ jobs:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         gh issue edit ${{ steps.issue.outputs.issueNumber }} \
-          --add-label "rount-5,hackathon,team-pitch,overdue" \
+          --add-label "round-5,hackathon,team-pitch,overdue" \
           -R ${{ github.event.repository.full_name }}
 
     - name: Comment to issue - Overdue
@@ -137,7 +137,7 @@ jobs:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         gh issue edit ${{ steps.issue.outputs.issueNumber }} \
-          --add-label "rount-5,hackathon,team-pitch,submitted,verifying" \
+          --add-label "round-5,hackathon,team-pitch,submitted,verifying" \
           -R ${{ github.event.repository.full_name }}
 
     - name: Get random inspector
