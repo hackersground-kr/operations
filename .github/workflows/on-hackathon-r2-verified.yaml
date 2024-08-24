@@ -180,8 +180,7 @@ jobs:
 
     - name: Call Power Automate workflow
       if: |
-        steps.issue.outputs.issueType == 'TOPIC' &&
-        steps.issue.outputs.inspected == 'true'
+        steps.issue.outputs.issueType == 'TOPIC'
       id: request
       uses: fjogeleit/http-request-action@v1
       with:
