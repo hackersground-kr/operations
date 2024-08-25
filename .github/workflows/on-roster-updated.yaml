@@ -37,7 +37,7 @@ jobs:
         # Get the random assignee
         $id = $ids[$random]
 
-        $tokenUrl = "${{ vars.APIM_BASE_URL }}/access-token?id=$id"
+        $tokenUrl = "${{ vars.APIM_BASE_URL }}/github/access-token?id=$id"
         Write-Host "Token URL: $tokenUrl"
         $token = $(Invoke-RestMethod $tokenUrl -Headers @{ "Ocp-Apim-Subscription-Key" = "${{ secrets.APIM_SUBSCRIPTION_KEY }}" })
 
