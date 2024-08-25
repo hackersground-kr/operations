@@ -23,7 +23,7 @@ jobs:
     - name: Check event payload
       shell: pwsh
       run: |
-        $eventPayload = ${{ toJson(github) }}
+        $eventPayload = '${{ toJson(github) }}'
 
     - name: Get GitHub access token
       id: github-connect
