@@ -46,5 +46,7 @@ jobs:
 
     - name: Update inspectors
       shell: bash
+      env:
+        GH_TOKEN: ${{ steps.github-connect.outputs.token }}
       run: |
         gh variable set INSPECTORS --body "${{ github.event.inputs.gitHubIDs }}" -R hackersground-kr/hackers-ground
